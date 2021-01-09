@@ -2,11 +2,14 @@ package org.vpreportcorrector.app
 
 import javafx.scene.Scene
 import org.vpreportcorrector.mainview.MainView
-import tornadofx.App
-import tornadofx.UIComponent
-import tornadofx.launch
+import tornadofx.*
 
 class MyApp: App(MainView::class, Styles::class) {
+    init {
+        // enables "hot reload" in debug mode
+//        reloadStylesheetsOnFocus()
+//        reloadViewsOnFocus()
+    }
     fun main(args: Array<String>) {
         launch<MyApp>(args)
     }

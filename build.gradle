@@ -22,6 +22,13 @@ dependencies {
     implementation "org.openjfx:javafx:13-ea+8"
     implementation "org.openjfx:javafx-base:13-ea+8"
     implementation "org.openjfx:javafx-controls:13-ea+8"
+
+    implementation 'org.kordamp.ikonli:ikonli-javafx:12.1.0'
+    implementation 'org.kordamp.ikonli:ikonli-fontawesome-pack:12.1.0'
+    implementation 'org.kordamp.ikonli:ikonli-fontawesome5-pack:12.1.0'
+    implementation 'org.kordamp.ikonli:ikonli-bootstrapicons-pack:12.1.0'
+
+
 }
 
 compileKotlin {
