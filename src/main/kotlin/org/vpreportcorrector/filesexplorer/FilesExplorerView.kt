@@ -36,12 +36,10 @@ class FilesExplorerView : View("Working directory") {
 
     private val rootFolder = controller.getRootFolder()
 
-    private val filesTree = treeview<Path>(TreeItem(rootFolder)) {
+    var filesTree = treeview<Path>(TreeItem(rootFolder)) {
         minWidth = 50.0
         populate {
-            if (Files.isDirectory(it.value)) it.value.list().filter { path: Path ->
-                !Files.isHidden(path) && Files.isReadable(path) && Files.isWritable(path)
-            }
+            if (Files.isDirectory(it.value)) it.value.list()
             else null
         }
         cellFormat {
@@ -90,8 +88,7 @@ class FilesExplorerView : View("Working directory") {
             button("", FontIcon(FontAwesome.REPEAT)) {
                 tooltip("Refresh")
                 action {
-                    // TODO: 09.01.21
-                    filesTree.refresh()
+                    refreshTreeView()
                 }
             }
             button("", FontIcon(FontAwesomeSolid.FOLDER_PLUS)){
@@ -101,7 +98,7 @@ class FilesExplorerView : View("Working directory") {
                     val model = NewFolderModel(NewFolder(rootFolder.toFile().absolutePath, null))
                     setInScope(model, scope)
                     find(NewFolderDialogView::class, scope).openModal(block = true)
-                    filesTree.refresh()
+                    refreshTreeView()
                 }
             }
             button("", FontIcon(BootstrapIcons.ARROWS_EXPAND)){
@@ -113,13 +110,35 @@ class FilesExplorerView : View("Working directory") {
                 action { filesTree.root.collapseAll() }
             }
         }
+
         add(filesTree)
         filesTree.fitToParentHeight()
         filesTree.fitToParentWidth()
+    }
+
+    private fun refreshTreeView() {
+        with(filesTree){
+            refreshTreeItemRecursively(this.root)
+        }
+    }
+
+    private fun refreshTreeItemRecursively(root: TreeItem<Path>){
+        if (root.value.toFile().isDirectory) {
+            val subPathsSet = root.value.list().toSet()
+            val toAdd: List<Path> = subPathsSet.filter { path -> !root.children.map { it.value }.toSet().contains(path) }
+            val toRemove: List<TreeItem<Path>> = root.children.filter { treeItem -> !subPathsSet.contains(treeItem.value) }
+            root.children.removeAll(toRemove)
+            root.children.addAll(toAdd.map { TreeItem(it) })
+            root.children.forEach { refreshTreeItemRecursively(it) }
+        }
     }
 }
 
 /**
  * Extension function to return the actual children.
  */
-fun Path.list() = Files.list(this).use { it.toList() }
+fun Path.list(): List<Path> = Files.list(this).use {
+    it.toList().filter { path: Path ->
+        !Files.isHidden(path) && Files.isReadable(path) && Files.isWritable(path)
+    }
+}

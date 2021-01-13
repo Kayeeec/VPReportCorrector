@@ -5,7 +5,7 @@ import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.setValue
 
-class FolderContextMenuVisibility() {
+class FilesExplorer() {
     val isEditVisibleProperty = SimpleBooleanProperty(false)
     var isEditVisible by isEditVisibleProperty
 
@@ -22,13 +22,14 @@ class FolderContextMenuVisibility() {
     var isNewFolderVisible by isNewFolderVisibleProperty
 }
 
-class FileContextMenuVisibilityModel : ItemViewModel<FolderContextMenuVisibility>() {
-    val isEditVisible = bind(FolderContextMenuVisibility::isEditVisibleProperty)
-    val isViewVisible = bind(FolderContextMenuVisibility::isViewVisibleProperty)
-    val isImportVisible = bind(FolderContextMenuVisibility::isImportVisibleProperty)
-    val isRenameVisible = bind(FolderContextMenuVisibility::isRenameVisibleProperty)
-    val isNewFolderVisible = bind(FolderContextMenuVisibility::isNewFolderVisibleProperty)
+class FilesExplorerModel : ItemViewModel<FilesExplorer>() {
+    val isEditVisible = bind(FilesExplorer::isEditVisibleProperty)
+    val isViewVisible = bind(FilesExplorer::isViewVisibleProperty)
+    val isImportVisible = bind(FilesExplorer::isImportVisibleProperty)
+    val isRenameVisible = bind(FilesExplorer::isRenameVisibleProperty)
+    val isNewFolderVisible = bind(FilesExplorer::isNewFolderVisibleProperty)
 }
+
 
 
 

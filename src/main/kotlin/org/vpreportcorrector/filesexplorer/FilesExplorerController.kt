@@ -3,7 +3,6 @@ package org.vpreportcorrector.filesexplorer
 import javafx.scene.control.MultipleSelectionModel
 import javafx.scene.control.TreeItem
 import tornadofx.Controller
-import tornadofx.ItemViewModel
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -17,7 +16,7 @@ class FilesExplorerController: Controller() {
         "jpg", "png", "bmp", "jpeg", "svg",
         "JPG", "PNG", "BMP", "JPEG", "SVG",
     )
-    val model: FileContextMenuVisibilityModel by inject()
+    val model: FilesExplorerModel by inject()
 
     fun getRootFolder(): Path {
         return Paths.get(TEST_REPO_LOCATION)
@@ -59,10 +58,5 @@ class FilesExplorerController: Controller() {
                 && selectionModel.selectedItems.size == 1
                 && selectionModel.selectedItems[0].value.toFile().isDirectory
     }
-}
-
-class FilesExplorerControllerModel : ItemViewModel<FilesExplorerController>() {
-    val pdfExtensions = bind(FilesExplorerController::pdfExtensions)
-    val imageExtensions = bind(FilesExplorerController::imageExtensions)
 }
 
