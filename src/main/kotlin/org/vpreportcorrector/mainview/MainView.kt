@@ -2,6 +2,10 @@ package org.vpreportcorrector.mainview
 
 import javafx.geometry.Orientation
 import javafx.scene.Node
+import javafx.scene.control.Tooltip
+import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
+import org.kordamp.ikonli.javafx.FontIcon
+import org.vpreportcorrector.app.Styles.Companion.sideButton
 import org.vpreportcorrector.filesexplorer.FilesExplorerView
 import tornadofx.*
 
@@ -16,18 +20,24 @@ class MainView : View("Hello TornadoFX") {
         add(FilesExplorerView()) // TODO: 06.01.21 min and max size
         add(ContentView())
     }
+
     override val root = borderpane {
-        left = vbox { // TODO: 06.01.21 improve style --arrow instead
-            button("Files") {
-                action {
-                    toggleFilesExplorerPane()
+        left = vbox {
+            group {
+                button("Directory", FontIcon(FontAwesomeSolid.FOLDER)) {
+                    action {
+                        toggleFilesExplorerPane()
+                    }
+                    rotate = -90.0
+                    addClass(sideButton)
+                    tooltip("Toggle working directory file explorer")
                 }
             }
         }
         center = centerSplitPane
     }
 
-    fun toggleFilesExplorerPane() {
+    private fun toggleFilesExplorerPane() {
         if (filesExplorerVisible) {
             filesExplorerNode = centerSplitPane.items[0]
             filesExplorerDividerPosition = centerSplitPane.dividerPositions[0]

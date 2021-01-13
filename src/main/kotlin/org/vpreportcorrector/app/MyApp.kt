@@ -7,8 +7,8 @@ import tornadofx.*
 class MyApp: App(MainView::class, Styles::class) {
     init {
         // enables "hot reload" in debug mode
-//        reloadStylesheetsOnFocus()
-//        reloadViewsOnFocus()
+        reloadStylesheetsOnFocus()
+        reloadViewsOnFocus()
     }
     fun main(args: Array<String>) {
         launch<MyApp>(args)
