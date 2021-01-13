@@ -73,7 +73,18 @@ class FilesExplorerView : View("Working directory") {
             separator()
             item("Copy")
             item("Paste")
-            item("Delete")
+            item("Delete") {
+                action {
+                    if (selectionModel.selectedItems !== null && selectionModel.selectedItems.isNotEmpty()) {
+                        val pathsToDelete = selectionModel.selectedItems.map { it.value }
+                        val header = "Do you really want to delete selected item/s?"
+                        confirm(header = header, title= "Confirm deletion", actionFn = {
+                            controller.delete(pathsToDelete)
+                            refreshTreeView()
+                        })
+                    }
+                }
+            }
         }
         root.isExpanded = true
 

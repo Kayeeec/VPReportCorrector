@@ -4,6 +4,8 @@ import javafx.scene.control.MultipleSelectionModel
 import javafx.scene.control.TreeItem
 import tornadofx.Controller
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -57,6 +59,25 @@ class FilesExplorerController: Controller() {
         model.isNewFolderVisible.value = selectionModel != null
                 && selectionModel.selectedItems.size == 1
                 && selectionModel.selectedItems[0].value.toFile().isDirectory
+    }
+
+    fun delete(pathsToDelete: List<Path>) {
+        pathsToDelete.forEach {
+            try {
+                deleteDirectoryStream(it)
+            } catch (e: NoSuchFileException) {
+                // this can be safely ignored
+            } catch (e: Exception) {
+                // TODO: 13.01.21 error handling
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun deleteDirectoryStream(path: Path) {
+        Files.walk(path)
+            .sorted(Comparator.reverseOrder())
+            .map { it.toFile() }.forEach { it.delete() }
     }
 }
 
