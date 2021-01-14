@@ -20,6 +20,9 @@ class FilesExplorer() {
 
     val isNewFolderVisibleProperty = SimpleBooleanProperty(false)
     var isNewFolderVisible by isNewFolderVisibleProperty
+
+    val isFileTreeFocusedProperty = SimpleBooleanProperty(false)
+    var isFileTreeFocused by isFileTreeFocusedProperty
 }
 
 class FilesExplorerModel : ItemViewModel<FilesExplorer>() {
@@ -28,6 +31,7 @@ class FilesExplorerModel : ItemViewModel<FilesExplorer>() {
     val isImportVisible = bind(FilesExplorer::isImportVisibleProperty)
     val isRenameVisible = bind(FilesExplorer::isRenameVisibleProperty)
     val isNewFolderVisible = bind(FilesExplorer::isNewFolderVisibleProperty)
+    val isFileTreeFocused = bind(FilesExplorer::isFileTreeFocusedProperty)
 }
 
 

@@ -2,6 +2,7 @@ package org.vpreportcorrector.filesexplorer
 
 import javafx.geometry.Pos
 import javafx.scene.control.TreeItem
+import javafx.scene.input.KeyCombination
 import org.kordamp.ikonli.bootstrapicons.BootstrapIcons
 import org.kordamp.ikonli.fontawesome.FontAwesome
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
@@ -33,7 +34,6 @@ import kotlin.streams.toList
 
 class FilesExplorerView : View("Working directory") {
     private val controller: FilesExplorerController by inject()
-
     private val rootFolder = controller.getRootFolder()
 
     var filesTree = treeview<Path>(TreeItem(rootFolder)) {
@@ -57,23 +57,39 @@ class FilesExplorerView : View("Working directory") {
         contextmenu {
             item("New folder") {
                 visibleWhen { controller.model.isNewFolderVisible }
+                enableWhen { controller.model.isFileTreeFocused.and(controller.model.isNewFolderVisible) }
             }
             item("Import") {
                 visibleWhen { controller.model.isImportVisible }
+                enableWhen { controller.model.isFileTreeFocused.and(controller.model.isImportVisible) }
             }
             item("Edit") {
                 visibleWhen { controller.model.isEditVisible }
+                enableWhen { controller.model.isFileTreeFocused.and(controller.model.isEditVisible) }
             }
             item("View") {
                 visibleWhen { controller.model.isViewVisible }
+                enableWhen { controller.model.isFileTreeFocused.and(controller.model.isViewVisible) }
             }
             item("Rename") {
                 visibleWhen { controller.model.isRenameVisible }
+                enableWhen { controller.model.isFileTreeFocused.and(controller.model.isRenameVisible) }
             }
             separator()
-            item("Copy")
-            item("Paste")
-            item("Delete") {
+            item("Copy", KeyCombination.keyCombination("Shortcut+C")){
+                enableWhen { controller.model.isFileTreeFocused }
+                action {
+                    println("copy")
+                }
+            }
+            item("Paste") {
+                enableWhen { controller.model.isFileTreeFocused }
+                action {
+                    println("paste")
+                }
+            }
+            item("Delete", KeyCombination.keyCombination("Delete")) {
+                enableWhen { controller.model.isFileTreeFocused }
                 action {
                     if (selectionModel.selectedItems !== null && selectionModel.selectedItems.isNotEmpty()) {
                         val pathsToDelete = selectionModel.selectedItems.map { it.value }
@@ -90,6 +106,10 @@ class FilesExplorerView : View("Working directory") {
 
         selectionModel.selectedItems.onChange {
             controller.recomputeContextMenuVisibilities(selectionModel)
+        }
+
+        focusedProperty().onChange { newValue: Boolean ->
+            controller.model.isFileTreeFocused.value = newValue
         }
     }
 

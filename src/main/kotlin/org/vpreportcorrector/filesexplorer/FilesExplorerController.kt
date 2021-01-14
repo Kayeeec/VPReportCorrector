@@ -2,8 +2,10 @@ package org.vpreportcorrector.filesexplorer
 
 import javafx.scene.control.MultipleSelectionModel
 import javafx.scene.control.TreeItem
+import org.vpreportcorrector.app.errorhandling.ErrorCollector
 import tornadofx.Controller
 import java.io.File
+import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.NoSuchFileException
 import java.nio.file.Path
@@ -62,16 +64,24 @@ class FilesExplorerController: Controller() {
     }
 
     fun delete(pathsToDelete: List<Path>) {
+        val errorCollector = ErrorCollector("Error/s occurred while deleting file/s.")
         pathsToDelete.forEach {
             try {
                 deleteDirectoryStream(it)
             } catch (e: NoSuchFileException) {
-                // this can be safely ignored
-            } catch (e: Exception) {
-                // TODO: 13.01.21 error handling
+                // this can be ignored
+            } catch (e: IOException) {
                 e.printStackTrace()
+                errorCollector.addError("Unexpected error has occurred during IO operation: ${e.message}", e)
+            } catch (e: SecurityException) {
+                e.printStackTrace()
+                errorCollector.addError("Insufficient permissions to delete file: ${e.message}", e)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                errorCollector.addError("Failed to delete file: ${e.message}", e)
             }
         }
+        errorCollector.verify()
     }
 
     private fun deleteDirectoryStream(path: Path) {
