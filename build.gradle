@@ -4,7 +4,7 @@ plugins {
 }
 
 javafx {
-    modules = ['javafx.controls', 'javafx.media', 'javafx.graphics']
+    modules = ['javafx.controls', 'javafx.media', 'javafx.graphics', 'javafx.web']
 }
 
 group 'org.vpreportcorrector'
@@ -22,6 +22,7 @@ dependencies {
     implementation "org.openjfx:javafx:13-ea+8"
     implementation "org.openjfx:javafx-base:13-ea+8"
     implementation "org.openjfx:javafx-controls:13-ea+8"
+    implementation "org.openjfx:javafx-web:13-ea+8"
 
     implementation 'org.kordamp.ikonli:ikonli-javafx:12.1.0'
     implementation 'org.kordamp.ikonli:ikonli-fontawesome-pack:12.1.0'

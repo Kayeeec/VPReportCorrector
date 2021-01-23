@@ -1,6 +1,7 @@
 package org.vpreportcorrector.app
 
 import javafx.scene.Scene
+import org.vpreportcorrector.app.errorhandling.UncaughtErrorHandler
 import org.vpreportcorrector.mainview.MainView
 import tornadofx.*
 
@@ -9,6 +10,7 @@ class MyApp: App(MainView::class, Styles::class) {
         // enables "hot reload" in debug mode
 //        reloadStylesheetsOnFocus()
 //        reloadViewsOnFocus()
+        Thread.setDefaultUncaughtExceptionHandler(UncaughtErrorHandler())
     }
     fun main(args: Array<String>) {
         launch<MyApp>(args)
