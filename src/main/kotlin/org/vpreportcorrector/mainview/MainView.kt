@@ -2,14 +2,16 @@ package org.vpreportcorrector.mainview
 
 import javafx.geometry.Orientation
 import javafx.scene.Node
-import javafx.scene.control.Tooltip
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
 import org.vpreportcorrector.app.Styles.Companion.sideButton
 import org.vpreportcorrector.filesexplorer.FilesExplorerView
 import tornadofx.*
 
-class MainView : View("Hello TornadoFX") {
+class MainView : View("VPReportCorrector") {
+    private val filesExplorerView: FilesExplorerView by inject()
+    private val contentView: ContentView by inject()
+
     private var filesExplorerVisible = true
     private var filesExplorerDividerPosition: Double = 0.3
     private var filesExplorerNode: Node? = null
@@ -17,8 +19,8 @@ class MainView : View("Hello TornadoFX") {
     private val centerSplitPane = splitpane {
         orientation = Orientation.HORIZONTAL
         setDividerPositions(0.3)
-        add(FilesExplorerView()) // TODO: 06.01.21 min and max size
-        add(ContentView())
+        add(filesExplorerView)
+        add(contentView)
     }
 
     override val root = borderpane {

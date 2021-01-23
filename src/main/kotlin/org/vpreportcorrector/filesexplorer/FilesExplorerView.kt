@@ -3,41 +3,23 @@ package org.vpreportcorrector.filesexplorer
 import javafx.geometry.Pos
 import javafx.scene.control.TreeItem
 import javafx.scene.input.KeyCombination
+import javafx.scene.layout.Priority
 import org.kordamp.ikonli.bootstrapicons.BootstrapIcons
 import org.kordamp.ikonli.fontawesome.FontAwesome
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
+import org.vpreportcorrector.utils.list
 import tornadofx.*
 import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.streams.toList
-
-// TODO: 06.01.21 implement file operations (create folder dialog)
-/**
- *  add folder
- *      main button -- done might be redone
- *      context menu on directories
- *      ctrl n
-*   remove
- *      context menu on everything
- *      confirm dialog
-*   move
- *      drag
- *  copy
- *     context menu
- *     ctrl c
-*   paste
- *      context + ctrl v
-*   rename
- *      use editable tree items
- */
 
 class FilesExplorerView : View("Working directory") {
     private val controller: FilesExplorerController by inject()
     private val rootFolder = controller.getRootFolder()
 
-    var filesTree = treeview<Path>(TreeItem(rootFolder)) {
+    private var filesTree = treeview<Path>(TreeItem(rootFolder)) {
         minWidth = 50.0
+        isEditable = true
         populate {
             if (Files.isDirectory(it.value)) it.value.list()
             else null
@@ -52,12 +34,20 @@ class FilesExplorerView : View("Working directory") {
                 else -> FontIcon(FontAwesome.FILE)
             }
         }
+
         multiSelect(true)
 
         contextmenu {
             item("New folder") {
                 visibleWhen { controller.model.isNewFolderVisible }
                 enableWhen { controller.model.isFileTreeFocused.and(controller.model.isNewFolderVisible) }
+                action {
+                    val location = selectionModel.selectedItems.firstOrNull()?.value?.toFile()
+                    if (location != null ) {
+                        controller.createFolder(location = location, newFolderName = null)
+                        refreshTreeView()
+                    }
+                }
             }
             item("Import") {
                 visibleWhen { controller.model.isImportVisible }
@@ -74,18 +64,37 @@ class FilesExplorerView : View("Working directory") {
             item("Rename") {
                 visibleWhen { controller.model.isRenameVisible }
                 enableWhen { controller.model.isFileTreeFocused.and(controller.model.isRenameVisible) }
+                action {
+                    if (selectionModel.selectedItems !== null
+                        && selectionModel.selectedItems.isNotEmpty()
+                        && selectionModel.selectedItems.size == 1
+                    ) {
+                        val toRename = selectionModel.selectedItems.firstOrNull()?.value
+                        if (toRename != null) {
+                            controller.rename(toRename)
+                            refreshTreeView()
+                        }
+                    }
+                }
             }
             separator()
             item("Copy", KeyCombination.keyCombination("Shortcut+C")){
                 enableWhen { controller.model.isFileTreeFocused }
                 action {
-                    println("copy")
+                    if (selectionModel.selectedItems !== null && selectionModel.selectedItems.isNotEmpty()) {
+                        val pathsToCopy = selectionModel.selectedItems.map { it.value }
+                        controller.copy(pathsToCopy)
+                    }
                 }
             }
-            item("Paste") {
-                enableWhen { controller.model.isFileTreeFocused }
+            item("Paste", KeyCombination.keyCombination("Shortcut+V")) {
+                enableWhen { controller.model.isPasteEnabled }
                 action {
-                    println("paste")
+                    try {
+                        controller.paste(selectionModel.selectedItems.first().value)
+                    } finally {
+                        refreshTreeView()
+                    }
                 }
             }
             item("Delete", KeyCombination.keyCombination("Delete")) {
@@ -105,7 +114,7 @@ class FilesExplorerView : View("Working directory") {
         root.isExpanded = true
 
         selectionModel.selectedItems.onChange {
-            controller.recomputeContextMenuVisibilities(selectionModel)
+            controller.onSelectedItemsChange(selectionModel)
         }
 
         focusedProperty().onChange { newValue: Boolean ->
@@ -115,7 +124,9 @@ class FilesExplorerView : View("Working directory") {
 
     override val root = vbox {
         hbox {
+            hgrow = Priority.ALWAYS
             alignment = Pos.CENTER_RIGHT
+
             button("", FontIcon(FontAwesome.REPEAT)) {
                 tooltip("Refresh")
                 action {
@@ -125,10 +136,7 @@ class FilesExplorerView : View("Working directory") {
             button("", FontIcon(FontAwesomeSolid.FOLDER_PLUS)){
                 tooltip("New folder")
                 action {
-                    val scope = Scope()
-                    val model = NewFolderModel(NewFolder(rootFolder.toFile().absolutePath, null))
-                    setInScope(model, scope)
-                    find(NewFolderDialogView::class, scope).openModal(block = true)
+                    controller.createFolder(location = rootFolder.toFile(), newFolderName = null)
                     refreshTreeView()
                 }
             }
@@ -162,14 +170,5 @@ class FilesExplorerView : View("Working directory") {
             root.children.addAll(toAdd.map { TreeItem(it) })
             root.children.forEach { refreshTreeItemRecursively(it) }
         }
-    }
-}
-
-/**
- * Extension function to return the actual children.
- */
-fun Path.list(): List<Path> = Files.list(this).use {
-    it.toList().filter { path: Path ->
-        !Files.isHidden(path) && Files.isReadable(path) && Files.isWritable(path)
     }
 }
