@@ -9,7 +9,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 class RenameDialogView : View("Rename") {
-    val model: RenameDialogModel by inject()
+    private val model: RenameDialogModel by inject()
 
     override val root = borderpane {
         center = form {
@@ -42,27 +42,28 @@ class RenameDialogView : View("Rename") {
                 isDefaultButton = true
                 enableWhen { model.valid }
                 action {
+                    model.commit()
+                    val data = model.item
                     try {
-                        model.commit()
-                        Files.move(model.toRename.value, model.toRename.value.resolveSibling(model.newName.value.trim()))
+                        Files.move(data.toRename, data.toRename.resolveSibling(data.newName.trim()))
                         close()
                     } catch (e: FileAlreadyExistsException) {
-                        model.conflictingFileName.value = model.newName.value
+                        model.conflictingFileName.value = data.newName
                         model.validate()
                     } catch (e: SecurityException) {
-                        e.printStackTrace()
+                        log.severe(e.stackTraceToString())
                         error(
                             title = "Error renaming file",
                             header = "Insufficient permissions to rename file.",
-                            content = "File:\n${model.toRename.value}\n\nError message:\n${e.message}",
+                            content = "File:\n${data.toRename}\n\nError message:\n${e.message}",
                         )
                         close()
                     } catch (e: Exception) {
-                        e.printStackTrace()
+                        log.severe(e.stackTraceToString())
                         error(
                             title = "Error renaming file",
                             header = "Failed to rename file",
-                            content = "File:\n${model.toRename.value}\n\nError message:\n${e.message}",
+                            content = "File:\n${data.toRename}\n\nError message:\n${e.message}",
                         )
                         close()
                     }
@@ -79,16 +80,16 @@ class RenameDialogView : View("Rename") {
 
 class RenameDialog(renamed: Path) {
     val conflictingFileNameProperty = SimpleStringProperty(null)
-    var conflictingFileName by conflictingFileNameProperty
+    var conflictingFileName: String? by conflictingFileNameProperty
 
     val oldNameProperty = SimpleStringProperty(renamed.toFile().name)
-    var oldName by oldNameProperty
+    var oldName: String by oldNameProperty
 
     val newNameProperty = SimpleStringProperty(renamed.toFile().name)
-    var newName by newNameProperty
+    var newName: String by newNameProperty
 
-    val toRenameProperty = SimpleObjectProperty<Path>(renamed)
-    var toRename by toRenameProperty
+    val toRenameProperty = SimpleObjectProperty(renamed)
+    var toRename: Path by toRenameProperty
 }
 
 class RenameDialogModel(renameDialog: RenameDialog) : ItemViewModel<RenameDialog>(renameDialog) {

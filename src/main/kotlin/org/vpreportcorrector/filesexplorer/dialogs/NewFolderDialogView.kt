@@ -52,7 +52,7 @@ class NewFolderDialogView : View("New folder") {
                         newFolderFile = File(newFolderModel.location, newFolderModel.name)
                         Files.createDirectories(newFolderFile.toPath())
                     } catch (e: FileAlreadyExistsException) {
-                        e.printStackTrace()
+                        log.severe(e.stackTraceToString())
                         error(
                             title = "Error creating directory",
                             header = "Directory '${newFolderFile?.absolutePath}' already exists.",
@@ -60,14 +60,14 @@ class NewFolderDialogView : View("New folder") {
                         )
 
                     } catch (e: SecurityException) {
-                        e.printStackTrace()
+                        log.severe(e.stackTraceToString())
                         error(
                             title = "Error creating directory",
                             header = "Insufficient permissions to create directory: '${newFolderFile?.absolutePath}'",
                             content = "Error message:\n${e.message}",
                         )
                     } catch (e: Exception) {
-                        e.printStackTrace()
+                        log.severe(e.stackTraceToString())
                         error(
                             title = "Error creating directory",
                             header = "Failed to create directory: '${newFolderFile?.absolutePath}'",
@@ -84,12 +84,12 @@ class NewFolderDialogView : View("New folder") {
     }
 }
 
-class NewFolder(location: File, name: String? = null) {
-    val locationProperty = SimpleObjectProperty<File>(location)
-    var location by locationProperty
+class NewFolder(location: File, name: String = "") {
+    val locationProperty = SimpleObjectProperty(location)
+    var location: File by locationProperty
 
     val nameProperty = SimpleStringProperty(name)
-    var name by nameProperty
+    var name: String by nameProperty
 }
 
 class NewFolderModel(newFolder: NewFolder) : ItemViewModel<NewFolder>(newFolder) {

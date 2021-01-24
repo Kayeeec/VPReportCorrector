@@ -13,12 +13,14 @@ import org.vpreportcorrector.utils.suggestName
 import tornadofx.Controller
 import tornadofx.Scope
 import tornadofx.find
+import tornadofx.putFiles
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import java.nio.file.Paths
+
 
 // TODO: 07.01.21 add settings for repository location
 const val TEST_REPO_LOCATION = "/mnt/shared/Skola/DP/testRepositoryRoot"
@@ -38,14 +40,6 @@ class FilesExplorerController: Controller() {
 
     fun onSelectedItemsChange(selectionModel: MultipleSelectionModel<TreeItem<Path>>?) {
         recomputeContextMenuVisibilities(selectionModel)
-        recomputeIsPasteEnabled(selectionModel)
-    }
-
-    private fun recomputeIsPasteEnabled(selectionModel: MultipleSelectionModel<TreeItem<Path>>?) {
-        val selectedSize = selectionModel?.selectedItems?.size ?: 0
-        model.isPasteEnabled.value = model.isFileTreeFocused.value
-            .and(selectedSize == 1)
-            .and(model.copiedPaths.isNotEmpty())
     }
 
     private fun recomputeContextMenuVisibilities(selectionModel: MultipleSelectionModel<TreeItem<Path>>?) {
@@ -104,13 +98,13 @@ class FilesExplorerController: Controller() {
             } catch (e: NoSuchFileException) {
                 // this can be ignored
             } catch (e: IOException) {
-                e.printStackTrace()
+                log.severe(e.stackTraceToString())
                 errorCollector.addError("Unexpected error has occurred during IO operation: ${e.message}", e)
             } catch (e: SecurityException) {
-                e.printStackTrace()
+                log.severe(e.stackTraceToString())
                 errorCollector.addError("Insufficient permissions to delete file: ${e.message}", e)
             } catch (e: Exception) {
-                e.printStackTrace()
+                log.severe(e.stackTraceToString())
                 errorCollector.addError("Failed to delete file: ${e.message}", e)
             }
         }
@@ -123,12 +117,6 @@ class FilesExplorerController: Controller() {
             .map { it.toFile() }.forEach { it.delete() }
     }
 
-    fun copy(pathsToCopy: List<Path>) {
-        val filteredPaths = filterDuplicateSelections(pathsToCopy)
-        model.copiedPaths.value.clear()
-        model.copiedPaths.value.addAll(filteredPaths)
-    }
-
     private fun filterDuplicateSelections(pathsToCopy: List<Path>): List<Path> {
         val sortedPaths = pathsToCopy.sortedBy { it.toFile().absolutePath }
         val filtered = mutableListOf<Path>()
@@ -138,26 +126,6 @@ class FilesExplorerController: Controller() {
             }
         }
         return filtered
-    }
-
-
-    fun paste(targetPath: Path) {
-        val errorCollector = ErrorCollector("Error/s occurred while pasting:")
-        var remembered = RememberChoice()
-        if (model.copiedPaths.value.isNotEmpty()) {
-            val targetDir = resolveTargetDir(targetPath)
-            model.copiedPaths.forEach { path ->
-                try {
-                    remembered = checkConflictsAndCopyFileOrDir(remembered, path, targetDir)
-                } catch (e: Exception) {
-                    errorCollector.addError(
-                        "Error occurred copying file ${path.toAbsolutePath()} to destination: ${targetDir.absolutePath}",
-                        e
-                    )
-                }
-            }
-        }
-        errorCollector.verify()
     }
 
     private fun checkConflictsAndCopyFileOrDir(rememberedAction: RememberChoice, copied: Path, targetDir: File): RememberChoice {
@@ -272,11 +240,91 @@ class FilesExplorerController: Controller() {
         return tmp.toFile()
     }
 
-    fun createFolder(location: File, newFolderName: String? = null) {
+    fun createFolder(location: File, newFolderName: String = "") {
         val scope = Scope()
         val model = NewFolderModel(NewFolder(location, newFolderName))
         setInScope(model, scope)
         find(NewFolderDialogView::class, scope).openModal(block = true)
     }
+
+    fun clipboardCopy(paths: List<Path>) {
+        try {
+            val filteredFiles = filterDuplicateSelections(paths).map { it.toFile() }
+            clipboard.putFiles(filteredFiles.toMutableList())
+        } catch (e: Exception) {
+            log.warning(e.stackTraceToString())
+            tornadofx.error(
+                title = "Error",
+                header = "Error occurred while copying files to clipboard.",
+                content = "Error message:\n${e.message}"
+            )
+        }
+    }
+
+    fun clipboardPaste(targetPath: Path){
+        val files = mutableListOf<File>()
+        try {
+            clipboard.files?.let { files.addAll(it) }
+        } catch (e: Exception) {
+            log.severe(e.stackTraceToString())
+            tornadofx.error(
+                title = "Error",
+                header = "Error occurred while pasting files from clipboard.",
+                content = "Error message:\n${e.message}"
+            )
+        }
+        if (files.isNotEmpty()) {
+            pasteFiles(targetPath, files)
+        }
+    }
+
+    private fun pasteFiles(targetPath: Path, copiedFiles: List<File>) {
+        val errorCollector = ErrorCollector("Error/s occurred while pasting:")
+        var remembered = RememberChoice()
+        val targetDir = resolveTargetDir(targetPath)
+        copiedFiles.map { it.toPath() }.forEach { path ->
+            try {
+                remembered = checkConflictsAndCopyFileOrDir(remembered, path, targetDir)
+            } catch (e: Exception) {
+                errorCollector.addError(
+                    "Error occurred copying file ${path.toAbsolutePath()} to destination: ${targetDir.absolutePath}",
+                    e
+                )
+            }
+        }
+        errorCollector.verify()
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

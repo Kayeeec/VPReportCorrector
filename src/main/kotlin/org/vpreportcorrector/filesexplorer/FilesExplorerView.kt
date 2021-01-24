@@ -44,7 +44,7 @@ class FilesExplorerView : View("Working directory") {
                 action {
                     val location = selectionModel.selectedItems.firstOrNull()?.value?.toFile()
                     if (location != null ) {
-                        controller.createFolder(location = location, newFolderName = null)
+                        controller.createFolder(location = location)
                         refreshTreeView()
                     }
                 }
@@ -83,15 +83,14 @@ class FilesExplorerView : View("Working directory") {
                 action {
                     if (selectionModel.selectedItems !== null && selectionModel.selectedItems.isNotEmpty()) {
                         val pathsToCopy = selectionModel.selectedItems.map { it.value }
-                        controller.copy(pathsToCopy)
+                        controller.clipboardCopy(pathsToCopy)
                     }
                 }
             }
             item("Paste", KeyCombination.keyCombination("Shortcut+V")) {
-                enableWhen { controller.model.isPasteEnabled }
                 action {
                     try {
-                        controller.paste(selectionModel.selectedItems.first().value)
+                        controller.clipboardPaste(selectionModel.selectedItems.first().value)
                     } finally {
                         refreshTreeView()
                     }
@@ -104,8 +103,11 @@ class FilesExplorerView : View("Working directory") {
                         val pathsToDelete = selectionModel.selectedItems.map { it.value }
                         val header = "Do you really want to delete selected item/s?"
                         confirm(header = header, title= "Confirm deletion", actionFn = {
-                            controller.delete(pathsToDelete)
-                            refreshTreeView()
+                            try {
+                                controller.delete(pathsToDelete)
+                            } finally {
+                                refreshTreeView()
+                            }
                         })
                     }
                 }
@@ -134,9 +136,9 @@ class FilesExplorerView : View("Working directory") {
                 }
             }
             button("", FontIcon(FontAwesomeSolid.FOLDER_PLUS)){
-                tooltip("New folder")
+                tooltip("New folder (in the directory root)")
                 action {
-                    controller.createFolder(location = rootFolder.toFile(), newFolderName = null)
+                    controller.createFolder(location = rootFolder.toFile())
                     refreshTreeView()
                 }
             }
