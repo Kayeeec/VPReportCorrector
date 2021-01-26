@@ -6,10 +6,7 @@ import javafx.stage.Modality
 import org.apache.commons.io.FileUtils
 import org.vpreportcorrector.app.errorhandling.ErrorCollector
 import org.vpreportcorrector.filesexplorer.dialogs.*
-import org.vpreportcorrector.utils.findConflictingFile
-import org.vpreportcorrector.utils.isDescendantOf
-import org.vpreportcorrector.utils.list
-import org.vpreportcorrector.utils.suggestName
+import org.vpreportcorrector.utils.*
 import tornadofx.Controller
 import tornadofx.Scope
 import tornadofx.find
@@ -22,10 +19,6 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 
-// TODO: 07.01.21 add settings for repository location
-const val TEST_REPO_LOCATION = "/mnt/shared/Skola/DP/testRepositoryRoot"
-
-
 class FilesExplorerController: Controller() {
     val pdfExtensions = setOf("pdf", "PDF")
     val imageExtensions = setOf(
@@ -34,8 +27,24 @@ class FilesExplorerController: Controller() {
     )
     val model: FilesExplorerModel by inject()
 
-    fun getRootFolder(): Path {
-        return Paths.get(TEST_REPO_LOCATION)
+    fun getRootFolder(): Path? {
+        var result: Path? = null
+        try {
+            var workingDirectoryPath: String = ""
+            preferences {
+                sync()
+                workingDirectoryPath = get(KEY_WORKING_DIRECTORY, "")
+            }
+            if (workingDirectoryPath.isNotBlank()) result = Paths.get(workingDirectoryPath)
+        } catch (e: Exception) {
+            log.severe(e.stackTraceToString())
+            tornadofx.error(
+                title = "Error",
+                header = "Error occurred while getting working directory.",
+                content = "Error message:\n${e.message}"
+            )
+        }
+        return result
     }
 
     fun onSelectedItemsChange(selectionModel: MultipleSelectionModel<TreeItem<Path>>?) {

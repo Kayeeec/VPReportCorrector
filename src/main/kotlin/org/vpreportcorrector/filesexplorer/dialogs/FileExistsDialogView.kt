@@ -8,7 +8,7 @@ import javafx.scene.control.ButtonBar
 import javafx.scene.control.ToggleGroup
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
-import org.vpreportcorrector.app.Styles.Companion.container
+import org.vpreportcorrector.app.Styles.Companion.paddedContainer
 import org.vpreportcorrector.app.Styles.Companion.icon48
 import org.vpreportcorrector.app.Styles.Companion.iconBlue
 import org.vpreportcorrector.app.Styles.Companion.p
@@ -79,7 +79,7 @@ class FileExistsDialogView : View() {
     }
 
     override val root = borderpane {
-        addClass(container)
+        addClass(paddedContainer)
 
         center = form {
             fieldset() {

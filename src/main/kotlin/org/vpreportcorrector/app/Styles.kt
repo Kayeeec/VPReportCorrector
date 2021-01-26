@@ -2,10 +2,12 @@ package org.vpreportcorrector.app
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
 import javafx.scene.text.FontWeight
+import javafx.scene.text.TextAlignment
 import tornadofx.*
 
 class Styles : Stylesheet() {
     companion object {
+        // Classes
         val heading by cssclass()
         val sideButton by cssclass()
 
@@ -13,14 +15,25 @@ class Styles : Stylesheet() {
         val h2 by cssclass()
         val h3 by cssclass()
         val p by cssclass()
-        val container by cssclass()
+        val paddedContainer by cssclass()
+        val centered by cssclass()
+        val typographyText by cssclass()
 
         val icon48 by cssclass()
         val iconBlue by cssclass()
 
+        val helpLabel by cssclass()
+        val helpIcon by cssclass()
+
 //        val filePdfIcon by cssclass()
+
+        // Properties
         val iconColor by cssproperty<Paint>("-fx-icon-color")
 
+        // Colors
+        val colorInfo = c("#6495ED")
+        val colorInfoMuted = c("#6495ED", 0.8)
+        val colorSecondary = c("#6c757d")
     }
 
     init {
@@ -33,6 +46,10 @@ class Styles : Stylesheet() {
 //        s(".file-pdf-icon .ikonli-font-icon") {
 //            iconColor.value = c("#b32015")
 //        }
+
+        menuBar {
+            padding = box(0.px)
+        }
 
         sideButton {
             fontSize = 10.px
@@ -62,8 +79,15 @@ class Styles : Stylesheet() {
             padding = box(0.px, 0.px, 10.px, 0.px)
         }
 
-        container {
+        paddedContainer {
             padding = box(10.px)
+        }
+
+        centered {
+            textAlignment = TextAlignment.CENTER
+            typographyText {
+                textAlignment = TextAlignment.CENTER
+            }
         }
 
         icon48 {
@@ -71,9 +95,16 @@ class Styles : Stylesheet() {
         }
 
         iconBlue {
-            iconColor.value = Color.CORNFLOWERBLUE
+            iconColor.value = colorInfo
         }
 
+        helpLabel {
+            padding = box(2.px, 2.px, 2.px, 5.px)
+        }
 
+        helpIcon {
+            fontSize = 20.px
+            iconColor.value = colorInfoMuted
+        }
     }
 }

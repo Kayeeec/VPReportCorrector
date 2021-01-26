@@ -3,6 +3,9 @@ package org.vpreportcorrector.filesexplorer.dialogs
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Orientation
+import org.apache.commons.io.FilenameUtils
+import org.vpreportcorrector.app.Styles
+import org.vpreportcorrector.utils.isValidFileName
 import tornadofx.*
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Files
@@ -10,6 +13,12 @@ import java.nio.file.Path
 
 class RenameDialogView : View("Rename") {
     private val model: RenameDialogModel by inject()
+
+    override fun onBeforeShow() {
+        modalStage?.let {
+            it.minWidth = 350.0
+        }
+    }
 
     override val root = borderpane {
         center = form {
@@ -24,6 +33,8 @@ class RenameDialogView : View("Rename") {
                             else if (it.trim() == model.oldName.value.trim()
                                 || it.trim() == model.toRename.value.toFile().name.trim())
                                 error("The new name must be different from the current name.")
+                            else if (!isValidFileName(it))
+                                error("The name contains invalid characters.")
                             else null
                         }
                     }
@@ -32,6 +43,7 @@ class RenameDialogView : View("Rename") {
         }
 
         bottom = buttonbar {
+            addClass(Styles.paddedContainer)
             button("Cancel") {
                 isCancelButton = true
                 action {
@@ -45,7 +57,8 @@ class RenameDialogView : View("Rename") {
                     model.commit()
                     val data = model.item
                     try {
-                        Files.move(data.toRename, data.toRename.resolveSibling(data.newName.trim()))
+                        val newName = resolveName(data)
+                        Files.move(data.toRename, data.toRename.resolveSibling(newName))
                         close()
                     } catch (e: FileAlreadyExistsException) {
                         model.conflictingFileName.value = data.newName
@@ -75,6 +88,18 @@ class RenameDialogView : View("Rename") {
         model.newName.onChange {
             if (!model.conflictingFileName.value.isNullOrBlank()) model.conflictingFileName.value = null
         }
+    }
+
+    private fun resolveName(data: RenameDialog): String {
+        val trimmed = data.newName.trim()
+        val file = data.toRename.toFile()
+        if (file.isDirectory) return trimmed
+        var extension = FilenameUtils.getExtension(trimmed)
+        if (extension.isNullOrBlank()) {
+            extension = FilenameUtils.getExtension(file.name)
+            return "${trimmed}.${extension}"
+        }
+        return trimmed
     }
 }
 

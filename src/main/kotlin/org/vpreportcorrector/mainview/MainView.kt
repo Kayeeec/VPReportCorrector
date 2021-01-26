@@ -2,10 +2,13 @@ package org.vpreportcorrector.mainview
 
 import javafx.geometry.Orientation
 import javafx.scene.Node
+import javafx.scene.layout.Priority
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
+import org.vpreportcorrector.app.Styles.Companion.paddedContainer
 import org.vpreportcorrector.app.Styles.Companion.sideButton
 import org.vpreportcorrector.filesexplorer.FilesExplorerView
+import org.vpreportcorrector.settings.SettingsModalView
 import tornadofx.*
 
 class MainView : View("VPReportCorrector") {
@@ -24,6 +27,17 @@ class MainView : View("VPReportCorrector") {
     }
 
     override val root = borderpane {
+        top = menubar {
+            hgrow = Priority.ALWAYS
+            removeClass(paddedContainer)
+            menu("Files") {
+                item("Settings", "Shortcut+Alt+S") {
+                    action {
+                        find<SettingsModalView>().openModal()
+                    }
+                }
+            }
+        }
         left = vbox {
             group {
                 button("Directory", FontIcon(FontAwesomeSolid.FOLDER)) {

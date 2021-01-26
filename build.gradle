@@ -30,6 +30,7 @@ dependencies {
     implementation 'org.kordamp.ikonli:ikonli-bootstrapicons-pack:12.1.0'
 
     compile 'commons-io:commons-io:2.8.0'
+    compile 'org.apache.commons:commons-lang3:3.11'
 
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.21'
     compile group: 'org.apache.pdfbox', name: 'fontbox', version: '2.0.21'

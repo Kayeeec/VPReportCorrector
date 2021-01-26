@@ -4,16 +4,19 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Orientation
 import javafx.scene.layout.Priority
+import org.vpreportcorrector.app.Styles
+import org.vpreportcorrector.utils.isValidFileName
+import org.vpreportcorrector.utils.t
 import tornadofx.*
 import java.io.File
-import java.nio.file.Files
 import java.nio.file.FileAlreadyExistsException
+import java.nio.file.Files
 
-class NewFolderDialogView : View("New folder") {
+class NewFolderDialogView : View() {
     private val model: NewFolderModel by inject()
 
     init {
-        title = "New folder (${model.location.value.absolutePath})"
+        title = t("title", model.location.value.absolutePath)
     }
 
     override fun onBeforeShow() {
@@ -27,9 +30,16 @@ class NewFolderDialogView : View("New folder") {
             fieldset(
                 labelPosition = Orientation.VERTICAL
             ) {
-                field("New folder name:") {
+                field(t("nameLabel")) {
                     textfield(model.name) {
-                        required()
+                        validator {
+                            if (it.isNullOrBlank())
+                                error(t("error.required"))
+                            else if (!isValidFileName(it))
+                                error(t("error.hasInvalidCharacters"))
+                            else
+                                null
+                        }
                         whenDocked { requestFocus() }
                     }
                 }
@@ -37,11 +47,12 @@ class NewFolderDialogView : View("New folder") {
         }
 
         bottom = buttonbar {
-            button("Cancel"){
+            addClass(Styles.paddedContainer)
+            button(t("ok")){
                 isCancelButton = true
                 action { close() }
             }
-            button("Save") {
+            button(t("save")) {
                 isDefaultButton = true
                 enableWhen(model.valid)
                 action {
@@ -49,29 +60,29 @@ class NewFolderDialogView : View("New folder") {
                     var newFolderFile: File? = null
                     try {
                         val newFolderModel = model.item
-                        newFolderFile = File(newFolderModel.location, newFolderModel.name)
+                        newFolderFile = File(newFolderModel.location, newFolderModel.name.trim())
                         Files.createDirectories(newFolderFile.toPath())
                     } catch (e: FileAlreadyExistsException) {
                         log.severe(e.stackTraceToString())
                         error(
-                            title = "Error creating directory",
-                            header = "Directory '${newFolderFile?.absolutePath}' already exists.",
-                            content = "Error message:\n${e.message}",
+                            title = t("errorTitle"),
+                            header = t("directoryExists", newFolderFile?.absolutePath),
+                            content = t("errorContent", e.message),
                         )
 
                     } catch (e: SecurityException) {
                         log.severe(e.stackTraceToString())
                         error(
-                            title = "Error creating directory",
-                            header = "Insufficient permissions to create directory: '${newFolderFile?.absolutePath}'",
-                            content = "Error message:\n${e.message}",
+                            title = t("errorTitle"),
+                            header = t("insufficientPermissions", newFolderFile?.absolutePath),
+                            content = t("errorContent", e.message),
                         )
                     } catch (e: Exception) {
                         log.severe(e.stackTraceToString())
                         error(
-                            title = "Error creating directory",
-                            header = "Failed to create directory: '${newFolderFile?.absolutePath}'",
-                            content = "Error message:\n${e.message}",
+                            title = t("errorTitle"),
+                            header = t("creationFailed", newFolderFile?.absolutePath),
+                            content = t("errorContent", e.message),
                         )
                     } finally {
                         close()
