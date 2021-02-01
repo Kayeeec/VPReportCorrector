@@ -1,6 +1,11 @@
 plugins {
+    id 'application'
     id 'org.jetbrains.kotlin.jvm' version '1.4.10'
     id 'org.openjfx.javafxplugin' version '0.0.9'
+}
+
+application {
+    mainClassName = 'org.vpreportcorrector.app.MyAppRun'
 }
 
 javafx {
