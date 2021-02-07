@@ -106,5 +106,10 @@ class Styles : Stylesheet() {
             fontSize = 20.px
             iconColor.value = colorInfoMuted
         }
+
+        s(".split-pane-divider") {
+            padding = box(0.px, 1.px, 0.px, 0.px)
+            borderWidth += box(0.px, 1.px, 0.px, 1.px)
+        }
     }
 }

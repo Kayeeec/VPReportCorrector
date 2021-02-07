@@ -10,30 +10,33 @@ import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.common.PDRectangle
 import org.apache.pdfbox.pdmodel.common.PDStream
 import org.apache.pdfbox.rendering.PDFRenderer
+import org.vpreportcorrector.diagramextractor.exceptions.DiagramExtractorException
+import org.vpreportcorrector.utils.FileConflictChoice
+import org.vpreportcorrector.utils.findConflictingFile
+import org.vpreportcorrector.utils.openFileExistsDialog
+import org.vpreportcorrector.utils.suggestName
 import types.DiagramPageResult
 import utils.searchPageForDiagramHeadings
 import java.awt.Color
 import java.io.File
+import java.lang.Exception
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 import kotlin.math.max
 
 class DiagramExtractor(
-    private val filePath: String,
-    private val outPath: String = "extracted_diagrams", // todo: will be defined by user (during GUI implementation)
+    inputPdf: File,
+    private val outputDir: File,
+    var rememberChoicePdf: FileConflictChoice?
 ) {
     private val diagramPages = mutableListOf<DiagramPageResult>()
     private var maxDiagramPageNumber = 0
-    private var fileName: String
-    private var document: PDDocument
-    private var template: PDDocument
+    private var fileName: String = inputPdf.nameWithoutExtension
+    private var document: PDDocument = PDDocument.load(inputPdf)
+    private var template: PDDocument = PDDocument.load(inputPdf)
     private val paddingLength: Int
         get() = "${this.maxDiagramPageNumber}".length
-
-    init {
-        val file = File(this.filePath)
-        this.document = PDDocument.load(file) // TODO: 27.10.20 handle IO (during GUI implementation)
-        this.fileName = file.nameWithoutExtension
-        this.template = PDDocument.load(file) // TODO: 27.10.20 handle IO (during GUI implementation)
-    }
 
     fun extractDiagrams() {
         this.document.use { pdDocument: PDDocument ->
@@ -125,13 +128,54 @@ class DiagramExtractor(
         val pdfRenderer = PDFRenderer(tempDoc)
         svgGraphics2D.background = Color(255, 255, 255)
         pdfRenderer.renderPageToGraphics(0, svgGraphics2D, 2.0F)
+        writeToFile(svgGraphics2D, svgFileName)
+    }
 
-        // todo: more resilient file creation IO, ensure outPath never + no end slash (during GUI impl.)
-        val svgFile = File("${this.outPath}/${svgFileName}")
-        svgFile.parentFile.mkdirs()
-        svgFile.setExecutable(false)
-        svgFile.bufferedWriter().use {
-            svgGraphics2D.stream(it)
+    private fun writeToFile(svgGraphics2D: SVGGraphics2D, svgFileName: String) {
+        val svgPath = resolveConflictsAndGetOutPath(svgFileName) ?: return
+        try {
+            val svgFile = Files.createFile(svgPath).toFile()
+            svgFile.bufferedWriter().use {
+                svgGraphics2D.stream(it)
+            }
+        } catch (e: Exception) {
+            throw DiagramExtractorException("Failed to create or write to output file '${svgPath.toFile().absolutePath}'", e)
+        }
+    }
+
+    private fun resolveConflictsAndGetOutPath(svgFileName: String): Path? {
+        var svgPath: Path? = Paths.get(outputDir.absolutePath, svgFileName)
+        val conflictingFile = findConflictingFile(outputDir.toPath(), svgPath!!)
+        if (conflictingFile != null) {
+            var choice = rememberChoicePdf
+            if (choice == null) {
+                val result = openFileExistsDialog(conflictingFile, svgPath)
+                if (result.remember) rememberChoicePdf = result.choice
+                choice = result.choice
+            }
+            when(choice) {
+                FileConflictChoice.REPLACE_OR_MERGE -> {
+                    deleteConflictingFile(conflictingFile.toFile())
+                }
+                FileConflictChoice.RENAME -> {
+                    val newName = suggestName(outputDir.toPath(), svgPath)
+                    svgPath = Paths.get(outputDir.absolutePath, newName)
+                }
+                FileConflictChoice.SKIP -> {
+                    svgPath = null
+                }
+            }
+        }
+        return svgPath
+    }
+
+    private fun deleteConflictingFile(file: File): Boolean {
+        try {
+            return file.delete()
+        } catch (e: SecurityException) {
+            throw DiagramExtractorException("Failed to delete conflicting file '${file.name}' due to insufficient permissions.", e)
+        } catch (e: Exception) {
+            throw DiagramExtractorException("Failed to delete conflicting file '${file.name}'.", e)
         }
     }
 

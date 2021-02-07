@@ -1,12 +1,15 @@
 package org.vpreportcorrector.filesexplorer
 
+import javafx.application.Platform
 import javafx.scene.control.MultipleSelectionModel
 import javafx.scene.control.TreeItem
 import javafx.stage.Modality
-import org.apache.commons.io.FileUtils
 import org.vpreportcorrector.app.errorhandling.ErrorCollector
 import org.vpreportcorrector.filesexplorer.dialogs.*
-import org.vpreportcorrector.utils.*
+import org.vpreportcorrector.import.openSimpleImportDialog
+import org.vpreportcorrector.utils.checkConflictsAndCopyFileOrDir
+import org.vpreportcorrector.utils.isDescendantOf
+import org.vpreportcorrector.utils.isPdf
 import tornadofx.Controller
 import tornadofx.Scope
 import tornadofx.find
@@ -16,7 +19,7 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.NoSuchFileException
 import java.nio.file.Path
-import java.nio.file.Paths
+import java.util.concurrent.FutureTask
 
 
 class FilesExplorerController: Controller() {
@@ -26,26 +29,6 @@ class FilesExplorerController: Controller() {
         "JPG", "PNG", "BMP", "JPEG", "SVG",
     )
     val model: FilesExplorerModel by inject()
-
-    fun getRootFolder(): Path? {
-        var result: Path? = null
-        try {
-            var workingDirectoryPath: String = ""
-            preferences {
-                sync()
-                workingDirectoryPath = get(KEY_WORKING_DIRECTORY, "")
-            }
-            if (workingDirectoryPath.isNotBlank()) result = Paths.get(workingDirectoryPath)
-        } catch (e: Exception) {
-            log.severe(e.stackTraceToString())
-            tornadofx.error(
-                title = "Error",
-                header = "Error occurred while getting working directory.",
-                content = "Error message:\n${e.message}"
-            )
-        }
-        return result
-    }
 
     fun onSelectedItemsChange(selectionModel: MultipleSelectionModel<TreeItem<Path>>?) {
         recomputeContextMenuVisibilities(selectionModel)
@@ -71,10 +54,13 @@ class FilesExplorerController: Controller() {
     private fun recomputeIsImportVisible(selectionModel: MultipleSelectionModel<TreeItem<Path>>?) {
         model.isImportVisible.value = selectionModel != null
                 && !selectionModel.isEmpty
-                && selectionModel.selectedItems.all {
-                    val file = it.value.toFile()
-                    !file.isDirectory && pdfExtensions.contains(file.extension)
-                }
+                && (
+                    selectionModel.selectedItems.all {
+                        val file = it.value.toFile()
+                        !file.isDirectory && isPdf(file)
+                    }
+                    || (selectionModel.selectedItems.size == 1 && Files.isDirectory(selectionModel.selectedItems[0].value))
+                )
     }
 
     private fun recomputeIsRenameVisible(selectionModel: MultipleSelectionModel<TreeItem<Path>>?) {
@@ -117,7 +103,7 @@ class FilesExplorerController: Controller() {
                 errorCollector.addError("Failed to delete file: ${e.message}", e)
             }
         }
-        errorCollector.verify()
+        Platform.runLater { errorCollector.verify() }
     }
 
     private fun deleteDirectoryStream(path: Path) {
@@ -135,110 +121,6 @@ class FilesExplorerController: Controller() {
             }
         }
         return filtered
-    }
-
-    private fun checkConflictsAndCopyFileOrDir(rememberedAction: RememberChoice, copied: Path, targetDir: File): RememberChoice {
-        val (conflictingFile, result) = checkConflicts(targetDir, copied, rememberedAction)
-        var remChoice = rememberedAction
-        if (conflictingFile != null) {
-            remChoice = resolveRememberedAction(rememberedAction, result, copied)
-            val chosen = remChoice.getRelevantChoice(copied)
-            if (chosen == FileConflictChoice.REPLACE_OR_MERGE
-                || result?.choice == FileConflictChoice.REPLACE_OR_MERGE) {
-                remChoice = replaceFileOrMergeDirectory(copied, targetDir, conflictingFile, remChoice)
-            }
-            else if (chosen == FileConflictChoice.RENAME || result?.choice == FileConflictChoice.RENAME){
-                val newName = result?.newName ?: suggestName(targetDir.toPath(), copied)
-                copyUsingNewName(copied, targetDir, newName)
-            }
-        } else {
-            copyFileOrDirectory(copied, targetDir)
-        }
-        return remChoice
-    }
-
-    private fun replaceFileOrMergeDirectory(
-        copied: Path,
-        targetDir: File,
-        conflictingFile: Path,
-        rememberedAction: RememberChoice
-    ): RememberChoice {
-        var remAction = rememberedAction
-        if (copied.toFile().isDirectory) {
-            copied.list().forEach { path ->
-                remAction = checkConflictsAndCopyFileOrDir(remAction, path, conflictingFile.toFile())
-            }
-        } else {
-            if (!Files.isSameFile(copied, conflictingFile)) {
-                FileUtils.copyFileToDirectory(copied.toFile(), targetDir)
-            }
-        }
-        return remAction
-    }
-
-    /**
-     * non conflicting
-     */
-    private fun copyFileOrDirectory(copied: Path, targetDir: File) {
-        if (copied.toFile().isDirectory) {
-            FileUtils.copyDirectoryToDirectory(copied.toFile(), targetDir)
-        } else {
-            FileUtils.copyFileToDirectory(copied.toFile(), targetDir)
-        }
-    }
-
-    private fun copyUsingNewName(copied: Path, targetDir: File, newName: String) {
-        if (copied.toFile().isDirectory) {
-            val newDir = File(targetDir, newName)
-            newDir.mkdirs()
-            FileUtils.copyDirectory(copied.toFile(), newDir)
-        } else {
-            val newFile = File(targetDir, newName)
-            FileUtils.copyFile(copied.toFile(), newFile)
-        }
-    }
-
-    private fun resolveRememberedAction(
-        rememberedAction: RememberChoice,
-        result: FileConflictResult?,
-        copied: Path,
-    ): RememberChoice {
-        if (copied.toFile().isDirectory) {
-            if (rememberedAction.directory == null && result != null && result.remember) {
-                rememberedAction.directory = result.choice
-                return rememberedAction
-            }
-            return rememberedAction
-        } else {
-            if (rememberedAction.file == null && result != null && result.remember) {
-                rememberedAction.file = result.choice
-                return rememberedAction
-            }
-            return rememberedAction
-        }
-    }
-
-    private fun checkConflicts(targetDir: File, path: Path, rememberedAction: RememberChoice): Pair<Path?, FileConflictResult?> {
-        val conflictingFile = findConflictingFile(targetDir.toPath(), path)
-        var result: FileConflictResult? = null
-
-        if (conflictingFile != null && rememberedAction.getRelevantChoice(path) == null) {
-            result = openFileExistsDialog(conflictingFile, path)
-        }
-        return Pair(conflictingFile, result)
-    }
-
-    private fun openFileExistsDialog(existing: Path, copied: Path): FileConflictResult {
-        val scope = Scope()
-        val model = FileExistsDialogModel(FileExistsDialog(existing, copied))
-        setInScope(model, scope)
-        find<FileExistsDialogView>(scope).openModal(
-            block = true,
-            modality = Modality.WINDOW_MODAL,
-            resizable = false,
-            escapeClosesWindow = false,
-        )
-        return FileConflictResult(model)
     }
 
     private fun resolveTargetDir(targetPath: Path): File {
@@ -270,18 +152,12 @@ class FilesExplorerController: Controller() {
         }
     }
 
-    fun clipboardPaste(targetPath: Path){
-        val files = mutableListOf<File>()
-        try {
-            clipboard.files?.let { files.addAll(it) }
-        } catch (e: Exception) {
-            log.severe(e.stackTraceToString())
-            tornadofx.error(
-                title = "Error",
-                header = "Error occurred while pasting files from clipboard.",
-                content = "Error message:\n${e.message}"
-            )
+    fun clipboardPaste(targetPath: Path) {
+        val clipboardFilesTask = FutureTask {
+            clipboard.files ?: listOf<File>()
         }
+        Platform.runLater(clipboardFilesTask)
+        val files = clipboardFilesTask.get()
         if (files.isNotEmpty()) {
             pasteFiles(targetPath, files)
         }
@@ -295,13 +171,23 @@ class FilesExplorerController: Controller() {
             try {
                 remembered = checkConflictsAndCopyFileOrDir(remembered, path, targetDir)
             } catch (e: Exception) {
+                log.severe(e.stackTraceToString())
                 errorCollector.addError(
                     "Error occurred copying file ${path.toAbsolutePath()} to destination: ${targetDir.absolutePath}",
                     e
                 )
             }
         }
-        errorCollector.verify()
+        Platform.runLater { errorCollector.verify() }
+    }
+
+    fun import(selected: List<TreeItem<Path>>) {
+        if (selected.size == 1 && Files.isDirectory(selected[0].value)) {
+            openSimpleImportDialog(dest = selected[0].value)
+        } else {
+            val pdfFiles = selected.map { it.value }.filter { isPdf(it.toFile()) }
+            openSimpleImportDialog(paths = pdfFiles)
+        }
     }
 }
 

@@ -3,6 +3,7 @@ package org.vpreportcorrector.filesexplorer.dialogs
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
+import org.vpreportcorrector.utils.FileConflictChoice
 import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.setValue

@@ -12,12 +12,9 @@ import org.vpreportcorrector.app.Styles.Companion.paddedContainer
 import org.vpreportcorrector.app.Styles.Companion.icon48
 import org.vpreportcorrector.app.Styles.Companion.iconBlue
 import org.vpreportcorrector.app.Styles.Companion.p
+import org.vpreportcorrector.utils.FileConflictChoice
 import org.vpreportcorrector.utils.suggestName
 import tornadofx.*
-
-enum class FileConflictChoice {
-    RENAME, REPLACE_OR_MERGE, SKIP
-}
 
 class FileExistsDialogView : View() {
     private val model: FileExistsDialogModel by inject()
@@ -118,7 +115,8 @@ class FileExistsDialogView : View() {
                                 model.newName.value = model.newName.value?.trim() ?: ""
                             }
                         }
-                        enableWhen { toggleGroup.selectedValueProperty<FileConflictChoice>().isEqualTo(FileConflictChoice.RENAME) }
+                        enableWhen { toggleGroup.selectedValueProperty<FileConflictChoice>().isEqualTo(
+                            FileConflictChoice.RENAME) }
                     }
                 }
             }

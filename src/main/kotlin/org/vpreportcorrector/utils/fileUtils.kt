@@ -1,10 +1,19 @@
 package org.vpreportcorrector.utils
 
+import javafx.application.Platform
+import javafx.stage.Modality
+import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang3.SystemUtils
+import org.vpreportcorrector.app.errorhandling.ErrorCollector
+import org.vpreportcorrector.filesexplorer.dialogs.*
+import tornadofx.Scope
+import tornadofx.find
+import tornadofx.setInScope
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.concurrent.FutureTask
 import kotlin.streams.toList
 
 
@@ -36,6 +45,11 @@ fun Path.isDescendantOf(possibleParent: Path): Boolean {
         parent = parent.parent
     }
     return false
+}
+
+fun File.isWithinOrEqual(possibleParentDir: File?): Boolean {
+    if (possibleParentDir == null || !possibleParentDir.isDirectory) return false
+    return this == possibleParentDir || this.toPath().isDescendantOf(possibleParentDir.toPath())
 }
 
 /**
@@ -93,3 +107,133 @@ fun isValidFileName(name: String): Boolean {
             && !getIllegalNames().contains(trimmedName)
             && !trimmedName.endsWith(".")
 }
+
+/**
+ * Copying files
+ */
+fun copyFiles(targetDir: File, copiedFiles: List<Path>) {
+    val errorCollector = ErrorCollector("Error/s occurred while copying:")
+    var remembered = RememberChoice()
+    copiedFiles.forEach { path ->
+        try {
+            remembered = checkConflictsAndCopyFileOrDir(remembered, path, targetDir)
+        } catch (e: Exception) {
+            errorCollector.addError(
+                "Error occurred copying file ${path.toAbsolutePath()} to destination: ${targetDir.absolutePath}",
+                e
+            )
+        }
+    }
+    Platform.runLater { errorCollector.verify() }
+}
+
+fun checkConflictsAndCopyFileOrDir(rememberedAction: RememberChoice, copied: Path, targetDir: File): RememberChoice {
+    val (conflictingFile, result) = checkConflicts(targetDir, copied, rememberedAction)
+    var remChoice = rememberedAction
+    if (conflictingFile != null) {
+        remChoice = resolveRememberedAction(rememberedAction, result, copied)
+        val chosen = remChoice.getRelevantChoice(copied)
+        if (chosen == FileConflictChoice.REPLACE_OR_MERGE
+            || result?.choice == FileConflictChoice.REPLACE_OR_MERGE) {
+            remChoice = replaceFileOrMergeDirectory(copied, targetDir, conflictingFile, remChoice)
+        }
+        else if (chosen == FileConflictChoice.RENAME || result?.choice == FileConflictChoice.RENAME){
+            val newName = result?.newName ?: suggestName(targetDir.toPath(), copied)
+            copyUsingNewName(copied, targetDir, newName)
+        }
+    } else {
+        copyFileOrDirectory(copied, targetDir)
+    }
+    return remChoice
+}
+
+private fun replaceFileOrMergeDirectory(
+    copied: Path,
+    targetDir: File,
+    conflictingFile: Path,
+    rememberedAction: RememberChoice
+): RememberChoice {
+    var remAction = rememberedAction
+    if (copied.toFile().isDirectory) {
+        copied.list().forEach { path ->
+            remAction = checkConflictsAndCopyFileOrDir(remAction, path, conflictingFile.toFile())
+        }
+    } else {
+        if (!Files.isSameFile(copied, conflictingFile)) {
+            FileUtils.copyFileToDirectory(copied.toFile(), targetDir)
+        }
+    }
+    return remAction
+}
+
+/* non conflicting */
+private fun copyFileOrDirectory(copied: Path, targetDir: File) {
+    if (copied.toFile().isDirectory) {
+        FileUtils.copyDirectoryToDirectory(copied.toFile(), targetDir)
+    } else {
+        FileUtils.copyFileToDirectory(copied.toFile(), targetDir)
+    }
+}
+
+private fun copyUsingNewName(copied: Path, targetDir: File, newName: String) {
+    if (copied.toFile().isDirectory) {
+        val newDir = File(targetDir, newName)
+        newDir.mkdirs()
+        FileUtils.copyDirectory(copied.toFile(), newDir)
+    } else {
+        val newFile = File(targetDir, newName)
+        FileUtils.copyFile(copied.toFile(), newFile)
+    }
+}
+
+private fun resolveRememberedAction(
+    rememberedAction: RememberChoice,
+    result: FileConflictResult?,
+    copied: Path,
+): RememberChoice {
+    if (copied.toFile().isDirectory) {
+        if (rememberedAction.directory == null && result != null && result.remember) {
+            rememberedAction.directory = result.choice
+            return rememberedAction
+        }
+        return rememberedAction
+    } else {
+        if (rememberedAction.file == null && result != null && result.remember) {
+            rememberedAction.file = result.choice
+            return rememberedAction
+        }
+        return rememberedAction
+    }
+}
+
+private fun checkConflicts(targetDir: File, path: Path, rememberedAction: RememberChoice): Pair<Path?, FileConflictResult?> {
+    val conflictingFile = findConflictingFile(targetDir.toPath(), path)
+    var result: FileConflictResult? = null
+
+    if (conflictingFile != null && rememberedAction.getRelevantChoice(path) == null) {
+        result = openFileExistsDialog(conflictingFile, path)
+    }
+    return Pair(conflictingFile, result)
+}
+
+fun openFileExistsDialog(existing: Path, copied: Path): FileConflictResult {
+    val futureTask = FutureTask {
+        val scope = Scope()
+        val model = FileExistsDialogModel(FileExistsDialog(existing, copied))
+        setInScope(model, scope)
+        find<FileExistsDialogView>(scope).openModal(
+            block = true,
+            modality = Modality.WINDOW_MODAL,
+            resizable = false,
+            escapeClosesWindow = false,
+        )
+        FileConflictResult(model)
+    }
+    Platform.runLater(futureTask)
+    return futureTask.get()
+}
+
+fun isPdf(file: File): Boolean {
+    return setOf("PDF", "pdf").contains(file.extension)
+}
+

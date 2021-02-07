@@ -5,19 +5,29 @@ import javafx.scene.Node
 import javafx.scene.layout.Priority
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
+import org.vpreportcorrector.app.SettingsChanged
 import org.vpreportcorrector.app.Styles.Companion.paddedContainer
 import org.vpreportcorrector.app.Styles.Companion.sideButton
 import org.vpreportcorrector.filesexplorer.FilesExplorerView
+import org.vpreportcorrector.import.openSimpleImportDialog
 import org.vpreportcorrector.settings.SettingsModalView
+import org.vpreportcorrector.utils.t
 import tornadofx.*
 
-class MainView : View("VPReportCorrector") {
+class MainView : View() {
+    private val globalDataModel: GlobalDataModel by inject()
     private val filesExplorerView: FilesExplorerView by inject()
     private val contentView: ContentView by inject()
 
     private var filesExplorerVisible = true
     private var filesExplorerDividerPosition: Double = 0.3
     private var filesExplorerNode: Node? = null
+
+    init {
+        title = t("appName")
+        globalDataModel.loadPreferencesData()
+        subscribe<SettingsChanged> { globalDataModel.loadPreferencesData() }
+    }
 
     private val centerSplitPane = splitpane {
         orientation = Orientation.HORIZONTAL
@@ -30,23 +40,29 @@ class MainView : View("VPReportCorrector") {
         top = menubar {
             hgrow = Priority.ALWAYS
             removeClass(paddedContainer)
-            menu("Files") {
-                item("Settings", "Shortcut+Alt+S") {
+            menu(t("files")) {
+                item(t("settings"), "Shortcut+Alt+S") {
                     action {
                         find<SettingsModalView>().openModal()
+                    }
+                }
+                item(t("import"), "Shortcut+Alt+I") {
+                    enableWhen { globalDataModel.workingDirectory.isNotNull }
+                    action {
+                        openSimpleImportDialog()
                     }
                 }
             }
         }
         left = vbox {
             group {
-                button("Directory", FontIcon(FontAwesomeSolid.FOLDER)) {
+                button(t("directory"), FontIcon(FontAwesomeSolid.FOLDER)) {
                     action {
                         toggleFilesExplorerPane()
                     }
                     rotate = -90.0
                     addClass(sideButton)
-                    tooltip("Toggle working directory file explorer")
+                    tooltip(t("directoryTooltip"))
                 }
             }
         }
