@@ -18,6 +18,6 @@ class MyApp: App(MainView::class, Styles::class) {
         launch<MyApp>(args)
     }
 
-    override fun createPrimaryScene(view: UIComponent) = Scene(view.root, 1000.0, 800.0)
+    override fun createPrimaryScene(view: UIComponent) = Scene(view.root, 1500.0, 1200.0)
 
 }
