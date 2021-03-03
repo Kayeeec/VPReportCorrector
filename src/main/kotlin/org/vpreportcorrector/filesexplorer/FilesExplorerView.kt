@@ -1,17 +1,21 @@
 package org.vpreportcorrector.filesexplorer
 
 import javafx.beans.property.SimpleObjectProperty
+import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.control.TreeItem
 import javafx.scene.control.TreeView
 import javafx.scene.input.KeyCombination
+import javafx.scene.input.MouseButton
 import javafx.scene.layout.Priority
 import org.kordamp.ikonli.bootstrapicons.BootstrapIcons
 import org.kordamp.ikonli.fontawesome.FontAwesome
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
+import org.vpreportcorrector.app.EditDiagramEvent
 import org.vpreportcorrector.app.RefreshFilesExplorer
 import org.vpreportcorrector.app.Styles.Companion.centered
+import org.vpreportcorrector.app.ViewDiagramEvent
 import org.vpreportcorrector.components.form.loadingOverlay
 import org.vpreportcorrector.mainview.GlobalDataModel
 import org.vpreportcorrector.settings.SettingsModalView
@@ -82,7 +86,7 @@ class FilesExplorerView : View() {
                             if (Files.isDirectory(it.value)) it.value.list()
                             else null
                         }
-                        cellFormat {
+                        cellFormat { it ->
                             text = "${it.fileName}"
                             val file = it.toFile()
                             graphic = when {
@@ -90,6 +94,15 @@ class FilesExplorerView : View() {
                                 controller.pdfExtensions.contains(file.extension) -> FontIcon(FontAwesome.FILE_PDF_O)
                                 controller.imageExtensions.contains(file.extension) -> FontIcon(FontAwesome.FILE_IMAGE_O)
                                 else -> FontIcon(FontAwesome.FILE)
+                            }
+                            onMouseClicked = EventHandler { mouseClick ->
+                                if (mouseClick.clickCount == 2) {
+                                    editDiagram()
+                                }
+                                else if (mouseClick.button == MouseButton.MIDDLE
+                                    || (mouseClick.isAltDown && mouseClick.button == MouseButton.PRIMARY)) {
+                                    viewDiagram()
+                                }
                             }
                         }
 
@@ -121,14 +134,14 @@ class FilesExplorerView : View() {
                                 visibleWhen { controller.model.isEditVisible }
                                 enableWhen { controller.model.isFileTreeFocused.and(controller.model.isEditVisible) }
                                 action {
-                                    // TODO: 07.02.21
+                                    editDiagram()
                                 }
                             }
                             item("View") {
                                 visibleWhen { controller.model.isViewVisible }
                                 enableWhen { controller.model.isFileTreeFocused.and(controller.model.isViewVisible) }
                                 action {
-                                    // TODO: 07.02.21
+                                    viewDiagram()
                                 }
                             }
                             item("Rename") {
@@ -235,6 +248,18 @@ class FilesExplorerView : View() {
             root.children.removeAll(toRemove)
             root.children.addAll(toAdd.map { TreeItem(it) })
             root.children.forEach { refreshTreeItemRecursively(it) }
+        }
+    }
+
+    private fun editDiagram() {
+        if (filesTree.selectionModel.selectedItems.size == 1 && controller.model.isEditVisible.value) {
+            fire(EditDiagramEvent(filesTree.selectionModel.selectedItems[0].value))
+        }
+    }
+
+    private fun viewDiagram() {
+        if (filesTree.selectionModel.selectedItems.size == 1 && controller.model.isViewVisible.value) {
+            fire(ViewDiagramEvent(filesTree.selectionModel.selectedItems[0].value))
         }
     }
 }

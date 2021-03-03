@@ -15,14 +15,17 @@ import org.vpreportcorrector.utils.FileConflictChoice
 import org.vpreportcorrector.utils.findConflictingFile
 import org.vpreportcorrector.utils.openFileExistsDialog
 import org.vpreportcorrector.utils.suggestName
+import org.w3c.dom.Element
 import types.DiagramPageResult
 import utils.searchPageForDiagramHeadings
 import java.awt.Color
+import java.awt.Dimension
 import java.io.File
 import java.lang.Exception
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.math.floor
 import kotlin.math.max
 
 class DiagramExtractor(
@@ -125,18 +128,23 @@ class DiagramExtractor(
         val ctx = SVGGeneratorContext.createDefault(doc)
         ctx.isEmbeddedFontsOn = true
         val svgGraphics2D = SVGGraphics2D(ctx, false)
+        val h = tempDoc.getPage(0).mediaBox.height.toInt() * 2
+        val w = tempDoc.getPage(0).mediaBox.width.toInt() * 2
+        svgGraphics2D.svgCanvasSize = Dimension(w, h)
         val pdfRenderer = PDFRenderer(tempDoc)
         svgGraphics2D.background = Color(255, 255, 255)
         pdfRenderer.renderPageToGraphics(0, svgGraphics2D, 2.0F)
-        writeToFile(svgGraphics2D, svgFileName)
+        val root = svgGraphics2D.root
+        root.setAttributeNS(null, "viewBox", "0 0 $w $h")
+        writeToFile(svgGraphics2D, svgFileName, root)
     }
 
-    private fun writeToFile(svgGraphics2D: SVGGraphics2D, svgFileName: String) {
+    private fun writeToFile(svgGraphics2D: SVGGraphics2D, svgFileName: String, root: Element) {
         val svgPath = resolveConflictsAndGetOutPath(svgFileName) ?: return
         try {
             val svgFile = Files.createFile(svgPath).toFile()
             svgFile.bufferedWriter().use {
-                svgGraphics2D.stream(it)
+                svgGraphics2D.stream(root, it, true, false)
             }
         } catch (e: Exception) {
             throw DiagramExtractorException("Failed to create or write to output file '${svgPath.toFile().absolutePath}'", e)
@@ -187,8 +195,8 @@ class DiagramExtractor(
 
     private fun cropPage(page: PDPage, diagramHeight: Float?) {
         if (diagramHeight == null) return
-        val newHeight = diagramHeight + (72/2)
-        val width = page.mediaBox.width
+        val newHeight = floor(diagramHeight + (72/2))
+        val width = floor(page.mediaBox.width)
         val pdRectangle = PDRectangle(width, newHeight)
         page.mediaBox = pdRectangle
         page.bleedBox = pdRectangle

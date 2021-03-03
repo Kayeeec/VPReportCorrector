@@ -5,6 +5,7 @@ import javafx.scene.text.TextFlow
 import org.vpreportcorrector.app.Styles
 import tornadofx.addClass
 import tornadofx.attachTo
+import tornadofx.style
 import tornadofx.text
 
 /**
@@ -33,6 +34,8 @@ fun EventTarget.h3(text: String, op: TextFlow.() -> Unit = {}) = TextFlow().atta
 fun EventTarget.p(text: String, op: TextFlow.() -> Unit = {}) = TextFlow().attachTo(this, op).apply {
     addClass(Styles.p)
     addClass(Styles.typographyText)
-    text(text)
+    text(text){
+        addClass("text")
+    }
 }
 

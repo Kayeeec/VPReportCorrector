@@ -1,7 +1,10 @@
 package org.vpreportcorrector.mainview
 
+import de.codecentric.centerdevice.javafxsvg.SvgImageLoaderFactory
+import de.codecentric.centerdevice.javafxsvg.dimension.AttributeDimensionProvider
 import javafx.geometry.Orientation
 import javafx.scene.Node
+import javafx.scene.control.SplitPane
 import javafx.scene.layout.Priority
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
@@ -27,13 +30,15 @@ class MainView : View() {
         title = t("appName")
         globalDataModel.loadPreferencesData()
         subscribe<SettingsChanged> { globalDataModel.loadPreferencesData() }
+        SvgImageLoaderFactory.install(AttributeDimensionProvider())
     }
 
     private val centerSplitPane = splitpane {
         orientation = Orientation.HORIZONTAL
-        setDividerPositions(0.3)
+        setDividerPositions(filesExplorerDividerPosition)
         add(filesExplorerView)
         add(contentView)
+        SplitPane.setResizableWithParent(this.items[0], false)
     }
 
     override val root = borderpane {

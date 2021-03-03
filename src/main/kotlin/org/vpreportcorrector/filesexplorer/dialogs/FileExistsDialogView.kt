@@ -123,9 +123,9 @@ class FileExistsDialogView : View() {
 
             fieldset {
                 field {
-                style {
-                    padding = box(10.px, 0.px, 0.px, 0.px)
-                }
+                    style {
+                        padding = box(10.px, 0.px, 0.px, 0.px)
+                    }
                     checkbox(property = model.remember) {
                         textProperty().bind(rememberChkbxLabel)
                     }
