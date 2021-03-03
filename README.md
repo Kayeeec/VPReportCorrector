@@ -1,5 +1,5 @@
 # VPReportCorrector
-gradle + kotlin + java 11 + openjfx 13
+gradle + kotlin + java 11 + openjfx 13 + tornadofx 2
 
 ## Running the application
 
