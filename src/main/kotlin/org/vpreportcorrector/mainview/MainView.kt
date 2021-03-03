@@ -2,6 +2,8 @@ package org.vpreportcorrector.mainview
 
 import de.codecentric.centerdevice.javafxsvg.SvgImageLoaderFactory
 import de.codecentric.centerdevice.javafxsvg.dimension.AttributeDimensionProvider
+import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Orientation
 import javafx.scene.Node
 import javafx.scene.control.SplitPane
@@ -61,10 +63,12 @@ class MainView : View() {
         }
         left = vbox {
             group {
-                button(t("directory"), FontIcon(FontAwesomeSolid.FOLDER)) {
+                togglebutton(t("directory")) {
                     action {
                         toggleFilesExplorerPane()
                     }
+                    isSelected = filesExplorerVisible
+                    graphic = FontIcon(FontAwesomeSolid.FOLDER)
                     rotate = -90.0
                     addClass(sideButton)
                     tooltip(t("directoryTooltip"))
