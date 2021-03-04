@@ -2,8 +2,6 @@ package org.vpreportcorrector.mainview
 
 import de.codecentric.centerdevice.javafxsvg.SvgImageLoaderFactory
 import de.codecentric.centerdevice.javafxsvg.dimension.AttributeDimensionProvider
-import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Orientation
 import javafx.scene.Node
 import javafx.scene.control.SplitPane

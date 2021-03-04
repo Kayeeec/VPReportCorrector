@@ -53,12 +53,17 @@ fun File.isWithinOrEqual(possibleParentDir: File?): Boolean {
 }
 
 /**
- * Extension function to return the actual children.
+ * Extension function to return the actual children of java.nio.file.Path.
+ * Filters out hidden files.
+ * Files are sorted first by extension (no extension = directory first) and then by name.
  */
-fun Path.list(): List<Path> = Files.list(this).use {
-    it.toList().filter { path: Path ->
+fun Path.list(): List<Path> = Files.list(this).use { stream ->
+    stream.toList().filter { path: Path ->
         !Files.isHidden(path) && Files.isReadable(path) && Files.isWritable(path)
-    }
+    }.sortedWith(
+        compareBy<Path>{ FilenameUtils.getExtension(it.fileName.toString()) }
+            .thenBy { it.fileName.toString() }
+    )
 }
 
 fun getUserHomeDirectory(): File? {
