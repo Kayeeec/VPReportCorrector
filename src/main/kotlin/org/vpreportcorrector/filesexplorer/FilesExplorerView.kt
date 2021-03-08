@@ -15,10 +15,13 @@ import org.kordamp.ikonli.javafx.FontIcon
 import org.vpreportcorrector.app.EditDiagramEvent
 import org.vpreportcorrector.app.RefreshFilesExplorer
 import org.vpreportcorrector.app.Styles.Companion.centered
+import org.vpreportcorrector.app.Styles.Companion.flatButton
 import org.vpreportcorrector.app.ViewDiagramEvent
 import org.vpreportcorrector.components.form.loadingOverlay
 import org.vpreportcorrector.mainview.GlobalDataModel
 import org.vpreportcorrector.settings.SettingsModalView
+import org.vpreportcorrector.utils.isImage
+import org.vpreportcorrector.utils.isPdf
 import org.vpreportcorrector.utils.list
 import org.vpreportcorrector.utils.p
 import tornadofx.*
@@ -26,6 +29,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 
+// TODO: 08.03.21 test shortcuts
 class FilesExplorerView : View() {
     private val controller: FilesExplorerController by inject()
     private val globalDataModel: GlobalDataModel by inject(FX.defaultScope)
@@ -53,6 +57,7 @@ class FilesExplorerView : View() {
                         alignment = Pos.CENTER_RIGHT
 
                         button("", FontIcon(FontAwesome.REPEAT)) {
+                            addClass(flatButton)
                             disableWhen { rootFolderProp.isNull }
                             tooltip("Refresh")
                             action {
@@ -60,6 +65,7 @@ class FilesExplorerView : View() {
                             }
                         }
                         button("", FontIcon(FontAwesomeSolid.FOLDER_PLUS)){
+                            addClass(flatButton)
                             disableWhen { rootFolderProp.isNull }
                             tooltip("New folder (in the directory root)")
                             action {
@@ -68,11 +74,13 @@ class FilesExplorerView : View() {
                             }
                         }
                         button("", FontIcon(BootstrapIcons.ARROWS_EXPAND)){
+                            addClass(flatButton)
                             disableWhen { rootFolderProp.isNull }
                             tooltip("Expand all")
                             action { filesTree.root.expandAll() }
                         }
                         button("", FontIcon(BootstrapIcons.ARROWS_COLLAPSE)){
+                            addClass(flatButton)
                             disableWhen { rootFolderProp.isNull }
                             tooltip("Collapse all")
                             action { filesTree.root.collapseAll() }
@@ -91,8 +99,8 @@ class FilesExplorerView : View() {
                             val file = it.toFile()
                             graphic = when {
                                 file.isDirectory -> FontIcon(FontAwesomeSolid.FOLDER)
-                                controller.pdfExtensions.contains(file.extension) -> FontIcon(FontAwesome.FILE_PDF_O)
-                                controller.imageExtensions.contains(file.extension) -> FontIcon(FontAwesome.FILE_IMAGE_O)
+                                isPdf(file) -> FontIcon(FontAwesome.FILE_PDF_O)
+                                isImage(file) -> FontIcon(FontAwesome.FILE_IMAGE_O)
                                 else -> FontIcon(FontAwesome.FILE)
                             }
                             onMouseClicked = EventHandler { mouseClick ->
@@ -167,7 +175,9 @@ class FilesExplorerView : View() {
                             item("Copy", KeyCombination.keyCombination("Shortcut+C")){
                                 enableWhen { controller.model.isFileTreeFocused }
                                 action {
-                                    if (selectionModel.selectedItems !== null && selectionModel.selectedItems.isNotEmpty()) {
+                                    if (filesTree.isFocused
+                                        && selectionModel.selectedItems !== null
+                                        && selectionModel.selectedItems.isNotEmpty()) {
                                         val pathsToCopy = selectionModel.selectedItems.map { it.value }
                                         controller.clipboardCopy(pathsToCopy)
                                     }
@@ -175,24 +185,28 @@ class FilesExplorerView : View() {
                             }
                             item("Paste", KeyCombination.keyCombination("Shortcut+V")) {
                                 action {
-                                    runAsync(pasteStatus) {
-                                        controller.clipboardPaste(selectionModel.selectedItems.first().value)
-                                    } fail {
-                                        log.severe(it.stackTraceToString())
-                                        error(
-                                            title = "Error",
-                                            header = "Error occurred while pasting files from clipboard.",
-                                            content = "Error message:\n${it.message}"
-                                        )
-                                    } finally {
-                                        refreshTreeView()
+                                    if (filesTree.isFocused) {
+                                        runAsync(pasteStatus) {
+                                            controller.clipboardPaste(selectionModel.selectedItems.first().value)
+                                        } fail {
+                                            log.severe(it.stackTraceToString())
+                                            error(
+                                                title = "Error",
+                                                header = "Error occurred while pasting files from clipboard.",
+                                                content = "Error message:\n${it.message}"
+                                            )
+                                        } finally {
+                                            refreshTreeView()
+                                        }
                                     }
                                 }
                             }
                             item("Delete", KeyCombination.keyCombination("Delete")) {
                                 enableWhen { controller.model.isFileTreeFocused }
                                 action {
-                                    if (selectionModel.selectedItems !== null && selectionModel.selectedItems.isNotEmpty()) {
+                                    if (filesTree.isFocused
+                                        && selectionModel.selectedItems !== null
+                                        && selectionModel.selectedItems.isNotEmpty()) {
                                         val pathsToDelete = selectionModel.selectedItems.map { it.value }
                                         val header = "Do you really want to delete selected item/s?"
                                         confirm(header = header, title= "Confirm deletion", actionFn = {

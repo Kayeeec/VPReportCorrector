@@ -28,7 +28,15 @@ class UncaughtErrorHandler : Thread.UncaughtExceptionHandler {
     companion object {
         // By default, all error messages are shown. Override to decide if certain errors should be handled another way.
         // Call consume to avoid error dialog.
-        var filter: (ErrorEvent) -> Unit = { }
+        var filter: (ErrorEvent) -> Unit = {
+            /**
+             * Consume uncaught icepdf errors, for there are weird bugs and the dialogs are annoying.
+             * IcePDF viewer still usable though.
+             */
+            if (it.error.stackTraceToString().contains("icepdf")) {
+                it.consume()
+            }
+        }
     }
 
     override fun uncaughtException(t: Thread, error: Throwable) {
@@ -63,6 +71,7 @@ class UncaughtErrorHandler : Thread.UncaughtExceptionHandler {
             prefRowCount = 20
             prefColumnCount = 50
             text = error.stackTraceToString()
+            isEditable = false
         }
 
         Alert(ERROR).apply {

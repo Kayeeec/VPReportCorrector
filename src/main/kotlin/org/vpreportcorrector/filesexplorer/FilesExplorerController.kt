@@ -23,11 +23,6 @@ import java.util.concurrent.FutureTask
 
 
 class FilesExplorerController: Controller() {
-    val pdfExtensions = setOf("pdf", "PDF")
-    val imageExtensions = setOf(
-        "jpg", "png", "bmp", "jpeg", "svg",
-        "JPG", "PNG", "BMP", "JPEG", "SVG",
-    )
     val model: FilesExplorerModel by inject()
 
     fun onSelectedItemsChange(selectionModel: MultipleSelectionModel<TreeItem<Path>>?) {
@@ -42,13 +37,11 @@ class FilesExplorerController: Controller() {
     }
 
     private fun recomputeIsVisibleAndIsEditable(selectionModel: MultipleSelectionModel<TreeItem<Path>>?) {
-        val file: File? = selectionModel?.selectedItems?.firstOrNull()?.value?.toFile()
-        val tmp = (selectionModel != null
-                && selectionModel.selectedItems.size == 1
-                && !file!!.isDirectory
-                && imageExtensions.contains(file.extension))
-        model.isViewVisible.value = tmp
-        model.isEditVisible.value = tmp
+        val file: File = selectionModel?.selectedItems?.firstOrNull()?.value?.toFile() ?: return
+        val isOnePdfFileSelected = selectionModel.selectedItems.size == 1
+                && !file.isDirectory && isPdf(file)
+        model.isViewVisible.value = isOnePdfFileSelected
+        model.isEditVisible.value = isOnePdfFileSelected
     }
 
     private fun recomputeIsImportVisible(selectionModel: MultipleSelectionModel<TreeItem<Path>>?) {
@@ -185,8 +178,9 @@ class FilesExplorerController: Controller() {
         if (selected.size == 1 && Files.isDirectory(selected[0].value)) {
             openSimpleImportDialog(dest = selected[0].value)
         } else {
+            val dest = if (selected.size == 1) selected.first().value.parent else null
             val pdfFiles = selected.map { it.value }.filter { isPdf(it.toFile()) }
-            openSimpleImportDialog(paths = pdfFiles)
+            openSimpleImportDialog(dest = dest, paths = pdfFiles)
         }
     }
 }

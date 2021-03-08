@@ -1,5 +1,6 @@
 package org.vpreportcorrector.app
 import javafx.geometry.Pos
+import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
 import javafx.scene.text.FontWeight
 import javafx.scene.text.TextAlignment
@@ -10,8 +11,10 @@ class Styles : Stylesheet() {
         // Classes
         val heading by cssclass()
         val sideButton by cssclass()
+        val flatButton by cssclass()
 
         val diagramErrorsFragment by cssclass()
+        val diagramAnnotatorView by cssclass()
 
         val h1 by cssclass()
         val h2 by cssclass()
@@ -47,6 +50,7 @@ class Styles : Stylesheet() {
 
         menuBar {
             padding = box(0.px)
+            backgroundColor += AppColors.bgPrimary
         }
 
         sideButton {
@@ -129,6 +133,24 @@ class Styles : Stylesheet() {
                 backgroundColor += AppColors.bgSecondary
             }
         }
+
+        flatButton {
+            backgroundColor += Color.TRANSPARENT
+            borderWidth += box(0.px)
+            borderRadius += box(0.px)
+            and(hover) {
+                backgroundColor += AppColors.bgButtonHover
+            }
+            and(selected) {
+                backgroundColor += AppColors.bgButtonActive
+            }
+        }
+
+        diagramAnnotatorView {
+            flatButton {
+                fontSize = 14.px
+            }
+        }
     }
 }
 
@@ -139,6 +161,9 @@ class AppColors() {
         val textSecondary = c("#6c757d")
         val textMuted = c("#6c757d")
         val bgPrimary = c("#f4f4f4")
+        val bgButtonHover = c("#e1e2e1")
+        val bgButtonActive = c("#c1c1c1")
         val bgSecondary = c("#ffffff")
+
     }
 }

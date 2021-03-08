@@ -94,7 +94,7 @@ class DiagramExtractor(
      *     1.2 then buffer diagram operators until next BT or no more tokens (token == null)
      *   2. create pdf page with only the diagram operators using a template pdf created from the imported pdf
      *   3. crop the page
-     *   4. convert it to svg
+     *   4. and save it to a separate pdf file
      */
     private fun extractDiagramFromPage(dpage: DiagramPageResult, pdTemplate: PDDocument) {
         val pdfStreamParser = PDFStreamParser(dpage.pdPage)
@@ -118,7 +118,18 @@ class DiagramExtractor(
         val page = pdTemplate.getPage(0)
         cropPage(page, dpage.searchedPage.diagramHeight)
         page.setContents(pdStream)
-        convertPageToSvg(pdTemplate, getSvgFileName(dpage))
+        savePdfPage(pdTemplate, getPdfFileName(dpage))
+//        convertPageToSvg(pdTemplate, getSvgFileName(dpage))
+    }
+
+    private fun savePdfPage(pdTemplate: PDDocument, pdfFileName: String) {
+        val newFilePath = resolveConflictsAndGetOutPath(pdfFileName) ?: return
+        try {
+            val pdfFile = Files.createFile(newFilePath).toFile()
+            pdTemplate.save(pdfFile)
+        } catch (e: Exception) {
+            throw DiagramExtractorException("Failed to create or write to output file '${newFilePath.toFile().absolutePath}'", e)
+        }
     }
 
     private fun convertPageToSvg(tempDoc: PDDocument, svgFileName: String) {
@@ -151,8 +162,8 @@ class DiagramExtractor(
         }
     }
 
-    private fun resolveConflictsAndGetOutPath(svgFileName: String): Path? {
-        var svgPath: Path? = Paths.get(outputDir.absolutePath, svgFileName)
+    private fun resolveConflictsAndGetOutPath(fileName: String): Path? {
+        var svgPath: Path? = Paths.get(outputDir.absolutePath, fileName)
         val conflictingFile = findConflictingFile(outputDir.toPath(), svgPath!!)
         if (conflictingFile != null) {
             var choice = rememberChoicePdf
@@ -191,6 +202,12 @@ class DiagramExtractor(
         val paddedNumber = dpage.pageNumber.toString().padStart(this.paddingLength, '0')
         val diagramName = dpage.searchedPage.diagramName!!.replace(" ", "_")
         return "${this.fileName}_${paddedNumber}_$diagramName.svg"
+    }
+
+    private fun getPdfFileName(dpage: DiagramPageResult): String {
+        val paddedNumber = dpage.pageNumber.toString().padStart(this.paddingLength, '0')
+        val diagramName = dpage.searchedPage.diagramName!!.replace(" ", "_")
+        return "${this.fileName}_${paddedNumber}_$diagramName.pdf"
     }
 
     private fun cropPage(page: PDPage, diagramHeight: Float?) {

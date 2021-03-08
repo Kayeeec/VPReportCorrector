@@ -61,8 +61,7 @@ fun Path.list(): List<Path> = Files.list(this).use { stream ->
     stream.toList().filter { path: Path ->
         !Files.isHidden(path) && Files.isReadable(path) && Files.isWritable(path)
     }.sortedWith(
-        compareBy<Path>{ FilenameUtils.getExtension(it.fileName.toString()) }
-            .thenBy { it.fileName.toString() }
+        compareBy<Path>{ it.toFile().extension }.thenBy { it.fileName.toString() }
     )
 }
 
@@ -239,6 +238,10 @@ fun openFileExistsDialog(existing: Path, copied: Path): FileConflictResult {
 }
 
 fun isPdf(file: File): Boolean {
-    return setOf("PDF", "pdf").contains(file.extension)
+    return file.extension.equals("pdf", true)
+}
+
+fun isImage(file: File): Boolean {
+    return listOf("jpg", "png", "bmp", "jpeg", "svg").any { it.equals(file.extension, true) }
 }
 

@@ -3,6 +3,7 @@ package org.vpreportcorrector.import
 import javafx.collections.ObservableList
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
+import javafx.stage.FileChooser
 import org.kordamp.ikonli.fontawesome5.FontAwesomeRegular
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
@@ -24,6 +25,12 @@ class SimpleImportView : View() {
     private var fileChooserInitialDirectory = getUserHomeDirectory()
 
     private val taskStatus = TaskStatus()
+    private val extensionFilters = arrayOf(
+        FileChooser.ExtensionFilter(
+            t("pdfExtensionFilterDescription"),
+            "*.pdf", "*.PDF"
+        )
+    )
 
     init {
         title = t("title")
@@ -88,7 +95,7 @@ class SimpleImportView : View() {
                                     action {
                                         val selectedFiles = chooseFile(
                                             title = t("addFilesTitle"),
-                                            filters = arrayOf(),
+                                            filters = extensionFilters,
                                             initialDirectory = fileChooserInitialDirectory,
                                             mode = FileChooserMode.Multi
                                         )

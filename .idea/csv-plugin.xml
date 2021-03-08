@@ -3,6 +3,13 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
+        <entry key="/build.gradle">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/src/main/java/org/vpreportcorrector/diagram/components/gesturepane/CustomGesturePane.java">
           <value>
             <Attribute>
@@ -24,7 +31,21 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/src/main/kotlin/org/vpreportcorrector/diagram/edit/DiagramEditorView.kt">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/src/main/kotlin/org/vpreportcorrector/diagram/view/DiagramViewFragment.kt">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/src/main/kotlin/org/vpreportcorrector/filesexplorer/FilesExplorerController.kt">
           <value>
             <Attribute>
               <option name="separator" value=":" />
