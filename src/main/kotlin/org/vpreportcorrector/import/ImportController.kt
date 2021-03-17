@@ -1,6 +1,6 @@
 package org.vpreportcorrector.import
 
-import DiagramExtractor
+import PdfToPdfDiagramExtractor
 import javafx.application.Platform
 import org.vpreportcorrector.app.errorhandling.ErrorCollector
 import org.vpreportcorrector.utils.FileConflictChoice
@@ -13,13 +13,13 @@ class ImportController: Controller() {
     fun importAndExtractDiagrams(dest: File, files: List<File>) {
         val collector = ErrorCollector("Error/s occurred while extracting diagrams:")
         val filesToCopy = mutableSetOf<File>()
-        var rememberChoicePdf: FileConflictChoice? = null
+        var fileConflictChoice: FileConflictChoice? = null
         files.forEach { file ->
             if (isPdf(file)) {
                 try {
-                    val de = DiagramExtractor(file, dest, rememberChoicePdf)
+                    val de = PdfToPdfDiagramExtractor(file, dest, fileConflictChoice)
                     de.extractDiagrams()
-                    rememberChoicePdf = de.rememberChoicePdf
+                    fileConflictChoice = de.savedFileConflictChoice
                 } catch (e: Exception) {
                     collector.addError("Error extracting diagrams from file '${file.name}'", e)
                 }
