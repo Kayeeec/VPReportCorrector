@@ -20,8 +20,7 @@ import java.awt.Dimension
 import javax.swing.JComponent
 import javax.swing.SwingUtilities
 
-// TODO: refactor - shared code with the editor view
-// TODO: 15.03.21 refactor - MVVM
+// TODO: refactor - shared code, better pattern
 // TODO: solve resizing bugs
 class DiagramViewerView : View() {
     private val controller: DiagramController by inject()
@@ -30,7 +29,6 @@ class DiagramViewerView : View() {
     private val diagramErrorsDrawer = find<DiagramErrorsDrawerView>()
 
     private var swingController = controller.swingController
-    private var viewerPanel: JComponent by singleAssign()
     private val swingNode = CustomSwingNode()
 
     private var toolBar = hbox {
@@ -56,11 +54,11 @@ class DiagramViewerView : View() {
         val dimension = Dimension(width.toInt(), height.toInt())
         swingNode.resize(width, height)
         SwingUtilities.invokeLater {
-            viewerPanel.size = dimension
-            viewerPanel.minimumSize = dimension
-            viewerPanel.preferredSize = dimension
-            viewerPanel.maximumSize = dimension
-            viewerPanel.repaint()
+            controller.viewerPanel.size = dimension
+            controller.viewerPanel.minimumSize = dimension
+            controller.viewerPanel.preferredSize = dimension
+            controller.viewerPanel.maximumSize = dimension
+            controller.viewerPanel.repaint()
         }
     }
 
@@ -75,13 +73,12 @@ class DiagramViewerView : View() {
 
                 swingController.documentViewController.annotationCallback =
                     MyAnnotationCallback(swingController.documentViewController)
-                swingController.documentViewController.documentView
 
                 val factory = SwingViewBuilder(swingController, properties)
-                viewerPanel = factory.buildUtilityAndDocumentSplitPane(false)
+                controller.viewerPanel = factory.buildUtilityAndDocumentSplitPane(false)
                 buildToolbar(factory)
-                viewerPanel.revalidate()
-                swingNode.content = viewerPanel
+                controller.viewerPanel.revalidate()
+                swingNode.content = controller.viewerPanel
                 centerView.add(swingNode)
             }
         } catch (e: Exception) {
@@ -90,7 +87,9 @@ class DiagramViewerView : View() {
     }
 
     init {
+        title = controller.model.path.toFile().name
         createViewer()
+        controller.openDocument()
         controller.loadData()
         swingNode.onMouseEntered = EventHandler {
             if (!swingNode.isFocused) {
@@ -147,7 +146,6 @@ class DiagramViewerView : View() {
             top = toolBar
 
             center = centerView
-            controller.openDocumentForView(viewerPanel)
 
             right = diagramErrorsDrawer.root
             diagramErrorsDrawer.drawerExpandedProperty.bind(diagramErrorsBtn.selectedProperty())

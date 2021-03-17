@@ -24,14 +24,13 @@ import javax.swing.SwingUtilities
 const val DEFAULT_PDF_VIEWER_ICON_SIZE = "_24"
 
 // TODO: add conditional pager
-// TODO: try java 1.8 icepdf jar build
+// TODO: refactor - better pattern, common viewer code
 class DiagramEditorView : View() {
     private val controller: DiagramController by inject()
     var diagramErrorsBtn: ToggleButton by singleAssign()
     private val diagramErrorsDrawer = find<DiagramErrorsDrawerView>(scope)
 
     private var swingController = controller.swingController
-    private var viewerPanel: JComponent by singleAssign()
     private val swingNode = CustomSwingNode()
 
     private val centerView = vbox {
@@ -53,6 +52,7 @@ class DiagramEditorView : View() {
 
     init {
         createViewerAndOpenDocument()
+        controller.openDocument()
         controller.loadData()
         swingNode.onMouseEntered = EventHandler {
             if (!swingNode.isFocused) {
@@ -67,11 +67,11 @@ class DiagramEditorView : View() {
         val dimension = Dimension(width.toInt(), height.toInt())
         swingNode.resize(width, height)
         SwingUtilities.invokeLater {
-            viewerPanel.size = dimension
-            viewerPanel.minimumSize = dimension
-            viewerPanel.preferredSize = dimension
-            viewerPanel.maximumSize = dimension
-            viewerPanel.repaint()
+            controller.viewerPanel.size = dimension
+            controller.viewerPanel.minimumSize = dimension
+            controller.viewerPanel.preferredSize = dimension
+            controller.viewerPanel.maximumSize = dimension
+            controller.viewerPanel.repaint()
         }
     }
 
@@ -88,16 +88,13 @@ class DiagramEditorView : View() {
 
                 swingController.documentViewController.annotationCallback =
                     MyAnnotationCallback(swingController.documentViewController)
-                val factory = SwingViewBuilder(swingController, properties)
-                viewerPanel = factory.buildUtilityAndDocumentSplitPane(false)
-                buildToolbar(factory)
-                viewerPanel.revalidate()
-                swingNode.content = viewerPanel
-                centerView.add(swingNode)
 
-                // open document
-                swingController.openDocument(controller.model.path.toAbsolutePath().toString())
-                viewerPanel.revalidate()
+                val factory = SwingViewBuilder(swingController, properties)
+                controller.viewerPanel = factory.buildUtilityAndDocumentSplitPane(false)
+                buildToolbar(factory)
+                controller.viewerPanel.revalidate()
+                swingNode.content = controller.viewerPanel
+                centerView.add(swingNode)
             } catch (e: Exception) {
                 log.severe(e.stackTraceToString())
             } finally {

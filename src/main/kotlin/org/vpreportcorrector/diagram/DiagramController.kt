@@ -1,19 +1,21 @@
 package org.vpreportcorrector.diagram
 
 import javafx.beans.property.SimpleBooleanProperty
+import javafx.scene.control.ButtonType
 import org.icepdf.core.pobjects.annotations.Annotation
 import org.icepdf.ri.common.SwingController
 import org.icepdf.ri.common.ViewModel
+import org.vpreportcorrector.app.DiagramSavedEvent
 import tornadofx.*
 import java.io.BufferedOutputStream
 import java.io.FileOutputStream
-import java.lang.Exception
 import javax.swing.JComponent
 import javax.swing.SwingUtilities
 
 class DiagramController: Controller() {
     val model: DiagramModel by inject()
     val swingController = SwingController()
+    var viewerPanel: JComponent by singleAssign()
 
     fun loadData() {
         model.loadingLatch.startLoading()
@@ -39,20 +41,51 @@ class DiagramController: Controller() {
         return result
     }
 
+    fun hasUnsavedChanges(): Boolean {
+        // TODO: 16.03.21 add check for diagram errors changes - after MVVM refactor
+        if (!model.isEditing) return false
+        // TODO KB: bug icepdf? - even after reopening the document on save the state manager is non empty
+        //  therefore it always looks unsaved, implement own annotations change test
+//        return isPdfModified()
+        return false
+    }
+
+    private fun isPdfModified(): Boolean {
+        var isPdfModified = false
+        SwingUtilities.invokeAndWait {
+            isPdfModified = swingController.document.stateManager.isChanged
+        }
+        return isPdfModified
+    }
+
     /**
      * Handles diagram tab closing. Checks if changes need to be saved.
      * @return true if the tab can be closed, false otherwise
      */
     fun onClose(): Boolean {
-//        if (model.hasUnsavedChangesProperty.value) {
-            // TODO: 14.02.21 edit view closing logic, check saved, save diagram errors
-//        var doClose = false
-//        confirm("Close view?", "text: '${textProperty.value}'", actionFn = { doClose = true })
-//        return doClose
-        SwingUtilities.invokeAndWait {
-            swingController.dispose()
+        if (!model.isEditing) return true
+        var doClose = true
+        if (hasUnsavedChanges()) {
+            confirmation(
+                title = "Unsaved changes",
+                header = "There are unsaved changes, do you want to discard them?",
+                actionFn = { buttonType: ButtonType ->
+                   when(buttonType) {
+                       ButtonType.CANCEL -> doClose = false
+                       ButtonType.YES -> {
+                           doClose = true
+                       }
+                   }
+                },
+                buttons = arrayOf(ButtonType.CANCEL, ButtonType.YES)
+            )
         }
-        return true
+        if (doClose) {
+            SwingUtilities.invokeAndWait {
+                swingController.dispose()
+            }
+        }
+        return doClose
     }
 
     fun save() {
@@ -60,11 +93,11 @@ class DiagramController: Controller() {
             model.loadingLatch.startLoading()
             savePdfDocument()
             saveDiagramErrors()
+        } success {
+            fire(DiagramSavedEvent(path = model.path))
         } finally {
             model.loadingLatch.endLoading()
-            println("in finally block")
         }
-        // TODO: 09.03.21 error handling
     }
 
     private fun saveDiagramErrors() {
@@ -72,39 +105,36 @@ class DiagramController: Controller() {
     }
 
     private fun savePdfDocument() {
-        SwingUtilities.invokeAndWait {
-            simplePdfSave()
-        }
-    }
-
-    private fun simplePdfSave() {
-        val file = model.path.toFile()
         try {
-            println("saving start")
-            val document = swingController.document
-            val fileOutputStream = FileOutputStream(file)
-            val buf = BufferedOutputStream(fileOutputStream, 8192)
-            if (!document.stateManager.isChanged) {
-                document.writeToOutputStream(buf)
-            } else {
-                document.saveToOutputStream(buf)
+            SwingUtilities.invokeAndWait {
+                val file = model.path.toFile()
+                val fileOutputStream = FileOutputStream(file)
+                val buf = BufferedOutputStream(fileOutputStream, 8192)
+                if (!swingController.document.stateManager.isChanged) {
+                    swingController.document.writeToOutputStream(buf)
+                } else {
+                    swingController.document.saveToOutputStream(buf)
+                }
+                buf.flush()
+                fileOutputStream.flush()
+                buf.close()
+                fileOutputStream.close()
+                ViewModel.setDefaultFile(file)
             }
-            buf.flush()
-            fileOutputStream.flush()
-            buf.close()
-            fileOutputStream.close()
-            println("saving end")
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             log.severe(e.stackTraceToString())
-            // TODO: 09.03.21 error handling
         }
-        ViewModel.setDefaultFile(file)
     }
 
-    fun openDocumentForView(viewerPanel: JComponent) {
+    /**
+     * Must be run on swing thread!
+     */
+    fun openDocument() {
         SwingUtilities.invokeLater {
             swingController.openDocument(model.path.toAbsolutePath().toString())
-            makeAnnotationsReadOnly()
+            if (model.isEditing) {
+                makeAnnotationsReadOnly()
+            }
             viewerPanel.revalidate()
         }
     }
