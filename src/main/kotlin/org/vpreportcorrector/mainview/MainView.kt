@@ -15,6 +15,8 @@ import org.vpreportcorrector.app.Styles.Companion.paddedContainer
 import org.vpreportcorrector.app.Styles.Companion.sideButton
 import org.vpreportcorrector.filesexplorer.FilesExplorerView
 import org.vpreportcorrector.import.openSimpleImportDialog
+import org.vpreportcorrector.mainview.content.ContentView
+import org.vpreportcorrector.mainview.content.ContentViewModel
 import org.vpreportcorrector.settings.SettingsModalView
 import org.vpreportcorrector.utils.t
 import tornadofx.*
@@ -23,6 +25,7 @@ class MainView : View() {
     private val globalDataModel: GlobalDataModel by inject()
     private val filesExplorerView: FilesExplorerView by inject()
     private val contentView: ContentView by inject()
+    private val contentViewModel: ContentViewModel by inject()
 
     private var filesExplorerVisible = true
     private var filesExplorerDividerPosition: Double = 0.25
@@ -32,7 +35,7 @@ class MainView : View() {
         title = t("appName")
         globalDataModel.loadPreferencesData()
         subscribe<SettingsChanged> { globalDataModel.loadPreferencesData() }
-        SvgImageLoaderFactory.install(AttributeDimensionProvider())
+        SvgImageLoaderFactory.install(AttributeDimensionProvider()) // TODO: 17.03.21 remove
     }
 
     private val centerSplitPane = splitpane {
@@ -63,7 +66,9 @@ class MainView : View() {
                     separator()
                     item(t("quit"), "Shortcut+Q", FontIcon(FontAwesomeSolid.POWER_OFF)) {
                         action {
-                            Platform.exit()
+                            if (contentViewModel.checkUnsavedChanges()) {
+                                Platform.exit()
+                            }
                         }
                     }
                 }

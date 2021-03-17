@@ -52,6 +52,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/src/main/kotlin/org/vpreportcorrector/mainview/content/ContentController.kt">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/src/main/kotlin/org/vpreportcorrector/mainview/content/ContentView.kt">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>

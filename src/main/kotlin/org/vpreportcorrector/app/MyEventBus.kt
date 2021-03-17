@@ -8,3 +8,6 @@ object RefreshFilesExplorer : FXEvent()
 
 class EditDiagramEvent(val path: Path): FXEvent()
 class ViewDiagramEvent(val path: Path): FXEvent()
+
+class DiagramSavedEvent(val path: Path): FXEvent()
+
