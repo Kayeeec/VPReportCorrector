@@ -15,8 +15,8 @@ import org.vpreportcorrector.app.Styles.Companion.textMuted
 import org.vpreportcorrector.app.ViewDiagramEvent
 import org.vpreportcorrector.diagram.DiagramController
 import org.vpreportcorrector.diagram.DiagramModel
-import org.vpreportcorrector.diagram.edit.DiagramEditorView
-import org.vpreportcorrector.diagram.view.DiagramViewerView
+import org.vpreportcorrector.diagram.DiagramEditorView
+import org.vpreportcorrector.diagram.DiagramViewerView
 import org.vpreportcorrector.utils.p
 import tornadofx.*
 import java.nio.file.Path

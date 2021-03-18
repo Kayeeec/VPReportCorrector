@@ -1,4 +1,4 @@
-package org.vpreportcorrector.diagram.edit
+package org.vpreportcorrector.diagram
 
 import javafx.embed.swing.SwingNode
 import javafx.event.EventHandler
@@ -13,7 +13,6 @@ import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
 import org.vpreportcorrector.app.Styles
 import org.vpreportcorrector.components.form.loadingOverlay
-import org.vpreportcorrector.diagram.DiagramController
 import org.vpreportcorrector.diagram.components.DiagramErrorsDrawerView
 import org.vpreportcorrector.diagram.components.CustomSwingNode
 import tornadofx.*

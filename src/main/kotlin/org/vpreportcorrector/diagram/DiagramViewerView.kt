@@ -1,4 +1,4 @@
-package org.vpreportcorrector.diagram.view
+package org.vpreportcorrector.diagram
 
 import javafx.embed.swing.SwingNode
 import javafx.event.EventHandler
@@ -11,10 +11,8 @@ import org.icepdf.ri.util.FontPropertiesManager
 import org.icepdf.ri.util.ViewerPropertiesManager
 import org.kordamp.ikonli.javafx.FontIcon
 import org.vpreportcorrector.components.form.loadingOverlay
-import org.vpreportcorrector.diagram.DiagramController
 import org.vpreportcorrector.diagram.components.DiagramErrorsDrawerView
 import org.vpreportcorrector.diagram.components.CustomSwingNode
-import org.vpreportcorrector.diagram.edit.DEFAULT_PDF_VIEWER_ICON_SIZE
 import tornadofx.*
 import java.awt.Dimension
 import javax.swing.JComponent
