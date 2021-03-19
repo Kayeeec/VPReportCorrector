@@ -94,7 +94,7 @@ class FilesExplorerView : View() {
                             if (Files.isDirectory(it.value)) it.value.list()
                             else null
                         }
-                        cellFormat { it ->
+                        cellFormat {
                             text = "${it.fileName}"
                             val file = it.toFile()
                             graphic = when {
@@ -152,6 +152,14 @@ class FilesExplorerView : View() {
                                     viewDiagram()
                                 }
                             }
+                            item("Merge PDFs...") {
+                                visibleWhen { controller.model.isMergePdfsVisible }
+                                enableWhen { controller.model.isFileTreeFocused.and(controller.model.isMergePdfsVisible) }
+                                action {
+                                    controller.openMergePdfsDialog(selectionModel)
+                                }
+                            }
+                            separator()
                             item("Rename") {
                                 visibleWhen { controller.model.isRenameVisible }
                                 enableWhen { controller.model.isFileTreeFocused.and(controller.model.isRenameVisible) }
@@ -171,7 +179,6 @@ class FilesExplorerView : View() {
                                     }
                                 }
                             }
-                            separator()
                             item("Copy", KeyCombination.keyCombination("Shortcut+C")){
                                 enableWhen { controller.model.isFileTreeFocused }
                                 action {

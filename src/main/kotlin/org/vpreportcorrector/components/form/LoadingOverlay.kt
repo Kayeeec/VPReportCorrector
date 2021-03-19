@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleDoubleProperty
 import javafx.event.EventTarget
 import javafx.geometry.Pos
 import javafx.scene.layout.VBox
+import javafx.scene.text.TextAlignment
 import tornadofx.*
 
 fun EventTarget.loadingOverlay(taskStatus: TaskStatus, op: VBox.() -> Unit = {}): VBox {
@@ -18,6 +19,10 @@ fun EventTarget.loadingOverlay(taskStatus: TaskStatus, op: VBox.() -> Unit = {})
             progressProperty().bind(taskStatus.progress)
         }
         textflow {
+            style {
+                textAlignment = TextAlignment.CENTER
+                padding = box(10.px)
+            }
             text(taskStatus.message)
         }
     }

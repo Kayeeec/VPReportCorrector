@@ -73,6 +73,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/src/main/resources/org/vpreportcorrector/mergepdfs/MergePdfsDialogView.properties">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>

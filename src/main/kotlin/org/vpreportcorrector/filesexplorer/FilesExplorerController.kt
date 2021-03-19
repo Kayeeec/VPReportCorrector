@@ -7,6 +7,8 @@ import javafx.stage.Modality
 import org.vpreportcorrector.app.errorhandling.ErrorCollector
 import org.vpreportcorrector.filesexplorer.dialogs.*
 import org.vpreportcorrector.import.openSimpleImportDialog
+import org.vpreportcorrector.mergepdfs.MergePdfsDialogView
+import org.vpreportcorrector.mergepdfs.MergePdfsDialogViewModel
 import org.vpreportcorrector.utils.checkConflictsAndCopyFileOrDir
 import org.vpreportcorrector.utils.isDescendantOf
 import org.vpreportcorrector.utils.isPdf
@@ -21,7 +23,7 @@ import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import java.util.concurrent.FutureTask
 
-
+// TODO: 18.03.21 refactor to MVVM ?
 class FilesExplorerController: Controller() {
     val model: FilesExplorerModel by inject()
 
@@ -34,6 +36,12 @@ class FilesExplorerController: Controller() {
         recomputeIsVisibleAndIsEditable(selectionModel)
         recomputeIsRenameVisible(selectionModel)
         recomputeIsNewFolderVisible(selectionModel)
+        recomputeIsMergePdfsVisible(selectionModel)
+    }
+
+    private fun recomputeIsMergePdfsVisible(selectionModel: MultipleSelectionModel<TreeItem<Path>>?) {
+        val files = selectionModel?.selectedItems?.map { it.value.toFile() } ?: return
+        model.isMergePdfsVisible.value = files.size > 1 && files.all { isPdf(it) }
     }
 
     private fun recomputeIsVisibleAndIsEditable(selectionModel: MultipleSelectionModel<TreeItem<Path>>?) {
@@ -182,6 +190,14 @@ class FilesExplorerController: Controller() {
             val pdfFiles = selected.map { it.value }.filter { isPdf(it.toFile()) }
             openSimpleImportDialog(dest = dest, paths = pdfFiles)
         }
+    }
+
+    fun openMergePdfsDialog(selectionModel: MultipleSelectionModel<TreeItem<Path>>?) {
+        if (selectionModel == null || selectionModel.isEmpty) return
+        val mergeScope = Scope()
+        val mergeVm = MergePdfsDialogViewModel(selectionModel.selectedItems.map { it.value.toFile() })
+        setInScope(mergeVm, mergeScope)
+        find(MergePdfsDialogView::class, mergeScope).openModal()
     }
 }
 

@@ -245,3 +245,4 @@ fun isImage(file: File): Boolean {
     return listOf("jpg", "png", "bmp", "jpeg", "svg").any { it.equals(file.extension, true) }
 }
 
+fun File.isWriteable() = if (this.exists()) this.canWrite() else this.parentFile.canWrite()
