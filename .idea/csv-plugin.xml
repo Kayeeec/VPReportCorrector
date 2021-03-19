@@ -66,6 +66,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/src/main/kotlin/org/vpreportcorrector/mergepdfs/MergePdfsDialogView.kt">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>
