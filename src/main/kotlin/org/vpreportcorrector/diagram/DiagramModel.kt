@@ -8,6 +8,7 @@ import tornadofx.asObservable
 import java.nio.file.Path
 
 class DiagramModel(val path: Path, val isEditing: Boolean): ViewModel() {
+    val isEditingProperty = SimpleBooleanProperty(isEditing)
     val hasUnsavedChangesProperty = SimpleBooleanProperty(false)
     var loadingLatch = LoadingLatch()
     val pathUriString: String

@@ -1,8 +1,6 @@
 package org.vpreportcorrector.diagram
 
-import javafx.embed.swing.SwingNode
 import javafx.event.EventHandler
-import javafx.scene.control.ToggleButton
 import javafx.scene.control.Tooltip
 import javafx.scene.layout.Priority
 import org.icepdf.ri.common.MyAnnotationCallback
@@ -11,26 +9,26 @@ import org.icepdf.ri.util.FontPropertiesManager
 import org.icepdf.ri.util.ViewerPropertiesManager
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
+import org.vpreportcorrector.app.ResizeEditorEvent
 import org.vpreportcorrector.app.Styles
 import org.vpreportcorrector.components.form.loadingOverlay
-import org.vpreportcorrector.diagram.components.DiagramErrorsDrawerView
 import org.vpreportcorrector.diagram.components.CustomSwingNode
+import org.vpreportcorrector.diagram.components.DEFAULT_PDF_VIEWER_ICON_SIZE
+import org.vpreportcorrector.diagram.components.DiagramErrorsDrawerView
+import org.vpreportcorrector.diagram.components.PdfViewerSwingButtons
 import tornadofx.*
 import java.awt.Dimension
-import javax.swing.JComponent
 import javax.swing.SwingUtilities
 
-const val DEFAULT_PDF_VIEWER_ICON_SIZE = "_24"
-
 // TODO: add conditional pager
-// TODO: refactor - better pattern, common viewer code
-class DiagramEditorView : View() {
+// TODO: refactor - MVVM/MVC
+class DiagramView : View() {
     private val controller: DiagramController by inject()
-    var diagramErrorsBtn: ToggleButton by singleAssign()
     private val diagramErrorsDrawer = find<DiagramErrorsDrawerView>(scope)
 
     private var swingController = controller.swingController
     private val swingNode = CustomSwingNode()
+    private var swingButtons: PdfViewerSwingButtons by singleAssign()
 
     private val centerView = vbox {
         fitToParentSize()
@@ -42,6 +40,29 @@ class DiagramEditorView : View() {
         }
     }
 
+    private val diagramErrorsBtn = togglebutton("", null) {
+        addClass(Styles.flatButton)
+        isSelected = false
+        graphic = FontIcon(FontAwesomeSolid.TAGS)
+        tooltip = Tooltip("Show errors the diagram contains")
+    }
+    private val switchToEditBtn = button("Edit", FontIcon(FontAwesomeSolid.EDIT)) {
+        addClass(Styles.flatButton)
+        tooltip = Tooltip("Switch to edit mode")
+        hiddenWhen { controller.model.isEditingProperty }
+        action {
+            controller.switchToEditMode()
+        }
+    }
+    private val saveBtn = button("", FontIcon(FontAwesomeSolid.SAVE)) {
+        addClass(Styles.flatButton)
+        visibleWhen { controller.model.isEditingProperty }
+        tooltip = Tooltip("Save")
+        action {
+            controller.save()
+        }
+    }
+
     private var toolBar = hbox {
         style {
             padding = box(4.px)
@@ -50,6 +71,9 @@ class DiagramEditorView : View() {
     }
 
     init {
+        subscribe<ResizeEditorEvent> {
+            resizeViewerPanel(it.width, it.height)
+        }
         createViewerAndOpenDocument()
         controller.openDocument()
         controller.loadData()
@@ -58,11 +82,16 @@ class DiagramEditorView : View() {
                 swingNode.requestFocus()
             }
         }
+        controller.model.isEditingProperty.onChangeOnce {
+            buildToolbar()
+        }
     }
 
     private fun resizeViewerPanel(){
-        val width = centerView.widthProperty().value
-        val height = centerView.heightProperty().value
+        resizeViewerPanel(centerView.widthProperty().value, centerView.heightProperty().value)
+    }
+
+    private fun resizeViewerPanel(width: Double, height: Double){
         val dimension = Dimension(width.toInt(), height.toInt())
         swingNode.resize(width, height)
         SwingUtilities.invokeLater {
@@ -90,7 +119,8 @@ class DiagramEditorView : View() {
 
                 val factory = SwingViewBuilder(swingController, properties)
                 controller.viewerPanel = factory.buildUtilityAndDocumentSplitPane(false)
-                buildToolbar(factory)
+                swingButtons = PdfViewerSwingButtons(factory)
+                buildToolbar()
                 controller.viewerPanel.revalidate()
                 swingNode.content = controller.viewerPanel
                 centerView.add(swingNode)
@@ -102,46 +132,56 @@ class DiagramEditorView : View() {
         }
     }
 
-    private fun buildToolbar(factory: SwingViewBuilder) {
+    private fun buildToolbar() {
+        toolBar.children.clear()
+        if (controller.model.isEditingProperty.value == true) {
+            buildEditorToolbar()
+        } else {
+            buildViewerToolbar()
+        }
+    }
+
+    private fun buildViewerToolbar() {
         with(toolBar) {
             flowpane {
-                add(toSwingNode(factory.buildShowHideUtilityPaneButton()))
-                button("", FontIcon(FontAwesomeSolid.SAVE)) {
-                    addClass(Styles.flatButton)
-                    tooltip = Tooltip("Save")
-                    action {
-                        controller.save()
-                    }
-                }
-                add(toSwingNode(factory.buildFitPageButton()))
-                add(toSwingNode(factory.buildPanToolButton()))
-                add(toSwingNode(factory.buildTextSelectToolButton()))
-                separator()
-                add(toSwingNode(factory.buildSelectToolButton(DEFAULT_PDF_VIEWER_ICON_SIZE)))
-                add(toSwingNode(factory.buildLineAnnotationToolButton(DEFAULT_PDF_VIEWER_ICON_SIZE)))
-                add(toSwingNode(factory.buildLineArrowAnnotationToolButton(DEFAULT_PDF_VIEWER_ICON_SIZE)))
-                add(toSwingNode(factory.buildSquareAnnotationToolButton(DEFAULT_PDF_VIEWER_ICON_SIZE)))
-                add(toSwingNode(factory.buildCircleAnnotationToolButton(DEFAULT_PDF_VIEWER_ICON_SIZE)))
-                add(toSwingNode(factory.buildInkAnnotationToolButton(DEFAULT_PDF_VIEWER_ICON_SIZE)))
-                add(toSwingNode(factory.buildFreeTextAnnotationToolButton(DEFAULT_PDF_VIEWER_ICON_SIZE)))
-                add(toSwingNode(factory.buildTextAnnotationToolButton(DEFAULT_PDF_VIEWER_ICON_SIZE)))
+                add(swingButtons.showHideUtilityPane)
+                add(swingButtons.fitPage)
+                add(swingButtons.pan)
+                add(swingButtons.textSelecion)
             }
 
             hbox { hgrow = Priority.ALWAYS }
 
-            diagramErrorsBtn = togglebutton("") {
-                addClass(Styles.flatButton)
-                isSelected = false
-                graphic = FontIcon(FontAwesomeSolid.TAGS)
-                tooltip = Tooltip("Show errors the diagram contains")
-            }
+            add(switchToEditBtn)
+            add(diagramErrorsBtn)
         }
     }
 
-    private fun toSwingNode(jComponent: JComponent): SwingNode {
-        val sn = SwingNode()
-        sn.content = jComponent
-        return sn
+    private fun buildEditorToolbar() {
+        with(toolBar) {
+            flowpane {
+                add(swingButtons.showHideUtilityPane)
+                add(saveBtn)
+                add(swingButtons.fitPage)
+                add(swingButtons.pan)
+                add(swingButtons.textSelecion)
+                separator()
+                add(swingButtons.selectAnnotation)
+                add(swingButtons.lineAnnotation)
+                add(swingButtons.lineArrowAnnotation)
+
+                add(swingButtons.squareAnnotation)
+                add(swingButtons.circleAnnotation)
+                add(swingButtons.inkAnnotation)
+
+                add(swingButtons.freeTextAnnotation)
+                add(swingButtons.textAnnotation)
+            }
+
+            hbox { hgrow = Priority.ALWAYS }
+
+            add(diagramErrorsBtn)
+        }
     }
 
     private fun setPdfViewerPreferences(properties: ViewerPropertiesManager) {
@@ -165,7 +205,7 @@ class DiagramEditorView : View() {
         properties.setBoolean(ViewerPropertiesManager.PROPERTY_SHOW_UTILITYPANE_BOOKMARKS, false)
         properties.setBoolean(ViewerPropertiesManager.PROPERTY_SHOW_UTILITYPANE_SIGNATURES, false)
         properties.setBoolean(ViewerPropertiesManager.PROPERTY_SHOW_UTILITYPANE_THUMBNAILS, false)
-        properties.setBoolean(ViewerPropertiesManager.PROPERTY_SHOW_UTILITYPANE_LAYERS, true)
+        properties.setBoolean(ViewerPropertiesManager.PROPERTY_SHOW_UTILITYPANE_LAYERS, false)
 
         properties.setBoolean(ViewerPropertiesManager.PROPERTY_SHOW_STATUSBAR, false)
 

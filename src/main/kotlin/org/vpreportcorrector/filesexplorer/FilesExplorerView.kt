@@ -12,11 +12,11 @@ import org.kordamp.ikonli.bootstrapicons.BootstrapIcons
 import org.kordamp.ikonli.fontawesome.FontAwesome
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
-import org.vpreportcorrector.app.EditDiagramEvent
+import org.vpreportcorrector.app.OpenDiagramEvent
 import org.vpreportcorrector.app.RefreshFilesExplorer
 import org.vpreportcorrector.app.Styles.Companion.centered
 import org.vpreportcorrector.app.Styles.Companion.flatButton
-import org.vpreportcorrector.app.ViewDiagramEvent
+import org.vpreportcorrector.app.OpenDiagramInNewWindowEvent
 import org.vpreportcorrector.components.form.loadingOverlay
 import org.vpreportcorrector.mainview.GlobalDataModel
 import org.vpreportcorrector.settings.SettingsModalView
@@ -105,11 +105,11 @@ class FilesExplorerView : View() {
                             }
                             onMouseClicked = EventHandler { mouseClick ->
                                 if (mouseClick.clickCount == 2) {
-                                    editDiagram()
+                                    openDiagram()
                                 }
                                 else if (mouseClick.button == MouseButton.MIDDLE
                                     || (mouseClick.isAltDown && mouseClick.button == MouseButton.PRIMARY)) {
-                                    viewDiagram()
+                                    openDiagram(true)
                                 }
                             }
                         }
@@ -138,18 +138,18 @@ class FilesExplorerView : View() {
                                     controller.import(selectionModel.selectedItems.toList())
                                 }
                             }
-                            item("Edit") {
+                            item("Open") {
                                 visibleWhen { controller.model.isEditVisible }
                                 enableWhen { controller.model.isFileTreeFocused.and(controller.model.isEditVisible) }
                                 action {
-                                    editDiagram()
+                                    openDiagram()
                                 }
                             }
-                            item("View") {
-                                visibleWhen { controller.model.isViewVisible }
-                                enableWhen { controller.model.isFileTreeFocused.and(controller.model.isViewVisible) }
+                            item("Open in new window") {
+                                visibleWhen { controller.model.isEditVisible }
+                                enableWhen { controller.model.isFileTreeFocused.and(controller.model.isEditVisible) }
                                 action {
-                                    viewDiagram()
+                                    openDiagram(true)
                                 }
                             }
                             item("Merge PDFs...") {
@@ -272,15 +272,13 @@ class FilesExplorerView : View() {
         }
     }
 
-    private fun editDiagram() {
+    private fun openDiagram(inNewWindow: Boolean = false) {
         if (filesTree.selectionModel.selectedItems.size == 1 && controller.model.isEditVisible.value) {
-            fire(EditDiagramEvent(filesTree.selectionModel.selectedItems[0].value))
-        }
-    }
-
-    private fun viewDiagram() {
-        if (filesTree.selectionModel.selectedItems.size == 1 && controller.model.isViewVisible.value) {
-            fire(ViewDiagramEvent(filesTree.selectionModel.selectedItems[0].value))
+            if (inNewWindow) {
+                fire(OpenDiagramInNewWindowEvent(filesTree.selectionModel.selectedItems[0].value) )
+            } else {
+                fire(OpenDiagramEvent(filesTree.selectionModel.selectedItems[0].value))
+            }
         }
     }
 }

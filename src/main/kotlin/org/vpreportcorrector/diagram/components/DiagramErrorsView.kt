@@ -25,7 +25,7 @@ class DiagramErrorsView : View() {
                         graphic = checkbox(text = t(it.first), property = it.second) {
                             isWrapText = true
                             prefWidthProperty().bind(this@listview.widthProperty().minus(16.0 + 2*7.6 + 3))
-                            isDisable = !model.isEditing
+                            enableWhen { model.isEditingProperty }
                         }
                     }
                 }

@@ -1,64 +1,77 @@
 package org.vpreportcorrector.mainview.content
 
-import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.binding.Bindings
 import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.control.Tab
-import javafx.scene.control.TabPane
 import javafx.scene.control.Tooltip
 import org.kordamp.ikonli.fontawesome5.FontAwesomeRegular
 import org.kordamp.ikonli.javafx.FontIcon
+import org.vpreportcorrector.app.DiagramInEditModeEvent
 import org.vpreportcorrector.app.DiagramSavedEvent
-import org.vpreportcorrector.app.EditDiagramEvent
+import org.vpreportcorrector.app.OpenDiagramEvent
+import org.vpreportcorrector.app.OpenDiagramInNewWindowEvent
 import org.vpreportcorrector.app.Styles.Companion.centered
 import org.vpreportcorrector.app.Styles.Companion.textMuted
-import org.vpreportcorrector.app.ViewDiagramEvent
 import org.vpreportcorrector.diagram.DiagramController
 import org.vpreportcorrector.diagram.DiagramModel
-import org.vpreportcorrector.diagram.DiagramEditorView
-import org.vpreportcorrector.diagram.DiagramViewerView
+import org.vpreportcorrector.diagram.DiagramView
 import org.vpreportcorrector.utils.p
 import tornadofx.*
 import java.nio.file.Path
 
 class ContentView : View("Content") {
     private val vm: ContentViewModel by inject()
-    private var parentTabPane: TabPane by singleAssign()
-    private val tabsNotEmpty = SimpleBooleanProperty(false)
 
-    private val viewTabGraphic = FontIcon(FontAwesomeRegular.EYE)
-    private val editTabGraphic = FontIcon(FontAwesomeRegular.EDIT)
+    private var tabPane = tabpane {
+        id = TabLocation.MAIN.name
+        fitToParentSize()
+    }
 
     init {
-        subscribe<ViewDiagramEvent> { event ->
-            vm.checkToOpenOrActivate(event.path) { openTab(event.path, false) }
+        subscribe<OpenDiagramInNewWindowEvent> { event ->
+            vm.checkToOpenOrActivate(event.path) { openInNewWindow(event.path) }
         }
-        subscribe<EditDiagramEvent> { event ->
-            vm.checkToOpenOrActivate(event.path) { openTab(event.path, true) }
+        subscribe<OpenDiagramEvent> { event ->
+            vm.checkToOpenOrActivate(event.path) { openTab(event.path) }
         }
         subscribe<DiagramSavedEvent> { event ->
             vm.setTabSaved(event.path)
         }
+        subscribe<DiagramInEditModeEvent> { event ->
+            vm.allOpenTabs[event.path]?.tab?.let {
+                it.graphic = FontIcon(FontAwesomeRegular.EDIT)
+            }
+        }
     }
 
-    private fun openTab(path: Path, isEditing: Boolean) {
+    private fun openTab(path: Path) {
+        val tab = createAndTrackTab(path, TabLocation.MAIN)
+        tab.graphic = FontIcon(FontAwesomeRegular.EYE)
+        tabPane.tabs.add(tab)
+        tabPane.selectionModel.select(tab)
+    }
+
+    private fun openInNewWindow(path: Path) {
+        val tab = createAndTrackTab(path, TabLocation.DETACHED_WINDOW)
+        vm.detachedWindowView.tabPane.tabs.add(tab)
+        tab.select()
+
+        if (vm.detachedWindowStage == null || !vm.detachedWindowStage!!.isShowing) {
+            vm.detachedWindowStage = vm.detachedWindowView.openWindow()
+        }
+        vm.detachedWindowStage?.toFront()
+    }
+
+    private fun createAndTrackTab(path: Path, location: TabLocation): Tab {
         val diagramScope = Scope()
-        val model = DiagramModel(path, isEditing)
+        val model = DiagramModel(path, false)
         setInScope(model, diagramScope)
-        val view = if (isEditing) find<DiagramEditorView>(diagramScope) else find<DiagramViewerView>(diagramScope)
+        val view = find<DiagramView>(diagramScope)
         val diagramCtrl = find<DiagramController>(diagramScope)
-        val tab = createTab(view, path, diagramCtrl)
-        tab.graphic = if (isEditing) editTabGraphic else viewTabGraphic
-        parentTabPane.tabs.add(tab)
-        parentTabPane.selectionModel.select(tab)
-        vm.openTabs[path] = TabData(tab, diagramCtrl)
-    }
 
-    private fun createTab(view: View, path: Path, diagramCtrl: DiagramController): Tab {
-        val tab = Tab(path.toFile().name, vbox {
-            fitToParentSize()
-            add(view)
-        })
+        val tab = Tab(path.toFile().name, view.root)
+        tab.graphic = FontIcon(FontAwesomeRegular.EYE)
         tab.tooltip = Tooltip(path.toAbsolutePath().toString())
         tab.id = path.toAbsolutePath().toString()
         tab.onCloseRequest = EventHandler { event ->
@@ -67,9 +80,10 @@ class ContentView : View("Content") {
                 event.consume()
             } else {
                 tab.close()
-                vm.openTabs.remove(path)
+                vm.allOpenTabs.remove(path)
             }
         }
+        vm.allOpenTabs[path] = TabData(tab, diagramCtrl, location)
         return tab
     }
 
@@ -77,18 +91,12 @@ class ContentView : View("Content") {
         fitToParentSize()
         vbox {
             fitToParentSize()
-            hiddenWhen { tabsNotEmpty }
+            visibleWhen { Bindings.size(tabPane.tabs).eq(0) }
             alignment = Pos.CENTER
             p("No diagrams open") {
                 addClass(textMuted, centered)
             }
         }
-        parentTabPane = tabpane {
-            fitToParentSize()
-            tabs.onChange {
-                tabsNotEmpty.value = parentTabPane.tabs.isNotEmpty()
-            }
-        }
+        add(tabPane)
     }
 }
-

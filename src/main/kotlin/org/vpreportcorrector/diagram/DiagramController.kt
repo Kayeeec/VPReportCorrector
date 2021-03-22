@@ -5,6 +5,7 @@ import javafx.scene.control.ButtonType
 import org.icepdf.core.pobjects.annotations.Annotation
 import org.icepdf.ri.common.SwingController
 import org.icepdf.ri.common.ViewModel
+import org.vpreportcorrector.app.DiagramInEditModeEvent
 import org.vpreportcorrector.app.DiagramSavedEvent
 import tornadofx.*
 import java.io.BufferedOutputStream
@@ -81,11 +82,15 @@ class DiagramController: Controller() {
             )
         }
         if (doClose) {
-            SwingUtilities.invokeAndWait {
-                swingController.dispose()
-            }
+            dispose()
         }
         return doClose
+    }
+
+    fun dispose() {
+        SwingUtilities.invokeAndWait {
+            swingController.dispose()
+        }
     }
 
     fun save() {
@@ -126,29 +131,34 @@ class DiagramController: Controller() {
         }
     }
 
-    /**
-     * Must be run on swing thread!
-     */
+
     fun openDocument() {
         SwingUtilities.invokeLater {
             swingController.openDocument(model.path.toAbsolutePath().toString())
-            if (model.isEditing) {
-                makeAnnotationsReadOnly()
-            }
+            setAnnotationsReadAndLockedFlags(true)
             viewerPanel.revalidate()
         }
     }
 
-    private fun makeAnnotationsReadOnly() {
+    private fun setAnnotationsReadAndLockedFlags(value: Boolean) {
         val pageTree = swingController.document.pageTree
         val n = pageTree.numberOfPages
         for (i in 0..n) {
             val page = pageTree.getPage(i)
             page?.annotations?.forEach {
-                it?.setFlag(Annotation.FLAG_READ_ONLY, true)
-                it?.setFlag(Annotation.FLAG_LOCKED_CONTENTS, true)
-                it?.setFlag(Annotation.FLAG_LOCKED, true)
+                it?.setFlag(Annotation.FLAG_READ_ONLY, value)
+                it?.setFlag(Annotation.FLAG_LOCKED_CONTENTS, value)
+                it?.setFlag(Annotation.FLAG_LOCKED, value)
             }
         }
+    }
+
+    fun switchToEditMode() {
+        model.isEditingProperty.value = true
+        SwingUtilities.invokeLater {
+            setAnnotationsReadAndLockedFlags(false)
+            viewerPanel.revalidate()
+        }
+        fire(DiagramInEditModeEvent(model.path))
     }
 }

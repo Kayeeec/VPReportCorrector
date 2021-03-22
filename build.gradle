@@ -21,6 +21,11 @@ repositories {
     jcenter()
 }
 
+ext {
+    ikonliVersion = '12.2.0'
+}
+
+
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.4.10"
     implementation "no.tornado:tornadofx:2.0.0-SNAPSHOT"
@@ -35,10 +40,10 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.11'
 
     // font icons
-    implementation 'org.kordamp.ikonli:ikonli-javafx:12.1.0'
-    implementation 'org.kordamp.ikonli:ikonli-fontawesome-pack:12.1.0'
-    implementation 'org.kordamp.ikonli:ikonli-fontawesome5-pack:12.1.0'
-    implementation 'org.kordamp.ikonli:ikonli-bootstrapicons-pack:12.1.0'
+    implementation "org.kordamp.ikonli:ikonli-javafx:${ikonliVersion}"
+    implementation "org.kordamp.ikonli:ikonli-fontawesome-pack:${ikonliVersion}"
+    implementation "org.kordamp.ikonli:ikonli-fontawesome5-pack:${ikonliVersion}"
+    implementation "org.kordamp.ikonli:ikonli-bootstrapicons-pack:${ikonliVersion}"
 
     // for diagram extractor
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.21'
