@@ -1,31 +1,88 @@
 package org.vpreportcorrector.diagram.components
 
-import javafx.beans.property.SimpleBooleanProperty
+import javafx.scene.control.ScrollPane
+import javafx.scene.layout.Priority
+import javafx.util.Duration
+import org.kordamp.ikonli.bootstrapicons.BootstrapIcons
+import org.kordamp.ikonli.javafx.FontIcon
 import org.vpreportcorrector.app.Styles
-import org.vpreportcorrector.components.NoSelectionModel
-import org.vpreportcorrector.diagram.DiagramModel
+import org.vpreportcorrector.components.collapseAll
+import org.vpreportcorrector.components.expandAll
+import org.vpreportcorrector.diagram.*
+import org.vpreportcorrector.diagram.enums.DiagramIssueGroup
+import org.vpreportcorrector.utils.AppConstants.SCROLL_BAR_WIDTH
 import org.vpreportcorrector.utils.t
 import tornadofx.*
 
 class DiagramErrorsView : View() {
-    private val model: DiagramModel by inject()
+    private val dvm: DiagramViewModel by inject()
+
+    private var squeezeBox: SqueezeBox by singleAssign()
 
     override val root = borderpane {
-        addClass(Styles.diagramErrorsFragment)
-        prefWidth = 300.0
+        addClass(Styles.diagramErrorsView)
+        hgrow = Priority.ALWAYS
+        vgrow = Priority.ALWAYS
+        prefWidth = 400.0
         fitToParentSize()
-        center = form {
-            fieldset("Diagram errors") {
-                fitToParentSize()
-                listview(model.diagramErrorsProperty){
-                    selectionModel = NoSelectionModel<Pair<String, SimpleBooleanProperty>>()
-                    isFocusTraversable = false
-                    fitToParentSize()
-                    cellFormat {
-                        graphic = checkbox(text = t(it.first), property = it.second) {
+        top = hbox {
+            addClass(Stylesheet.title)
+            hbox {
+                addClass(Stylesheet.title)
+                hgrow = Priority.ALWAYS
+                label(t("title"))
+            }
+            button {
+                addClass(Styles.flatButton)
+                graphic = FontIcon(BootstrapIcons.ARROWS_EXPAND)
+                tooltip = tooltip(t("expandAll"))
+                action { squeezeBox.expandAll() }
+            }
+            button {
+                addClass(Styles.flatButton)
+                graphic = FontIcon(BootstrapIcons.ARROWS_COLLAPSE)
+                tooltip = tooltip(t("collapseAll"))
+                action { squeezeBox.collapseAll() }
+            }
+        }
+        center = scrollpane {
+            fitToParentSize()
+            hgrow = Priority.ALWAYS
+            vgrow = Priority.ALWAYS
+            hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
+            vbarPolicy = ScrollPane.ScrollBarPolicy.ALWAYS
+            prefWidth = this@borderpane.prefWidth
+            squeezeBox = squeezebox {
+                prefWidthProperty().bind(this@scrollpane.widthProperty().minus(SCROLL_BAR_WIDTH))
+                usePrefWidth = true
+                for(group in enumValues<DiagramIssueGroup>()) {
+                    fold(t(group.name), true) {
+                        tooltip = tooltip(text) {
                             isWrapText = true
-                            prefWidthProperty().bind(this@listview.widthProperty().minus(16.0 + 2*7.6 + 3))
-                            enableWhen { model.isEditingProperty }
+                            prefWidth = 300.0
+                        }
+                        useMaxWidth = true
+                        fitToParentWidth()
+                        vbox {
+                            useMaxWidth = true
+                            hgrow = Priority.ALWAYS
+                            for (issue in group.issues) {
+                                checkbox(t(issue.name)) {
+                                    enableWhen { dvm.isEditingProperty }
+                                    isSelected = dvm.diagramIssuesProperty.contains(issue)
+                                    tooltip = tooltip(text) {
+                                        isWrapText = true
+                                        prefWidth = 300.0
+                                        showDelay = Duration.millis(300.0)
+                                    }
+                                    isWrapText = true
+                                    prefWidth = this@borderpane.prefWidth - SCROLL_BAR_WIDTH - 2
+                                    usePrefWidth = true
+                                    action {
+                                        dvm.updateDiagramIssue(issue, isSelected)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -33,3 +90,4 @@ class DiagramErrorsView : View() {
         }
     }
 }
+

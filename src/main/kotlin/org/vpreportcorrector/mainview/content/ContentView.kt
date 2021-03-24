@@ -13,9 +13,9 @@ import org.vpreportcorrector.app.OpenDiagramEvent
 import org.vpreportcorrector.app.OpenDiagramInNewWindowEvent
 import org.vpreportcorrector.app.Styles.Companion.centered
 import org.vpreportcorrector.app.Styles.Companion.textMuted
-import org.vpreportcorrector.diagram.DiagramController
 import org.vpreportcorrector.diagram.DiagramModel
 import org.vpreportcorrector.diagram.DiagramView
+import org.vpreportcorrector.diagram.DiagramViewModel
 import org.vpreportcorrector.utils.p
 import tornadofx.*
 import java.nio.file.Path
@@ -65,10 +65,10 @@ class ContentView : View("Content") {
 
     private fun createAndTrackTab(path: Path, location: TabLocation): Tab {
         val diagramScope = Scope()
-        val model = DiagramModel(path, false)
-        setInScope(model, diagramScope)
+        val dvm = DiagramViewModel(DiagramModel(path))
+        setInScope(dvm, diagramScope)
         val view = find<DiagramView>(diagramScope)
-        val diagramCtrl = find<DiagramController>(diagramScope)
+        val diagramCtrl = find<DiagramViewModel>(diagramScope)
 
         val tab = Tab(path.toFile().name, view.root)
         tab.graphic = FontIcon(FontAwesomeRegular.EYE)

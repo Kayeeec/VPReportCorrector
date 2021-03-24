@@ -12,8 +12,8 @@ import org.kordamp.ikonli.javafx.FontIcon
 import org.vpreportcorrector.app.ResizeEditorEvent
 import org.vpreportcorrector.app.Styles
 import org.vpreportcorrector.components.form.loadingOverlay
+import org.vpreportcorrector.diagram.DiagramViewConstants.DEFAULT_PDF_VIEWER_ICON_SIZE
 import org.vpreportcorrector.diagram.components.CustomSwingNode
-import org.vpreportcorrector.diagram.components.DEFAULT_PDF_VIEWER_ICON_SIZE
 import org.vpreportcorrector.diagram.components.DiagramErrorsDrawerView
 import org.vpreportcorrector.diagram.components.PdfViewerSwingButtons
 import tornadofx.*
@@ -21,12 +21,11 @@ import java.awt.Dimension
 import javax.swing.SwingUtilities
 
 // TODO: add conditional pager
-// TODO: refactor - MVVM/MVC
 class DiagramView : View() {
-    private val controller: DiagramController by inject()
+    private val vm: DiagramViewModel by inject()
     private val diagramErrorsDrawer = find<DiagramErrorsDrawerView>(scope)
 
-    private var swingController = controller.swingController
+    private var swingController = vm.item.swingController
     private val swingNode = CustomSwingNode()
     private var swingButtons: PdfViewerSwingButtons by singleAssign()
 
@@ -49,17 +48,17 @@ class DiagramView : View() {
     private val switchToEditBtn = button("Edit", FontIcon(FontAwesomeSolid.EDIT)) {
         addClass(Styles.flatButton)
         tooltip = Tooltip("Switch to edit mode")
-        hiddenWhen { controller.model.isEditingProperty }
+        hiddenWhen { vm.isEditingProperty }
         action {
-            controller.switchToEditMode()
+            vm.switchToEditMode()
         }
     }
     private val saveBtn = button("", FontIcon(FontAwesomeSolid.SAVE)) {
         addClass(Styles.flatButton)
-        visibleWhen { controller.model.isEditingProperty }
+        visibleWhen { vm.isEditingProperty }
         tooltip = Tooltip("Save")
         action {
-            controller.save()
+            vm.save()
         }
     }
 
@@ -74,15 +73,14 @@ class DiagramView : View() {
         subscribe<ResizeEditorEvent> {
             resizeViewerPanel(it.width, it.height)
         }
-        createViewerAndOpenDocument()
-        controller.openDocument()
-        controller.loadData()
+        createViewer()
+        vm.openDocument()
         swingNode.onMouseEntered = EventHandler {
             if (!swingNode.isFocused) {
                 swingNode.requestFocus()
             }
         }
-        controller.model.isEditingProperty.onChangeOnce {
+        vm.isEditingProperty.onChangeOnce {
             buildToolbar()
         }
     }
@@ -95,18 +93,18 @@ class DiagramView : View() {
         val dimension = Dimension(width.toInt(), height.toInt())
         swingNode.resize(width, height)
         SwingUtilities.invokeLater {
-            controller.viewerPanel.size = dimension
-            controller.viewerPanel.minimumSize = dimension
-            controller.viewerPanel.preferredSize = dimension
-            controller.viewerPanel.maximumSize = dimension
-            controller.viewerPanel.repaint()
+            vm.viewerPanel.size = dimension
+            vm.viewerPanel.minimumSize = dimension
+            vm.viewerPanel.preferredSize = dimension
+            vm.viewerPanel.maximumSize = dimension
+            vm.viewerPanel.repaint()
         }
     }
 
-    private fun createViewerAndOpenDocument() {
+    private fun createViewer() {
         SwingUtilities.invokeAndWait {
             try {
-                controller.model.loadingLatch.startLoading()
+                vm.loadingLatch.startLoading()
 
                 swingController.setIsEmbeddedComponent(true)
                 FontPropertiesManager.getInstance().loadOrReadSystemFonts()
@@ -118,23 +116,23 @@ class DiagramView : View() {
                     MyAnnotationCallback(swingController.documentViewController)
 
                 val factory = SwingViewBuilder(swingController, properties)
-                controller.viewerPanel = factory.buildUtilityAndDocumentSplitPane(false)
+                vm.viewerPanel = factory.buildUtilityAndDocumentSplitPane(false)
                 swingButtons = PdfViewerSwingButtons(factory)
                 buildToolbar()
-                controller.viewerPanel.revalidate()
-                swingNode.content = controller.viewerPanel
+                vm.viewerPanel.revalidate()
+                swingNode.content = vm.viewerPanel
                 centerView.add(swingNode)
             } catch (e: Exception) {
                 log.severe(e.stackTraceToString())
             } finally {
-                controller.model.loadingLatch.endLoading()
+                vm.loadingLatch.endLoading()
             }
         }
     }
 
     private fun buildToolbar() {
         toolBar.children.clear()
-        if (controller.model.isEditingProperty.value == true) {
+        if (vm.isEditingProperty.value == true) {
             buildEditorToolbar()
         } else {
             buildViewerToolbar()
@@ -250,7 +248,7 @@ class DiagramView : View() {
         }
 
         loadingOverlay {
-            visibleWhen { controller.model.loadingLatch.isLoading }
+            visibleWhen { vm.loadingLatch.isLoading }
         }
     }
 }

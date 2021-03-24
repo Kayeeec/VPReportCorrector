@@ -74,13 +74,13 @@ class FilesExplorerView : View() {
                         button("", FontIcon(BootstrapIcons.ARROWS_EXPAND)){
                             addClass(flatButton)
                             disableWhen { rootFolderProp.isNull }
-                            tooltip("Expand all")
+                            tooltip(t("expandAll"))
                             action { filesTree.root.expandAll() }
                         }
                         button("", FontIcon(BootstrapIcons.ARROWS_COLLAPSE)){
                             addClass(flatButton)
                             disableWhen { rootFolderProp.isNull }
-                            tooltip("Collapse all")
+                            tooltip(t("collapseAll"))
                             action { filesTree.root.collapseAll() }
                         }
                     }

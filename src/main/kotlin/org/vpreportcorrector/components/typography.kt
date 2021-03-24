@@ -30,6 +30,12 @@ fun EventTarget.h3(text: String, op: TextFlow.() -> Unit = {}) = TextFlow().atta
     text(text)
 }
 
+fun EventTarget.h4(text: String, op: TextFlow.() -> Unit = {}) = TextFlow().attachTo(this, op).apply {
+    addClass(Styles.h4)
+    addClass(Styles.typographyText)
+    text(text)
+}
+
 
 fun EventTarget.p(text: String, op: TextFlow.() -> Unit = {}) = TextFlow().attachTo(this, op).apply {
     addClass(Styles.p)

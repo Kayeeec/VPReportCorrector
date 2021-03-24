@@ -36,6 +36,8 @@ dependencies {
     implementation "org.openjfx:javafx-web:13-ea+8"
     implementation "org.openjfx:javafx-swing:13-ea+8"
 
+    implementation 'org.controlsfx:controlsfx:11.1.0'
+
     compile 'commons-io:commons-io:2.8.0'
     compile 'org.apache.commons:commons-lang3:3.11'
 

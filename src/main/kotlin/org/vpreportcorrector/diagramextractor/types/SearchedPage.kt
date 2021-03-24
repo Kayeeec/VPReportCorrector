@@ -1,10 +1,10 @@
-package types
+package org.vpreportcorrector.diagramextractor.types
 
-import utils.END_HEADER
-import utils.END_HEADER_FONT_SIZE
-import utils.NEXT_START_HEADER_FONT_SIZE
-import utils.START_HEADER
-import utils.START_HEADER_FONT_SIZE
+import org.vpreportcorrector.diagramextractor.utils.END_HEADER
+import org.vpreportcorrector.diagramextractor.utils.END_HEADER_FONT_SIZE
+import org.vpreportcorrector.diagramextractor.utils.NEXT_START_HEADER_FONT_SIZE
+import org.vpreportcorrector.diagramextractor.utils.START_HEADER
+import org.vpreportcorrector.diagramextractor.utils.START_HEADER_FONT_SIZE
 import kotlin.math.abs
 
 class SearchedPage {

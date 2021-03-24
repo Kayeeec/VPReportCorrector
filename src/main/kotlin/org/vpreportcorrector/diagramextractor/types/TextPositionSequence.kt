@@ -1,4 +1,4 @@
-package types
+package org.vpreportcorrector.diagramextractor.types
 
 import org.apache.pdfbox.text.TextPosition
 

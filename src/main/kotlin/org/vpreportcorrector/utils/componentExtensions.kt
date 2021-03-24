@@ -1,5 +1,7 @@
 package org.vpreportcorrector.utils
 
+import org.vpreportcorrector.utils.AppConstants.KEY_WORKING_DIRECTORY
+import org.vpreportcorrector.utils.AppConstants.PREFERENCES_NODE
 import tornadofx.Component
 import tornadofx.get
 import java.nio.file.Path
@@ -21,7 +23,7 @@ fun Component.t(key: String, vararg args: Any?): String {
  */
 fun Component.getWorkingDirectory(): Path? {
     var workingDir = ""
-    preferences {
+    preferences(PREFERENCES_NODE) {
         sync()
         workingDir = get(KEY_WORKING_DIRECTORY, "")
     }

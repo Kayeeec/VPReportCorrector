@@ -17,8 +17,8 @@ import org.vpreportcorrector.utils.findConflictingFile
 import org.vpreportcorrector.utils.openFileExistsDialog
 import org.vpreportcorrector.utils.suggestName
 import org.w3c.dom.Element
-import types.DiagramPageResult
-import utils.searchPageForDiagramHeadings
+import org.vpreportcorrector.diagramextractor.types.DiagramPageResult
+import org.vpreportcorrector.diagramextractor.utils.searchPageForDiagramHeadings
 import java.awt.Color
 import java.awt.Dimension
 import java.io.File

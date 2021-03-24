@@ -15,7 +15,7 @@ class ContentViewModel: ViewModel() {
      * @return true if at least one tab has unsaved changes, false otherwise
      */
     private fun hasTabsWithUnsavedChanges(): Boolean {
-        val unsavedTabs = allOpenTabs.filter { it.value.controller.hasUnsavedChanges() }
+        val unsavedTabs = allOpenTabs.filter { it.value.viewModel.hasUnsavedChanges() }
         unsavedTabs.forEach {
             setTabUnsaved(it.key)
         }
@@ -56,7 +56,7 @@ class ContentViewModel: ViewModel() {
      */
     fun disposeDetachedTabsAndClose(): Boolean {
         var doClose = true
-        val unsavedTabs = allOpenTabs.filter { it.value.controller.hasUnsavedChanges() }
+        val unsavedTabs = allOpenTabs.filter { it.value.viewModel.hasUnsavedChanges() }
         unsavedTabs.forEach {
             setTabUnsaved(it.key)
         }
@@ -76,7 +76,7 @@ class ContentViewModel: ViewModel() {
         if (doClose) {
             val detachedTabs = allOpenTabs.filter { it.value.location == TabLocation.DETACHED_WINDOW }
             detachedTabs.forEach {
-                it.value.controller.dispose()
+                it.value.viewModel.dispose()
                 it.value.tab.close()
                 allOpenTabs.remove(it.key)
             }

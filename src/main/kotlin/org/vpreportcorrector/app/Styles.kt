@@ -1,5 +1,6 @@
 package org.vpreportcorrector.app
 import javafx.geometry.Pos
+import javafx.scene.layout.HBox
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
 import javafx.scene.text.FontWeight
@@ -13,12 +14,13 @@ class Styles : Stylesheet() {
         val sideButton by cssclass()
         val flatButton by cssclass()
 
-        val diagramErrorsFragment by cssclass()
         val diagramAnnotatorView by cssclass()
+        val diagramErrorsView by cssclass()
 
         val h1 by cssclass()
         val h2 by cssclass()
         val h3 by cssclass()
+        val h4 by cssclass()
         val p by cssclass()
         val paddedContainer by cssclass()
         val centered by cssclass()
@@ -76,6 +78,12 @@ class Styles : Stylesheet() {
             padding = box(15.px, 0.px, 10.px, 0.px)
         }
 
+        h3 {
+            fontSize = 14.px
+            fontWeight = FontWeight.BOLD
+            padding = box(15.px, 0.px, 10.px, 0.px)
+        }
+
         p {
             fontSize = 14.px
             padding = box(0.px, 0.px, 10.px, 0.px)
@@ -122,15 +130,43 @@ class Styles : Stylesheet() {
             borderWidth += box(0.px, 1.px, 0.px, 1.px)
         }
 
-        diagramErrorsFragment {
+        diagramErrorsView {
+            title {
+                backgroundColor += AppColors.bgPrimary
+                alignment = Pos.CENTER_LEFT
+                label {
+                    fontSize = 13.px
+                    fontWeight = FontWeight.BOLD
+                    padding = box(0.px, 0.px, 0.px, 10.px)
+                }
+                button {
+                    fontWeight = FontWeight.NORMAL
+                }
+            }
             backgroundColor += AppColors.bgSecondary
             checkBox {
-                padding = box(5.px, 0.px)
+                padding = box(8.px, 10.px)
                 alignment = Pos.TOP_LEFT
                 opacity = 1.0
+                and(selected) {
+                    text {
+                        fontWeight = FontWeight.EXTRA_BOLD
+                    }
+                }
+                and(hover) {
+                    backgroundColor += AppColors.bgButtonHover
+                }
             }
             form {
                 backgroundColor += AppColors.bgSecondary
+            }
+            Stylesheet.titledPane {
+                title {
+                    backgroundColor += AppColors.bgPrimary
+                }
+                content {
+                    backgroundColor += AppColors.bgSecondary
+                }
             }
         }
 
@@ -161,9 +197,10 @@ class AppColors() {
         val textSecondary = c("#6c757d")
         val textMuted = c("#6c757d")
         val bgPrimary = c("#f4f4f4")
+        val bgPrimaryLighter = c("#f9f9f9")
+        val bgSecondary = c("#ffffff")
         val bgButtonHover = c("#e1e2e1")
         val bgButtonActive = c("#c1c1c1")
-        val bgSecondary = c("#ffffff")
 
     }
 }

@@ -1,10 +1,10 @@
-package utils
+package org.vpreportcorrector.diagramextractor.utils
 
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
 import org.apache.pdfbox.text.TextPosition
-import types.SearchedPage
-import types.TextPositionSequence
+import org.vpreportcorrector.diagramextractor.types.SearchedPage
+import org.vpreportcorrector.diagramextractor.types.TextPositionSequence
 import java.io.IOException
 
 /**

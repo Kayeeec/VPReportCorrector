@@ -38,6 +38,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/src/main/kotlin/org/vpreportcorrector/diagram/DiagramViewModel.kt">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/src/main/kotlin/org/vpreportcorrector/diagram/components/DiagramErrorsView.kt">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/src/main/kotlin/org/vpreportcorrector/diagram/edit/DiagramEditorView.kt">
           <value>
             <Attribute>
@@ -91,6 +105,20 @@
           <value>
             <Attribute>
               <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/src/main/kotlin/org/vpreportcorrector/utils/AppConstants.kt">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/src/main/resources/org/vpreportcorrector/diagram/components/DiagramErrorsView.properties">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
