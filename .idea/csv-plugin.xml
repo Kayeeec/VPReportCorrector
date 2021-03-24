@@ -17,6 +17,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/src/main/kotlin/org/vpreportcorrector/app/MyEventBus.kt">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/src/main/kotlin/org/vpreportcorrector/app/Styles.kt">
           <value>
             <Attribute>
@@ -77,6 +84,13 @@
           <value>
             <Attribute>
               <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/src/main/kotlin/org/vpreportcorrector/settings/SettingsModalView.kt">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
             </Attribute>
           </value>
         </entry>

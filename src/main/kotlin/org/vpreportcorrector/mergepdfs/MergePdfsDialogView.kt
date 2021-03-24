@@ -9,9 +9,10 @@ import javafx.stage.FileChooser
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
 import org.vpreportcorrector.app.RefreshFilesExplorer
+import org.vpreportcorrector.app.SettingsChanged
 import org.vpreportcorrector.app.Styles
 import org.vpreportcorrector.components.form.loadingOverlay
-import org.vpreportcorrector.mainview.GlobalDataModel
+import org.vpreportcorrector.utils.getWorkingDirectory
 import org.vpreportcorrector.utils.isPdf
 import org.vpreportcorrector.utils.isWriteable
 import org.vpreportcorrector.utils.t
@@ -20,7 +21,7 @@ import java.io.File
 
 class MergePdfsDialogView : View() {
     private val vm: MergePdfsDialogViewModel by inject()
-    private val globalData: GlobalDataModel by inject(FX.defaultScope)
+    private var workingDirectory = getWorkingDirectory()?.toFile()
     private val extensionFilters = arrayOf(
         FileChooser.ExtensionFilter(
             t("pdfExtensionFilterDescription"),
@@ -33,6 +34,7 @@ class MergePdfsDialogView : View() {
 
     init {
         title = t("title")
+        subscribe<SettingsChanged> { workingDirectory = getWorkingDirectory()?.toFile() }
     }
 
     override fun onBeforeShow() {
@@ -66,7 +68,7 @@ class MergePdfsDialogView : View() {
                                 hgrow = Priority.ALWAYS
                                 multiSelect(true)
                                 cellFormat {
-                                    text = it.toRelativeString(globalData.workingDirectory.value)
+                                    text = if (workingDirectory != null) it.toRelativeString(workingDirectory!!) else it.absolutePath
                                 }
                                 vm.selectionModelProperty.bindBidirectional(selectionModelProperty())
                             }
@@ -84,7 +86,7 @@ class MergePdfsDialogView : View() {
                                             filters = extensionFilters,
                                             mode = FileChooserMode.Multi
                                         ) {
-                                            initialDirectory = globalData.workingDirectory.value
+                                            initialDirectory = workingDirectory
                                         }
                                         vm.add(toAdd)
                                     }
@@ -137,7 +139,7 @@ class MergePdfsDialogView : View() {
                                         mode = FileChooserMode.Save,
                                     ) {
                                         initialFileName = MERGED_FILE_NAME
-                                        initialDirectory = globalData.workingDirectory.value
+                                        initialDirectory = workingDirectory
                                     }
                                     files.firstOrNull()?.let {
                                         vm.setDestination(it)

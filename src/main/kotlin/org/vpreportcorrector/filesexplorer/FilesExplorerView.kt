@@ -13,34 +13,32 @@ import org.kordamp.ikonli.fontawesome.FontAwesome
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
 import org.vpreportcorrector.app.OpenDiagramEvent
+import org.vpreportcorrector.app.OpenDiagramInNewWindowEvent
 import org.vpreportcorrector.app.RefreshFilesExplorer
+import org.vpreportcorrector.app.SettingsChanged
 import org.vpreportcorrector.app.Styles.Companion.centered
 import org.vpreportcorrector.app.Styles.Companion.flatButton
-import org.vpreportcorrector.app.OpenDiagramInNewWindowEvent
 import org.vpreportcorrector.components.form.loadingOverlay
-import org.vpreportcorrector.mainview.GlobalDataModel
 import org.vpreportcorrector.settings.SettingsModalView
-import org.vpreportcorrector.utils.isImage
-import org.vpreportcorrector.utils.isPdf
-import org.vpreportcorrector.utils.list
-import org.vpreportcorrector.utils.p
+import org.vpreportcorrector.utils.*
 import tornadofx.*
-import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 
 // TODO: 08.03.21 test shortcuts
 class FilesExplorerView : View() {
     private val controller: FilesExplorerController by inject()
-    private val globalDataModel: GlobalDataModel by inject(FX.defaultScope)
-    private val rootFolderProp = SimpleObjectProperty<Path?>(globalDataModel.workingDirectory.value?.toPath())
+    private val rootFolderProp = SimpleObjectProperty<Path?>(this.getWorkingDirectory())
     private lateinit var filesTree: TreeView<Path>
     private val pasteStatus = TaskStatus()
     private val deleteStatus = TaskStatus()
 
     init {
-        globalDataModel.workingDirectory.onChange { file: File? ->
-            rootFolderProp.value = file?.toPath()
+        subscribe<SettingsChanged> {
+            val newWorkDir = getWorkingDirectory()
+            if (newWorkDir != rootFolderProp.value) {
+                rootFolderProp.value = newWorkDir
+            }
         }
         subscribe<RefreshFilesExplorer> {
             refreshTreeView()

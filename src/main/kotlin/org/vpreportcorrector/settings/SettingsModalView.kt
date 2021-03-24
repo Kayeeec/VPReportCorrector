@@ -1,14 +1,11 @@
 package org.vpreportcorrector.settings
 
-import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.Tooltip
 import javafx.scene.layout.Priority
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
-import org.vpreportcorrector.app.SettingsChanged
 import org.vpreportcorrector.app.Styles
 import org.vpreportcorrector.components.form.help
-import org.vpreportcorrector.utils.KEY_WORKING_DIRECTORY
 import org.vpreportcorrector.utils.getUserHomeDirectory
 import org.vpreportcorrector.utils.t
 import tornadofx.*
@@ -16,17 +13,10 @@ import java.io.File
 import java.nio.file.Paths
 
 class SettingsModalView : View() {
-    private var model: SettingsModel
+    private val model: SettingsModel by inject()
+
     init {
         title = this.t("title")
-        var settings: Settings? = null
-        preferences {
-            sync()
-            settings = Settings(
-                workingDirectory = get(KEY_WORKING_DIRECTORY, "")
-            )
-        }
-        model = SettingsModel(settings!!)
     }
 
     override fun onBeforeShow() {
@@ -84,7 +74,6 @@ class SettingsModalView : View() {
                 isDefaultButton = true
                 action {
                     model.commit()
-                    fire(SettingsChanged)
                     close()
                 }
             }
@@ -105,19 +94,4 @@ class SettingsModalView : View() {
     }
 }
 
-class Settings(workingDirectory: String = "") {
-    val workingDirectoryProperty = SimpleStringProperty(workingDirectory)
-}
-
-
-class SettingsModel(settings: Settings) : ItemViewModel<Settings>(settings) {
-    val workingDirectory = bind(Settings::workingDirectoryProperty)
-
-    override fun onCommit() {
-        preferences {
-            put(KEY_WORKING_DIRECTORY, workingDirectory.value ?: "")
-            flush()
-        }
-    }
-}
 

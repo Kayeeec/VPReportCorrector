@@ -1,8 +1,7 @@
 package org.vpreportcorrector.mainview
 
-import de.codecentric.centerdevice.javafxsvg.SvgImageLoaderFactory
-import de.codecentric.centerdevice.javafxsvg.dimension.AttributeDimensionProvider
 import javafx.application.Platform
+import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Orientation
 import javafx.scene.Node
 import javafx.scene.control.SplitPane
@@ -18,11 +17,13 @@ import org.vpreportcorrector.import.openSimpleImportDialog
 import org.vpreportcorrector.mainview.content.ContentView
 import org.vpreportcorrector.mainview.content.ContentViewModel
 import org.vpreportcorrector.settings.SettingsModalView
+import org.vpreportcorrector.utils.getWorkingDirectory
 import org.vpreportcorrector.utils.t
 import tornadofx.*
+import java.nio.file.Path
 
 class MainView : View() {
-    private val globalDataModel: GlobalDataModel by inject()
+    private val workingDirectory = SimpleObjectProperty<Path>(getWorkingDirectory())
     private val filesExplorerView: FilesExplorerView by inject()
     private val contentView: ContentView by inject()
     private val contentViewModel: ContentViewModel by inject()
@@ -33,9 +34,9 @@ class MainView : View() {
 
     init {
         title = t("appName")
-        globalDataModel.loadPreferencesData()
-        subscribe<SettingsChanged> { globalDataModel.loadPreferencesData() }
-        SvgImageLoaderFactory.install(AttributeDimensionProvider()) // TODO: 17.03.21 remove
+        subscribe<SettingsChanged> {
+            workingDirectory.value = getWorkingDirectory()
+        }
     }
 
     private val centerSplitPane = splitpane {
@@ -58,7 +59,7 @@ class MainView : View() {
                         }
                     }
                     item(t("import"), "Shortcut+Alt+I", FontIcon(FontAwesomeSolid.FILE_IMPORT)) {
-                        enableWhen { globalDataModel.workingDirectory.isNotNull }
+                        enableWhen { workingDirectory.isNotNull }
                         action {
                             openSimpleImportDialog()
                         }

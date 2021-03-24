@@ -8,10 +8,11 @@ import org.kordamp.ikonli.fontawesome5.FontAwesomeRegular
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
 import org.vpreportcorrector.app.RefreshFilesExplorer
+import org.vpreportcorrector.app.SettingsChanged
 import org.vpreportcorrector.app.Styles
 import org.vpreportcorrector.components.form.loadingOverlay
-import org.vpreportcorrector.mainview.GlobalDataModel
 import org.vpreportcorrector.utils.getUserHomeDirectory
+import org.vpreportcorrector.utils.getWorkingDirectory
 import org.vpreportcorrector.utils.isWithinOrEqual
 import org.vpreportcorrector.utils.t
 import tornadofx.*
@@ -19,10 +20,10 @@ import java.io.File
 import java.nio.file.Path
 
 class SimpleImportView : View() {
-    private val globalData: GlobalDataModel by inject(FX.defaultScope)
     private val model: SimpleImportModel by inject()
     private val controller: ImportController by inject()
     private var fileChooserInitialDirectory = getUserHomeDirectory()
+    private var workingDirectory = getWorkingDirectory()?.toFile()
 
     private val taskStatus = TaskStatus()
     private val extensionFilters = arrayOf(
@@ -34,6 +35,9 @@ class SimpleImportView : View() {
 
     init {
         title = t("title")
+        subscribe<SettingsChanged> {
+            workingDirectory = getWorkingDirectory()?.toFile()
+        }
     }
 
     override fun onBeforeShow() {
@@ -61,7 +65,7 @@ class SimpleImportView : View() {
                                 validator {
                                     if (model.destination.value == null)
                                         error(t("error.required"))
-                                    else if (!model.destination.value.isWithinOrEqual(globalData.workingDirectory.value))
+                                    else if (!model.destination.value.isWithinOrEqual(workingDirectory))
                                         error(t("error.destinationInWorkingDir"))
                                     else
                                         null
@@ -208,7 +212,7 @@ class SimpleImportView : View() {
     private fun getInitialDirectory(): File? {
         if (model.destination.value != null)
             return model.destination.value
-        return globalData.workingDirectory.value
+        return workingDirectory
     }
 }
 
