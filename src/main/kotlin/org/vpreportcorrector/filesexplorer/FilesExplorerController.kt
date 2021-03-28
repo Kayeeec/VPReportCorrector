@@ -10,6 +10,7 @@ import org.vpreportcorrector.import.openSimpleImportDialog
 import org.vpreportcorrector.mergepdfs.MergePdfsDialogView
 import org.vpreportcorrector.mergepdfs.MergePdfsDialogViewModel
 import org.vpreportcorrector.utils.checkConflictsAndCopyFileOrDir
+import org.vpreportcorrector.utils.deleteDirectoryStream
 import org.vpreportcorrector.utils.isDescendantOf
 import org.vpreportcorrector.utils.isPdf
 import tornadofx.Controller
@@ -105,12 +106,6 @@ class FilesExplorerController: Controller() {
             }
         }
         Platform.runLater { errorCollector.verify() }
-    }
-
-    private fun deleteDirectoryStream(path: Path) {
-        Files.walk(path)
-            .sorted(Comparator.reverseOrder())
-            .map { it.toFile() }.forEach { it.delete() }
     }
 
     private fun filterDuplicateSelections(pathsToCopy: List<Path>): List<Path> {

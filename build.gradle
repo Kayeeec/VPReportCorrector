@@ -23,6 +23,9 @@ repositories {
 
 ext {
     ikonliVersion = '12.2.0'
+    googleDriveApiVersion = '1.23.0'
+    openjfxVersion = '13-ea+8'
+    pdfboxVersion = '2.0.21'
 }
 
 
@@ -30,13 +33,13 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.4.10"
     implementation "no.tornado:tornadofx:2.0.0-SNAPSHOT"
 
-    implementation "org.openjfx:javafx:13-ea+8"
-    implementation "org.openjfx:javafx-base:13-ea+8"
-    implementation "org.openjfx:javafx-controls:13-ea+8"
-    implementation "org.openjfx:javafx-web:13-ea+8"
-    implementation "org.openjfx:javafx-swing:13-ea+8"
+    implementation "org.openjfx:javafx:${openjfxVersion}"
+    implementation "org.openjfx:javafx-base:${openjfxVersion}"
+    implementation "org.openjfx:javafx-controls:${openjfxVersion}"
+    implementation "org.openjfx:javafx-web:${openjfxVersion}"
+    implementation "org.openjfx:javafx-swing:${openjfxVersion}"
 
-    implementation 'org.controlsfx:controlsfx:11.1.0'
+    implementation 'org.controlsfx:controlsfx:11.1.0' // todo remove?
 
     compile 'commons-io:commons-io:2.8.0'
     compile 'org.apache.commons:commons-lang3:3.11'
@@ -48,21 +51,18 @@ dependencies {
     implementation "org.kordamp.ikonli:ikonli-bootstrapicons-pack:${ikonliVersion}"
 
     // for diagram extractor
-    compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.21'
-    compile group: 'org.apache.pdfbox', name: 'fontbox', version: '2.0.21'
+    compile group: 'org.apache.pdfbox', name: 'pdfbox', version: pdfboxVersion
+    compile group: 'org.apache.pdfbox', name: 'fontbox', version: pdfboxVersion
     compile 'org.apache.xmlgraphics:batik-all:1.14' // todo: limit only to the needed components, this is too big, might not be needed in the end
-
-    // svg image loader
-    implementation 'de.codecentric.centerdevice:javafxsvg:1.3.0'
-
-    implementation 'net.kurobako:gesturefx:0.6.0'
-
-    // detachable tabs
-//    compile 'com.panemu:tiwulfx-dock:0.1'
 
     // pdf viewer/annotator swing component @see https://github.com/pcorless/icepdf
     compile files('./libs/icepdf-core-6.3.3-SNAPSHOT.jar')
     compile files('./libs/icepdf-viewer-6.3.3-SNAPSHOT.jar')
+
+    // sync
+    compile "com.google.api-client:google-api-client:${googleDriveApiVersion}"
+    compile "com.google.oauth-client:google-oauth-client-jetty:${googleDriveApiVersion}"
+    compile "com.google.apis:google-api-services-drive:v3-rev110-${googleDriveApiVersion}"
 }
 
 compileKotlin {

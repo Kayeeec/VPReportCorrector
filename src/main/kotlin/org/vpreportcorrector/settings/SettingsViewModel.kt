@@ -8,7 +8,7 @@ import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.setValue
 
-class SettingsModel : ItemViewModel<Settings>() {
+class SettingsViewModel : ItemViewModel<Settings>() {
     val workingDirectory = bind(Settings::workingDirectoryProperty)
 
     init {
@@ -33,6 +33,6 @@ class SettingsModel : ItemViewModel<Settings>() {
 
 class Settings(workingDirectory: String = "") {
     val workingDirectoryProperty = SimpleStringProperty(workingDirectory)
-    var workingDirectory by workingDirectoryProperty
+    var workingDirectory: String by workingDirectoryProperty
 }
 

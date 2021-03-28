@@ -246,3 +246,9 @@ fun isImage(file: File): Boolean {
 }
 
 fun File.isWriteable() = if (this.exists()) this.canWrite() else this.parentFile.canWrite()
+
+fun deleteDirectoryStream(path: Path) {
+    Files.walk(path)
+        .sorted(Comparator.reverseOrder())
+        .map { it.toFile() }.forEach { it.delete() }
+}

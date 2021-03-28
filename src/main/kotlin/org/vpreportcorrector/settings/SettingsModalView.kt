@@ -6,6 +6,7 @@ import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
 import org.vpreportcorrector.app.Styles
 import org.vpreportcorrector.components.form.help
+import org.vpreportcorrector.sync.GoogleDriveSettingsView
 import org.vpreportcorrector.utils.getUserHomeDirectory
 import org.vpreportcorrector.utils.t
 import tornadofx.*
@@ -13,7 +14,7 @@ import java.io.File
 import java.nio.file.Paths
 
 class SettingsModalView : View() {
-    private val model: SettingsModel by inject()
+    private val model: SettingsViewModel by inject()
 
     init {
         title = this.t("title")
@@ -52,9 +53,7 @@ class SettingsModalView : View() {
                     }
                 }
             }
-            fieldset(t("remoteRepository")) {
-                text("TODO")
-            }
+            add(find<GoogleDriveSettingsView>())
         }
         bottom = buttonbar {
             button(t("cancel")) {
