@@ -1,6 +1,6 @@
 package org.vpreportcorrector.utils
 
-import org.vpreportcorrector.utils.AppConstants.KEY_WORKING_DIRECTORY
+import org.vpreportcorrector.settings.SettingsPreferencesKey
 import org.vpreportcorrector.utils.AppConstants.PREFERENCES_NODE
 import tornadofx.Component
 import tornadofx.get
@@ -25,7 +25,7 @@ fun Component.getWorkingDirectory(): Path? {
     var workingDir = ""
     preferences(PREFERENCES_NODE) {
         sync()
-        workingDir = get(KEY_WORKING_DIRECTORY, "")
+        workingDir = get(SettingsPreferencesKey.WORKING_DIRECTORY, "")
     }
     return if (workingDir.isNotEmpty()) Paths.get(workingDir) else null
 }

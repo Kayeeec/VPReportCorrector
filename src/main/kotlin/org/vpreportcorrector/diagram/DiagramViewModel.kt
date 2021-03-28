@@ -6,17 +6,18 @@ import org.icepdf.core.pobjects.annotations.Annotation
 import org.vpreportcorrector.app.DiagramInEditModeEvent
 import org.vpreportcorrector.app.DiagramSavedEvent
 import org.vpreportcorrector.components.LoadingLatch
+import org.vpreportcorrector.components.WithLoading
 import org.vpreportcorrector.diagram.enums.DiagramIssue
 import tornadofx.*
 import javax.swing.JComponent
 import javax.swing.SwingUtilities
 
-class DiagramViewModel(diagramModel: DiagramModel): ItemViewModel<DiagramModel>(diagramModel) {
+class DiagramViewModel(diagramModel: DiagramModel): ItemViewModel<DiagramModel>(diagramModel),
+    WithLoading by LoadingLatch() {
     val diagramIssuesProperty = bind { diagramModel.diagramIssuesProperty }
 
     val isEditingProperty = SimpleBooleanProperty(false)
     var viewerPanel: JComponent by singleAssign()
-    var loadingLatch = LoadingLatch()
     var oldAnnotations: Set<String>? = null
 
     init {
@@ -24,11 +25,11 @@ class DiagramViewModel(diagramModel: DiagramModel): ItemViewModel<DiagramModel>(
     }
 
     private fun loadData() {
-        loadingLatch.startLoading()
+        startLoading()
         runAsync {
             item.loadDiagramErrors()
         } finally {
-            loadingLatch.endLoading()
+            endLoading()
         }
     }
 
@@ -85,13 +86,13 @@ class DiagramViewModel(diagramModel: DiagramModel): ItemViewModel<DiagramModel>(
 
     fun save() {
         runAsync {
-            loadingLatch.startLoading()
+            startLoading()
             item.savePdfDocument()
             item.saveAsJsonToFile()
         } success {
             fire(DiagramSavedEvent(path = item.path))
         } finally {
-            loadingLatch.endLoading()
+            endLoading()
         }
     }
 

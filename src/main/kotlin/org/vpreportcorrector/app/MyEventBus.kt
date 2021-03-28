@@ -13,3 +13,5 @@ class DiagramSavedEvent(val path: Path): FXEvent()
 class DiagramInEditModeEvent(val path: Path): FXEvent()
 
 class ResizeEditorEvent(val width: Double, val height: Double): FXEvent()
+
+object RequestSync : FXEvent()

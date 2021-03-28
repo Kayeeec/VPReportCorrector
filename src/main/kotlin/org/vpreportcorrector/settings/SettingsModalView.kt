@@ -1,19 +1,13 @@
 package org.vpreportcorrector.settings
 
-import javafx.scene.control.Tooltip
-import javafx.scene.layout.Priority
-import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
-import org.kordamp.ikonli.javafx.FontIcon
 import org.vpreportcorrector.app.Styles
-import org.vpreportcorrector.components.form.help
-import org.vpreportcorrector.utils.getUserHomeDirectory
+import org.vpreportcorrector.components.form.loadingOverlay
+import org.vpreportcorrector.sync.git.settings.GitSettingsView
 import org.vpreportcorrector.utils.t
 import tornadofx.*
-import java.io.File
-import java.nio.file.Paths
 
 class SettingsModalView : View() {
-    private val model: SettingsModel by inject()
+    private val vm: SettingsViewModel by inject()
 
     init {
         title = this.t("title")
@@ -25,71 +19,42 @@ class SettingsModalView : View() {
             it.minHeight = 400.0
         }
     }
-    override val root = borderpane {
-        addClass(Styles.paddedContainer)
-        center = form {
-            fieldset(t("general")) {
-                field(t("workingDirectory")) {
-                    hbox {
-                        hgrow = Priority.ALWAYS
-                        textfield(model.workingDirectory) {
-                            isEditable = false
-                            hgrow = Priority.ALWAYS
+    override val root = stackpane {
+        prefWidth = 750.0
+        borderpane {
+            addClass(Styles.paddedContainer)
+            center = vbox {
+                add(find<GeneralSettingsView>())
+                add(find<GitSettingsView>())
+            }
+            bottom = buttonbar {
+                button(t("cancel")) {
+                    isCancelButton = true
+                    action {
+                        close()
+                    }
+                }
+                button(t("reset")) {
+                    enableWhen { vm.isAnyDirty }
+                    action {
+                        vm.reset()
+                    }
+                }
+                button(t("save")) {
+                    enableWhen { vm.isSaveEnabled }
+                    isDefaultButton = true
+                    action {
+                        vm.save {
+                            close()
                         }
-                        button("", FontIcon(FontAwesomeSolid.FOLDER)) {
-                            tooltip = Tooltip(t("selectWorkDir"))
-                            action {
-                                val selectedDir = chooseDirectory(
-                                    title = t("chooseDirectory"),
-                                    initialDirectory = getInitialDirectory()
-                                )
-                                if (selectedDir != null) {
-                                    model.workingDirectory.value = selectedDir.absolutePath
-                                }
-                            }
-                        }
-                        help(t("workingDirTooltip"))
                     }
                 }
             }
-            fieldset(t("remoteRepository")) {
-                text("TODO")
-            }
+            vm.validate(decorateErrors = false)
         }
-        bottom = buttonbar {
-            button(t("cancel")) {
-                isCancelButton = true
-                action {
-                    close()
-                }
-            }
-            button(t("reset")) {
-                enableWhen { model.dirty }
-                action {
-                    model.rollback()
-                }
-            }
-            button(t("save")) {
-                enableWhen { model.valid.and(model.dirty) }
-                isDefaultButton = true
-                action {
-                    model.commit()
-                    close()
-                }
-            }
-        }
-        model.validate(decorateErrors = false)
-    }
 
-    private fun getInitialDirectory(): File? {
-        return if (model.workingDirectory.value.isNullOrBlank()) {
-            getUserHomeDirectory()
-        } else {
-            try {
-                Paths.get(model.workingDirectory.value).toFile()
-            } catch (e: Exception) {
-                null
-            }
+        loadingOverlay {
+            visibleWhen { vm.isAnyLoading }
         }
     }
 }

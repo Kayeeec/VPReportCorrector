@@ -65,6 +65,11 @@ fun Path.list(): List<Path> = Files.list(this).use { stream ->
     )
 }
 
+/**
+ * Extension function to return the all children of java.nio.file.Path.
+ */
+fun Path.listAll(): List<Path> = Files.list(this).use { it.toList()}
+
 fun getUserHomeDirectory(): File? {
     return try {
         SystemUtils.getUserHome()
@@ -113,11 +118,11 @@ fun isValidFileName(name: String): Boolean {
 }
 
 /**
- * Copying files
+ * Copying files with the ability to set conflict actions (to avoid dialogs).
  */
-fun copyFiles(targetDir: File, copiedFiles: List<Path>) {
+fun copyFiles(targetDir: File, copiedFiles: List<Path>, action: RememberChoice = RememberChoice()) {
     val errorCollector = ErrorCollector("Error/s occurred while copying:")
-    var remembered = RememberChoice()
+    var remembered = action
     copiedFiles.forEach { path ->
         try {
             remembered = checkConflictsAndCopyFileOrDir(remembered, path, targetDir)
@@ -246,3 +251,9 @@ fun isImage(file: File): Boolean {
 }
 
 fun File.isWriteable() = if (this.exists()) this.canWrite() else this.parentFile.canWrite()
+
+fun deleteDirectoryStream(path: Path) {
+    Files.walk(path)
+        .sorted(Comparator.reverseOrder())
+        .map { it.toFile() }.forEach { it.delete() }
+}
