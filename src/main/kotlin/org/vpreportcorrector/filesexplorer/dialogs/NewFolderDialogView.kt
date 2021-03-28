@@ -48,11 +48,11 @@ class NewFolderDialogView : View() {
 
         bottom = buttonbar {
             addClass(Styles.paddedContainer)
-            button(t("ok")){
+            button(t("cancel")){
                 isCancelButton = true
                 action { close() }
             }
-            button(t("save")) {
+            button(t("create")) {
                 isDefaultButton = true
                 enableWhen(model.valid)
                 action {

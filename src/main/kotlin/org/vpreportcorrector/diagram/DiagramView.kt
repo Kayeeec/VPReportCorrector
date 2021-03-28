@@ -104,7 +104,7 @@ class DiagramView : View() {
     private fun createViewer() {
         SwingUtilities.invokeAndWait {
             try {
-                vm.loadingLatch.startLoading()
+                vm.startLoading()
 
                 swingController.setIsEmbeddedComponent(true)
                 FontPropertiesManager.getInstance().loadOrReadSystemFonts()
@@ -125,7 +125,7 @@ class DiagramView : View() {
             } catch (e: Exception) {
                 log.severe(e.stackTraceToString())
             } finally {
-                vm.loadingLatch.endLoading()
+                vm.endLoading()
             }
         }
     }
@@ -248,7 +248,7 @@ class DiagramView : View() {
         }
 
         loadingOverlay {
-            visibleWhen { vm.loadingLatch.isLoading }
+            visibleWhen { vm.isLoading }
         }
     }
 }

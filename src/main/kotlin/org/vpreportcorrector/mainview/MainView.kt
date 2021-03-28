@@ -3,25 +3,30 @@ package org.vpreportcorrector.mainview
 import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Orientation
+import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.SplitPane
 import javafx.scene.layout.Priority
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
+import org.vpreportcorrector.app.RequestSync
 import org.vpreportcorrector.app.SettingsChanged
 import org.vpreportcorrector.app.Styles.Companion.flatButton
 import org.vpreportcorrector.app.Styles.Companion.paddedContainer
 import org.vpreportcorrector.app.Styles.Companion.sideButton
+import org.vpreportcorrector.components.form.loadingOverlay
 import org.vpreportcorrector.filesexplorer.FilesExplorerView
 import org.vpreportcorrector.import.openSimpleImportDialog
 import org.vpreportcorrector.mainview.content.ContentView
 import org.vpreportcorrector.mainview.content.ContentViewModel
 import org.vpreportcorrector.settings.SettingsModalView
+import org.vpreportcorrector.sync.SyncController
 import org.vpreportcorrector.utils.getWorkingDirectory
 import org.vpreportcorrector.utils.t
 import tornadofx.*
 import java.nio.file.Path
 
+// TODO KB: extract viewmodel?
 class MainView : View() {
     private val workingDirectory = SimpleObjectProperty<Path>(getWorkingDirectory())
     private val filesExplorerView: FilesExplorerView by inject()
@@ -31,6 +36,8 @@ class MainView : View() {
     private var filesExplorerVisible = true
     private var filesExplorerDividerPosition: Double = 0.25
     private var filesExplorerNode: Node? = null
+
+    private val syncController = find<SyncController>()
 
     init {
         title = t("appName")
@@ -49,7 +56,9 @@ class MainView : View() {
 
     override val root = borderpane {
         top = hbox {
+            disableWhen { syncController.isAnyTaskRunning }
             hgrow = Priority.ALWAYS
+            alignment = Pos.CENTER_LEFT
             menubar {
                 removeClass(paddedContainer)
                 menu(t("file")) {
@@ -74,6 +83,14 @@ class MainView : View() {
                     }
                 }
             }
+            hbox { hgrow = Priority.ALWAYS }
+            button("Sync", FontIcon(FontAwesomeSolid.SYNC_ALT)) {
+                addClass(flatButton)
+                tooltip = tooltip("Synchronise with remote repository")
+                enableWhen { syncController.isSyncServiceInitialized }
+                disableWhen { syncController.isAnyTaskRunning }
+                action { fire(RequestSync) }
+            }
         }
         left = vbox {
             group {
@@ -89,7 +106,13 @@ class MainView : View() {
                 }
             }
         }
-        center = centerSplitPane
+        center = stackpane {
+            add(centerSplitPane)
+            centerSplitPane.fitToParentSize()
+
+            loadingOverlay(syncController.syncTaskStatus)
+            loadingOverlay(syncController.initTaskStatus)
+        }
     }
 
     private fun toggleFilesExplorerPane() {

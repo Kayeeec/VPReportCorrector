@@ -7,6 +7,7 @@ import javafx.stage.Stage
 import org.vpreportcorrector.app.errorhandling.UncaughtErrorHandler
 import org.vpreportcorrector.mainview.MainView
 import org.vpreportcorrector.mainview.content.ContentViewModel
+import org.vpreportcorrector.sync.SyncController
 import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
@@ -14,6 +15,7 @@ import kotlin.system.exitProcess
 
 class MyApp: App(MainView::class, Styles::class) {
     private val contentViewModel: ContentViewModel by inject()
+    private val syncController: SyncController by inject()
 
     init {
         Thread.setDefaultUncaughtExceptionHandler(UncaughtErrorHandler())
@@ -33,7 +35,8 @@ class MyApp: App(MainView::class, Styles::class) {
     override fun start(stage: Stage) {
         super.start(stage)
         stage.onCloseRequest = EventHandler {
-            if (!contentViewModel.checkUnsavedChanges()) it.consume()
+            if (!contentViewModel.checkUnsavedChanges()
+                || syncController.isAnyTaskRunning.value) it.consume()
         }
     }
 
