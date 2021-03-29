@@ -108,6 +108,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/src/main/kotlin/org/vpreportcorrector/sync/GoogleDriveSettingsView.kt">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/src/main/kotlin/org/vpreportcorrector/utils/AppConstants.kt">
           <value>
             <Attribute>

@@ -23,7 +23,7 @@ repositories {
 
 ext {
     ikonliVersion = '12.2.0'
-    googleDriveApiVersion = '1.23.0'
+    googleDriveApiVersion = '1.31.0'
     openjfxVersion = '13-ea+8'
     pdfboxVersion = '2.0.21'
 }
@@ -62,7 +62,7 @@ dependencies {
     // sync
     compile "com.google.api-client:google-api-client:${googleDriveApiVersion}"
     compile "com.google.oauth-client:google-oauth-client-jetty:${googleDriveApiVersion}"
-    compile "com.google.apis:google-api-services-drive:v3-rev110-${googleDriveApiVersion}"
+    compile "com.google.apis:google-api-services-drive:v3-rev20210315-1.31.0"
 }
 
 compileKotlin {
