@@ -1,4 +1,4 @@
-package org.vpreportcorrector.sync
+package org.vpreportcorrector.sync.googledisk
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow
 import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl

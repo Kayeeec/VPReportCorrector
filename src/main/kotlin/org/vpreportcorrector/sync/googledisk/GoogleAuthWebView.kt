@@ -1,4 +1,4 @@
-package org.vpreportcorrector.sync
+package org.vpreportcorrector.sync.googledisk
 
 import tornadofx.*
 

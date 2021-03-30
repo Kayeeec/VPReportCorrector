@@ -6,6 +6,7 @@ object AppConstants {
      * java.util.Preferences keys
      */
     const val KEY_WORKING_DIRECTORY = "workingDirectory"
+    const val KEY_DISK_REMOTE_DIR_ID = "googleDiskRemoteDirectoryId"
 
     const val SCROLL_BAR_WIDTH = 16.0
 

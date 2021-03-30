@@ -1,6 +1,8 @@
-package org.vpreportcorrector.sync
+package org.vpreportcorrector.sync.googledisk.settings
 
 import javafx.scene.layout.Priority
+import org.kordamp.ikonli.fontawesome5.FontAwesomeBrands
+import org.kordamp.ikonli.javafx.FontIcon
 import org.vpreportcorrector.utils.t
 import tornadofx.*
 
@@ -36,14 +38,22 @@ class GoogleDriveSettingsView : View("Google Drive Settings") {
                 }
             }
         }
-        field {
-            button("Log files") {
-                enableWhen { vm.credential.isNotNull }
-                action {
-                    vm.logFiles()
+        field("Remote folder ID:") {
+            hbox {
+                hgrow = Priority.ALWAYS
+                textfield(vm.remoteFolderId) {
+                    hgrow = Priority.ALWAYS
+                }
+                button("", FontIcon(FontAwesomeBrands.GOOGLE_DRIVE)) {
+                    tooltip = tooltip("Browse Drive folders")
+                    enableWhen { vm.credential.isNotNull.and(vm.driveService.isNotNull) }
+                    action {
+                        vm.selectRemoteFolder()
+                    }
                 }
             }
         }
+        vm.validate(decorateErrors = false)
     }
 }
 
