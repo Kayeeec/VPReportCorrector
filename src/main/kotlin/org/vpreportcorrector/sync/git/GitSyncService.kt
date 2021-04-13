@@ -4,6 +4,7 @@ import com.jcraft.jsch.JSch
 import com.jcraft.jsch.JSchException
 import javafx.application.Platform
 import org.apache.commons.io.FileUtils
+import org.apache.xpath.operations.Bool
 import org.eclipse.jgit.api.*
 import org.eclipse.jgit.lib.ConfigConstants.CONFIG_BRANCH_SECTION
 import org.eclipse.jgit.lib.Constants
@@ -262,23 +263,23 @@ class GitSyncService: SyncService {
 
     private fun canInitializeNewRepository(): Boolean {
         val pre = "Cannot initialize git service -"
-        return (customAssert(workDir != null, "$pre Working directory is not set.")
+        return (customAssert(workDir != null, "$pre Working directory is not set.", false)
                 && customAssert(localGitFolder != null && !Files.exists(localGitFolder),
             "$pre Working directory already has a .git folder.")
                 && customAssert(gitSettings.hasCorrectRemoteRepoSettings(),
-            "$pre Incorrect git repository settings. Please check the application settings.")
+            "$pre Incorrect git repository settings. Please check the application settings.", false)
                 )
     }
 
     private fun canSync(): Boolean {
         val pre = "Cannot sync -"
         return customAssert(git != null,
-            "$pre GitSyncService was not properly initialized (git is null).")
+            "$pre GitSyncService was not properly initialized (git is null). Please check the settings.")
                 && customAssert(gitSettings.hasCorrectRemoteRepoSettings(),
-            "$pre Incorrect git repository settings. Please check the application settings.")
+            "$pre Incorrect git repository settings. Please check the settings.")
     }
 
-    private fun customAssert(predicate: Boolean, onFalseMessage: String): Boolean {
+    private fun customAssert(predicate: Boolean, onFalseMessage: String, doThrow: Boolean = true): Boolean {
         if (!predicate) {
             log.severe(onFalseMessage)
             error(onFalseMessage)
