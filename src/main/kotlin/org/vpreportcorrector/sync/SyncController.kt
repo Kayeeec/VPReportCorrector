@@ -7,10 +7,14 @@ import org.vpreportcorrector.app.RequestSync
 import org.vpreportcorrector.app.SettingsChanged
 import org.vpreportcorrector.app.errorhandling.errorWithStacktrace
 import org.vpreportcorrector.sync.git.GitSyncService
+import org.vpreportcorrector.utils.cleanDataDirectory
 import org.vpreportcorrector.utils.getSyncTo
-import tornadofx.*
-import kotlin.error
+import tornadofx.Controller
+import tornadofx.TaskStatus
+import tornadofx.fail
+import tornadofx.finally
 import kotlin.reflect.full.createInstance
+
 
 class SyncController: Controller() {
     private val syncServiceProperty = SimpleObjectProperty<SyncService?>(null)
@@ -34,6 +38,7 @@ class SyncController: Controller() {
         if (isAnyTaskRunning.value) return
         syncServiceProperty.value?.let {
             runAsync(syncTaskStatus) {
+                cleanDataDirectory()
                 updateMessage("Sync in progress...")
                 it.sync(this)
             } fail {
@@ -70,10 +75,14 @@ class SyncController: Controller() {
 
     private inline fun <reified T : SyncService> initializeService() {
         when (syncServiceProperty.value) {
-            null, !is T -> { // user added sync service or changed its type
+            null -> { // user added sync service
                 syncServiceProperty.value = T::class.createInstance()
             }
-            else -> { // same service type but settings have changed
+            !is T -> { // user changed sync service type
+                syncServiceProperty.value!!.dispose()
+                syncServiceProperty.value = T::class.createInstance()
+            }
+            else -> { // same service type but settings have presumably changed
                 val service = syncServiceProperty.value as T
                 val (reinitialize, dispose) = service.shouldReinitializeAndOrDispose()
                 if (reinitialize) {

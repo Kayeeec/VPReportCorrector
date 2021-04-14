@@ -38,7 +38,7 @@ import kotlin.math.max
  * @property savedFileConflictChoice an enum, which signifies what to do when a conflicting file should be created. Can be specified later during the computation.
  * @constructor Creates an extractor class instance ready for diagram extraction, with the inputFile and outputDirectory specified.
  */
-class PdfToPdfDiagramExtractor(
+class VisualParadigmPdfToPdfDiagramExtractor(
     inputFile: File,
     override val outputDirectory: File,
     override var savedFileConflictChoice: FileConflictChoice?

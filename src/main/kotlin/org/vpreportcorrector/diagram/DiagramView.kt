@@ -146,11 +146,12 @@ class DiagramView : View() {
                 add(swingButtons.fitPage)
                 add(swingButtons.pan)
                 add(swingButtons.textSelecion)
+                add(switchToEditBtn)
             }
 
             hbox { hgrow = Priority.ALWAYS }
 
-            add(switchToEditBtn)
+//            add(switchToEditBtn)
             add(diagramErrorsBtn)
         }
     }

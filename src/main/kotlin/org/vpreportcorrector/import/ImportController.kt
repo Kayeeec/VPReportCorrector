@@ -1,6 +1,6 @@
 package org.vpreportcorrector.import
 
-import PdfToPdfDiagramExtractor
+import VisualParadigmPdfToPdfDiagramExtractor
 import javafx.application.Platform
 import org.vpreportcorrector.app.errorhandling.ErrorCollector
 import org.vpreportcorrector.utils.FileConflictChoice
@@ -17,7 +17,7 @@ class ImportController: Controller() {
         files.forEach { file ->
             if (isPdf(file)) {
                 try {
-                    val de = PdfToPdfDiagramExtractor(file, dest, fileConflictChoice)
+                    val de = VisualParadigmPdfToPdfDiagramExtractor(file, dest, fileConflictChoice)
                     de.extractDiagrams()
                     fileConflictChoice = de.savedFileConflictChoice
                 } catch (e: Exception) {

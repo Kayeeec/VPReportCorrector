@@ -12,6 +12,7 @@ import tornadofx.find
 import tornadofx.setInScope
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import java.util.concurrent.FutureTask
 import kotlin.streams.toList
@@ -253,7 +254,23 @@ fun isImage(file: File): Boolean {
 fun File.isWriteable() = if (this.exists()) this.canWrite() else this.parentFile.canWrite()
 
 fun deleteDirectoryStream(path: Path) {
-    Files.walk(path)
-        .sorted(Comparator.reverseOrder())
-        .map { it.toFile() }.forEach { it.delete() }
+    Files.walk(path).use {
+        it.sorted(Comparator.reverseOrder())
+            .map { it.toFile() }
+            .forEach { it.delete() }
+    }
+}
+
+/**
+ * Tests if file denoted by [path] exists and does not care about the case of the filename.
+ * E.g.: returns true for path 'path/to/file.PDF' if there is file 'path/to/File.pdf'
+ */
+fun fileExistsNameCaseInsensitive(path: Path): Boolean {
+    return try {
+        val filename = path.toFile().name
+        val siblingsAndSelfNames = path.parent.listAll().map { it.toFile().name }
+        siblingsAndSelfNames.firstOrNull { it.equals(filename, true) } !== null
+    } catch (e: NoSuchFileException) {
+        false
+    }
 }

@@ -43,7 +43,7 @@ class DiagramViewModel(diagramModel: DiagramModel): ItemViewModel<DiagramModel>(
 
     fun hasUnsavedChanges(): Boolean {
         if (!isEditingProperty.value) return false
-        return item.isModified() || isPdfModified()
+        return false && item.isModified() || isPdfModified() // TODO: fix bug
     }
 
     private fun isPdfModified(): Boolean {
