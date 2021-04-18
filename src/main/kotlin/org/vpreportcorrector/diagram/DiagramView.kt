@@ -1,7 +1,9 @@
 package org.vpreportcorrector.diagram
 
 import javafx.event.EventHandler
+import javafx.geometry.Pos
 import javafx.scene.control.Tooltip
+import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import org.icepdf.ri.common.MyAnnotationCallback
 import org.icepdf.ri.common.SwingViewBuilder
@@ -15,7 +17,7 @@ import org.vpreportcorrector.components.form.loadingOverlay
 import org.vpreportcorrector.diagram.DiagramViewConstants.DEFAULT_PDF_VIEWER_ICON_SIZE
 import org.vpreportcorrector.diagram.components.CustomSwingNode
 import org.vpreportcorrector.diagram.components.DiagramErrorsDrawerView
-import org.vpreportcorrector.diagram.components.PdfViewerSwingButtons
+import org.vpreportcorrector.diagram.components.PdfViewerComponents
 import tornadofx.*
 import java.awt.Dimension
 import javax.swing.SwingUtilities
@@ -27,7 +29,8 @@ class DiagramView : View() {
 
     private var swingController = vm.item.swingController
     private val swingNode = CustomSwingNode()
-    private var swingButtons: PdfViewerSwingButtons by singleAssign()
+    private var viewerComponents: PdfViewerComponents by singleAssign()
+    private val currentPageProperty = swingController.currentPageProperty
 
     private val centerView = vbox {
         fitToParentSize()
@@ -38,6 +41,7 @@ class DiagramView : View() {
             resizeViewerPanel()
         }
     }
+    private var bottomBar: HBox? = null
 
     private val diagramErrorsBtn = togglebutton("", null) {
         addClass(Styles.flatButton)
@@ -74,7 +78,9 @@ class DiagramView : View() {
             resizeViewerPanel(it.width, it.height)
         }
         createViewer()
-        vm.openDocument()
+        vm.openDocument {
+            addPageNavigationIfNecessary()
+        }
         swingNode.onMouseEntered = EventHandler {
             if (!swingNode.isFocused) {
                 swingNode.requestFocus()
@@ -82,6 +88,50 @@ class DiagramView : View() {
         }
         vm.isEditingProperty.onChangeOnce {
             buildToolbar()
+        }
+
+    }
+
+    private fun addPageNavigationIfNecessary() {
+        if (swingController.document.numberOfPages > 1) {
+            bottomBar = hbox {
+                hgrow = Priority.ALWAYS
+                alignment = Pos.BASELINE_CENTER
+                button("", FontIcon(FontAwesomeSolid.FAST_BACKWARD)) {
+                    addClass(Styles.flatButton)
+                    enableWhen { swingController.previousAndFirstPageButtonEnabled }
+                    action {
+                        SwingUtilities.invokeLater { swingController.goToFirstPage() }
+                    }
+                }
+                button("", FontIcon(FontAwesomeSolid.STEP_BACKWARD)) {
+                    addClass(Styles.flatButton)
+                    enableWhen { swingController.previousAndFirstPageButtonEnabled }
+                    action {
+                        SwingUtilities.invokeLater { swingController.goToPreviousPage() }
+                    }
+                }
+                label(currentPageProperty) {
+                    style { padding = box(0.px, 0.px, 0.px, 5.px) }
+                }
+                label("/${swingController.document.numberOfPages}") {
+                    style { padding = box(0.px, 5.px, 0.px, 0.px) }
+                }
+                button("", FontIcon(FontAwesomeSolid.STEP_FORWARD)) {
+                    addClass(Styles.flatButton)
+                    enableWhen { swingController.nextAndLastPageButtonEnabled }
+                    action {
+                        SwingUtilities.invokeLater { swingController.goToNextPage() }
+                    }
+                }
+                button("", FontIcon(FontAwesomeSolid.FAST_FORWARD)) {
+                    addClass(Styles.flatButton)
+                    enableWhen { swingController.nextAndLastPageButtonEnabled }
+                    action {
+                        SwingUtilities.invokeLater { swingController.goToLastPage() }
+                    }
+                }
+            }
         }
     }
 
@@ -117,7 +167,7 @@ class DiagramView : View() {
 
                 val factory = SwingViewBuilder(swingController, properties)
                 vm.viewerPanel = factory.buildUtilityAndDocumentSplitPane(false)
-                swingButtons = PdfViewerSwingButtons(factory)
+                viewerComponents = PdfViewerComponents(factory)
                 buildToolbar()
                 vm.viewerPanel.revalidate()
                 swingNode.content = vm.viewerPanel
@@ -142,16 +192,14 @@ class DiagramView : View() {
     private fun buildViewerToolbar() {
         with(toolBar) {
             flowpane {
-                add(swingButtons.showHideUtilityPane)
-                add(swingButtons.fitPage)
-                add(swingButtons.pan)
-                add(swingButtons.textSelecion)
+                add(viewerComponents.showHideUtilityPane)
+                add(viewerComponents.fitPage)
+                add(viewerComponents.pan)
+                add(viewerComponents.textSelecion)
                 add(switchToEditBtn)
             }
 
             hbox { hgrow = Priority.ALWAYS }
-
-//            add(switchToEditBtn)
             add(diagramErrorsBtn)
         }
     }
@@ -159,22 +207,22 @@ class DiagramView : View() {
     private fun buildEditorToolbar() {
         with(toolBar) {
             flowpane {
-                add(swingButtons.showHideUtilityPane)
+                add(viewerComponents.showHideUtilityPane)
                 add(saveBtn)
-                add(swingButtons.fitPage)
-                add(swingButtons.pan)
-                add(swingButtons.textSelecion)
+                add(viewerComponents.fitPage)
+                add(viewerComponents.pan)
+                add(viewerComponents.textSelecion)
                 separator()
-                add(swingButtons.selectAnnotation)
-                add(swingButtons.lineAnnotation)
-                add(swingButtons.lineArrowAnnotation)
+                add(viewerComponents.selectAnnotation)
+                add(viewerComponents.lineAnnotation)
+                add(viewerComponents.lineArrowAnnotation)
 
-                add(swingButtons.squareAnnotation)
-                add(swingButtons.circleAnnotation)
-                add(swingButtons.inkAnnotation)
+                add(viewerComponents.squareAnnotation)
+                add(viewerComponents.circleAnnotation)
+                add(viewerComponents.inkAnnotation)
 
-                add(swingButtons.freeTextAnnotation)
-                add(swingButtons.textAnnotation)
+                add(viewerComponents.freeTextAnnotation)
+                add(viewerComponents.textAnnotation)
             }
 
             hbox { hgrow = Priority.ALWAYS }
@@ -246,6 +294,7 @@ class DiagramView : View() {
             centerView.fitToParentSize()
             right = diagramErrorsDrawer.root
             diagramErrorsDrawer.drawerExpandedProperty.bind(diagramErrorsBtn.selectedProperty())
+            bottom = bottomBar
         }
 
         loadingOverlay {

@@ -7,8 +7,8 @@ import org.vpreportcorrector.app.RequestSync
 import org.vpreportcorrector.app.SettingsChanged
 import org.vpreportcorrector.app.errorhandling.errorWithStacktrace
 import org.vpreportcorrector.sync.git.GitSyncService
-import org.vpreportcorrector.utils.cleanDataDirectory
-import org.vpreportcorrector.utils.getRemoteRepositoryType
+import org.vpreportcorrector.utils.Helpers.cleanDataDirectory
+import org.vpreportcorrector.utils.Helpers.getRemoteRepositoryType
 import tornadofx.Controller
 import tornadofx.TaskStatus
 import tornadofx.fail

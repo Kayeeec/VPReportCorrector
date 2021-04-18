@@ -5,7 +5,7 @@ import org.icepdf.ri.common.SwingViewBuilder
 import org.vpreportcorrector.diagram.DiagramViewConstants.DEFAULT_PDF_VIEWER_ICON_SIZE
 import javax.swing.JComponent
 
-class PdfViewerSwingButtons(factory: SwingViewBuilder) {
+class PdfViewerComponents(factory: SwingViewBuilder) {
     val showHideUtilityPane = toSwingNode(factory.buildShowHideUtilityPaneButton())
 
     val fitPage = toSwingNode(factory.buildFitPageButton())

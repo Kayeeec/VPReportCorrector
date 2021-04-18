@@ -96,12 +96,13 @@ class DiagramViewModel(diagramModel: DiagramModel): ItemViewModel<DiagramModel>(
         }
     }
 
-    fun openDocument() {
-        SwingUtilities.invokeLater {
+    fun openDocument(actionFn: () -> Unit = {}) {
+        SwingUtilities.invokeAndWait {
             item.swingController.openDocument(item.path.toAbsolutePath().toString())
             setAnnotationsReadAndLockedFlags(true)
             viewerPanel.revalidate()
         }
+        actionFn()
     }
 
     private fun getAllAnnotationsCopy(): Set<String> {

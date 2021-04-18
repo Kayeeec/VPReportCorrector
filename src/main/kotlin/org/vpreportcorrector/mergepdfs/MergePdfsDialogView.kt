@@ -12,7 +12,7 @@ import org.vpreportcorrector.app.RefreshFilesExplorer
 import org.vpreportcorrector.app.SettingsChanged
 import org.vpreportcorrector.app.Styles
 import org.vpreportcorrector.components.form.loadingOverlay
-import org.vpreportcorrector.utils.getWorkingDirectory
+import org.vpreportcorrector.utils.Helpers.getWorkingDirectory
 import org.vpreportcorrector.utils.isPdf
 import org.vpreportcorrector.utils.isWriteable
 import org.vpreportcorrector.utils.t

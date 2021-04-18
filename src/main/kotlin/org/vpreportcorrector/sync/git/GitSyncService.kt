@@ -4,7 +4,6 @@ import com.jcraft.jsch.JSch
 import com.jcraft.jsch.JSchException
 import javafx.application.Platform
 import org.apache.commons.io.FileUtils
-import org.apache.xpath.operations.Bool
 import org.eclipse.jgit.api.*
 import org.eclipse.jgit.lib.ConfigConstants.CONFIG_BRANCH_SECTION
 import org.eclipse.jgit.lib.Constants
@@ -18,9 +17,8 @@ import org.vpreportcorrector.sync.git.exceptions.GitSyncServiceException
 import org.vpreportcorrector.sync.git.settings.GitProtocol
 import org.vpreportcorrector.sync.git.settings.GitSettingsModel
 import org.vpreportcorrector.utils.*
-import tornadofx.FXTask
-import tornadofx.error
-import tornadofx.warning
+import org.vpreportcorrector.utils.Helpers.getWorkingDirectory
+import tornadofx.*
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths

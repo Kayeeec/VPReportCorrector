@@ -5,8 +5,8 @@ import javafx.beans.property.SimpleStringProperty
 import org.vpreportcorrector.settings.LoadableAndSavable
 import org.vpreportcorrector.settings.SettingsPreferencesKey
 import org.vpreportcorrector.sync.RemoteRepo
+import org.vpreportcorrector.utils.Helpers.preferencesHelper
 import org.vpreportcorrector.utils.enumValueOrNull
-import org.vpreportcorrector.utils.preferencesHelper
 import tornadofx.getValue
 import tornadofx.setValue
 

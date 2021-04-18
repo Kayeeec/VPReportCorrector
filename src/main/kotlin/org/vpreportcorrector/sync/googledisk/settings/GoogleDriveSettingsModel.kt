@@ -3,7 +3,7 @@ package org.vpreportcorrector.sync.googledisk.settings
 import javafx.beans.property.SimpleStringProperty
 import org.vpreportcorrector.settings.LoadableAndSavable
 import org.vpreportcorrector.sync.googledisk.GoogleDrivePreferencesKeys.REMOTE_DIR_ID
-import org.vpreportcorrector.utils.preferencesHelper
+import org.vpreportcorrector.utils.Helpers.preferencesHelper
 import tornadofx.getValue
 import tornadofx.setValue
 

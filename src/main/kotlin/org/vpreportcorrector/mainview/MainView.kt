@@ -21,7 +21,7 @@ import org.vpreportcorrector.mainview.content.ContentView
 import org.vpreportcorrector.mainview.content.ContentViewModel
 import org.vpreportcorrector.settings.modal.SettingsModalView
 import org.vpreportcorrector.sync.SyncController
-import org.vpreportcorrector.utils.getWorkingDirectory
+import org.vpreportcorrector.utils.Helpers.getWorkingDirectory
 import org.vpreportcorrector.utils.t
 import tornadofx.*
 import java.nio.file.Path

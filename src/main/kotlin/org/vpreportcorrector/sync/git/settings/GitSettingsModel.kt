@@ -3,7 +3,7 @@ package org.vpreportcorrector.sync.git.settings
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import org.vpreportcorrector.settings.LoadableAndSavable
-import org.vpreportcorrector.utils.preferencesHelper
+import org.vpreportcorrector.utils.Helpers.preferencesHelper
 import tornadofx.getValue
 import tornadofx.setValue
 import java.nio.file.Files

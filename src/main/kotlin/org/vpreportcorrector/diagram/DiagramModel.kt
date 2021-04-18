@@ -3,11 +3,10 @@ package org.vpreportcorrector.diagram
 import javafx.application.Platform
 import javafx.beans.property.SimpleSetProperty
 import javafx.collections.ObservableSet
-import org.icepdf.ri.common.SwingController
 import org.icepdf.ri.common.ViewModel
 import org.vpreportcorrector.diagram.enums.DiagramIssue
 import org.vpreportcorrector.utils.AppConstants.DATA_FOLDER_NAME
-import org.vpreportcorrector.utils.getWorkingDirectory
+import org.vpreportcorrector.utils.Helpers.getWorkingDirectory
 import tornadofx.*
 import java.io.BufferedOutputStream
 import java.io.File
@@ -24,7 +23,7 @@ import kotlin.error
 class DiagramModel(val path: Path): JsonModel {
     private val log by lazy { Logger.getLogger(this.javaClass.name) }
 
-    val swingController = SwingController()
+    val swingController: CustomSwingController = CustomSwingController()
     val diagramIssuesProperty = SimpleSetProperty<DiagramIssue>(mutableSetOf<DiagramIssue>().asObservable())
     val diagramIssues: ObservableSet<DiagramIssue> by diagramIssuesProperty
 
