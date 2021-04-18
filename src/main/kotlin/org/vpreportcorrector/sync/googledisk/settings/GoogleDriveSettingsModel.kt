@@ -1,14 +1,13 @@
 package org.vpreportcorrector.sync.googledisk.settings
 
 import javafx.beans.property.SimpleStringProperty
-import org.vpreportcorrector.settings.Loadable
-import org.vpreportcorrector.settings.Saveable
+import org.vpreportcorrector.settings.LoadableAndSavable
 import org.vpreportcorrector.sync.googledisk.GoogleDrivePreferencesKeys.REMOTE_DIR_ID
 import org.vpreportcorrector.utils.preferencesHelper
 import tornadofx.getValue
 import tornadofx.setValue
 
-class GoogleDriveSettingsModel: Saveable, Loadable {
+class GoogleDriveSettingsModel: LoadableAndSavable {
     val remoteFolderIdProperty = SimpleStringProperty()
     var remoteFolderId: String? by remoteFolderIdProperty
 

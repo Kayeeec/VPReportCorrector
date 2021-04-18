@@ -1,6 +1,6 @@
 package org.vpreportcorrector.settings
 
-interface Loadable {
+interface LoadableAndSavable {
     fun load()
+    fun save()
 }
-

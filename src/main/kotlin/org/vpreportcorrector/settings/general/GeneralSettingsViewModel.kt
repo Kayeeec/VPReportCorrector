@@ -1,18 +1,21 @@
-package org.vpreportcorrector.settings
+package org.vpreportcorrector.settings.general
 
-import org.vpreportcorrector.components.LoadingLatch
-import org.vpreportcorrector.components.WithLoading
+import org.vpreportcorrector.settings.SettingsViewModel
 import org.vpreportcorrector.utils.t
-import tornadofx.ItemViewModel
 import tornadofx.error
+import tornadofx.rebind
 
-class GeneralSettingsViewModel : ItemViewModel<GeneralSettingsModel>(GeneralSettingsModel())
-    , WithLoading by LoadingLatch(), Saveable {
+
+class GeneralSettingsViewModel : SettingsViewModel<GeneralSettingsModel>(GeneralSettingsModel()) {
     val workingDirectory = bind(GeneralSettingsModel::workingDirectoryProperty)
+    val remoteRepository = bind(GeneralSettingsModel::remoteRepositoryProperty)
 
-    init {
+    override fun load() {
         try {
-            item.load()
+            startLoading()
+            val m = GeneralSettingsModel()
+            m.load()
+            rebind { item = m }
         } catch (e: Throwable) {
             log.severe(e.stackTraceToString())
             error(
@@ -20,11 +23,14 @@ class GeneralSettingsViewModel : ItemViewModel<GeneralSettingsModel>(GeneralSett
                 header = "Failed to load general settings.",
                 content = t("error.content", e.message)
             )
+        } finally {
+            endLoading()
         }
     }
 
     override fun save() {
         try {
+            startLoading()
             item.save()
         } catch (e: Throwable) {
             log.severe(e.stackTraceToString())
@@ -33,6 +39,8 @@ class GeneralSettingsViewModel : ItemViewModel<GeneralSettingsModel>(GeneralSett
                 header = "Failed to save general settings.",
                 content = t("error.content", e.message)
             )
+        } finally {
+            endLoading()
         }
     }
 }

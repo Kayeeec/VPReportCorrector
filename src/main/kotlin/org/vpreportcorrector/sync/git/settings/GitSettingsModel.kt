@@ -2,14 +2,14 @@ package org.vpreportcorrector.sync.git.settings
 
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
-import org.vpreportcorrector.settings.Loadable
-import org.vpreportcorrector.settings.Saveable
+import org.vpreportcorrector.settings.LoadableAndSavable
 import org.vpreportcorrector.utils.preferencesHelper
+import tornadofx.getValue
+import tornadofx.setValue
 import java.nio.file.Files
 import java.nio.file.Paths
-import tornadofx.*
 
-class GitSettingsModel: Saveable, Loadable {
+class GitSettingsModel: LoadableAndSavable {
     val configUserNameProperty = SimpleStringProperty("")
     var configUserName: String by configUserNameProperty
 
@@ -17,19 +17,19 @@ class GitSettingsModel: Saveable, Loadable {
     var configUserEmail: String by configUserEmailProperty
 
     val repoUrlProperty = SimpleStringProperty("")
-    var repoUrl by repoUrlProperty
+    var repoUrl: String by repoUrlProperty
 
     val passphraseProperty = SimpleStringProperty("")
-    var passphrase by passphraseProperty
+    var passphrase: String by passphraseProperty
 
     val privateKeyPathProperty = SimpleStringProperty("")
-    var privateKeyPath by privateKeyPathProperty
+    var privateKeyPath: String by privateKeyPathProperty
 
     val passwordProperty = SimpleStringProperty("")
-    var password by passwordProperty
+    var password: String by passwordProperty
 
     val usernameProperty = SimpleStringProperty("")
-    var username by usernameProperty
+    var username: String by usernameProperty
 
     val methodProperty = SimpleObjectProperty<GitProtocol>(GitProtocol.HTTPS)
     var method: GitProtocol by methodProperty
@@ -54,27 +54,27 @@ class GitSettingsModel: Saveable, Loadable {
     override fun save() {
         // TODO encrypt values
         preferencesHelper {
-            put(GitPreferencesKey.URL, repoUrl ?: "")
+            put(GitPreferencesKey.URL, repoUrl.trim())
             put(GitPreferencesKey.METHOD, method.name)
-            put(GitPreferencesKey.CONFIG_USER_NAME, configUserName)
-            put(GitPreferencesKey.CONFIG_USER_EMAIL, configUserEmail)
+            put(GitPreferencesKey.CONFIG_USER_NAME, configUserName.trim())
+            put(GitPreferencesKey.CONFIG_USER_EMAIL, configUserEmail.trim())
             if (method == GitProtocol.HTTPS) {
-                put(GitPreferencesKey.PASSWORD, password ?: "")
-                put(GitPreferencesKey.USERNAME, username ?: "")
+                put(GitPreferencesKey.PASSWORD, password.trim())
+                put(GitPreferencesKey.USERNAME, username.trim())
                 put(GitPreferencesKey.PRIVATE_KEY_PATH, "")
                 put(GitPreferencesKey.PASSPHRASE, "")
             } else if (method == GitProtocol.SSH) {
                 put(GitPreferencesKey.PASSWORD, "")
                 put(GitPreferencesKey.USERNAME, "")
-                put(GitPreferencesKey.PRIVATE_KEY_PATH, privateKeyPath ?: "")
-                put(GitPreferencesKey.PASSPHRASE, passphrase ?: "")
+                put(GitPreferencesKey.PRIVATE_KEY_PATH, privateKeyPath.trim())
+                put(GitPreferencesKey.PASSPHRASE, passphrase.trim())
             }
             flush()
         }
     }
 
     fun hasCorrectRemoteRepoSettings(): Boolean {
-        return repoUrl != null && (hasCorrectHttpsSettings() || hasCorrectSshSettings())
+        return repoUrl.isNotBlank() && (hasCorrectHttpsSettings() || hasCorrectSshSettings())
     }
 
     private fun hasCorrectHttpsSettings(): Boolean {
@@ -95,5 +95,17 @@ class GitSettingsModel: Saveable, Loadable {
                 && password == other.password
                 && username == other.username
                 && method == other.method
+    }
+
+    override fun hashCode(): Int {
+        var result = configUserNameProperty.hashCode()
+        result = 31 * result + configUserEmailProperty.hashCode()
+        result = 31 * result + repoUrlProperty.hashCode()
+        result = 31 * result + passphraseProperty.hashCode()
+        result = 31 * result + privateKeyPathProperty.hashCode()
+        result = 31 * result + passwordProperty.hashCode()
+        result = 31 * result + usernameProperty.hashCode()
+        result = 31 * result + methodProperty.hashCode()
+        return result
     }
 }

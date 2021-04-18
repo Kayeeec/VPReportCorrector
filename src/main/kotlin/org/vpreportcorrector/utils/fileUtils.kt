@@ -260,17 +260,3 @@ fun deleteDirectoryStream(path: Path) {
             .forEach { it.delete() }
     }
 }
-
-/**
- * Tests if file denoted by [path] exists and does not care about the case of the filename.
- * E.g.: returns true for path 'path/to/file.PDF' if there is file 'path/to/File.pdf'
- */
-fun fileExistsNameCaseInsensitive(path: Path): Boolean {
-    return try {
-        val filename = path.toFile().name
-        val siblingsAndSelfNames = path.parent.listAll().map { it.toFile().name }
-        siblingsAndSelfNames.firstOrNull { it.equals(filename, true) } !== null
-    } catch (e: NoSuchFileException) {
-        false
-    }
-}

@@ -4,6 +4,7 @@ import org.vpreportcorrector.settings.SettingsPreferencesKey
 import org.vpreportcorrector.sync.RemoteRepo
 import org.vpreportcorrector.utils.AppConstants.PREFERENCES_NODE
 import java.nio.file.Files
+import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.prefs.Preferences
@@ -22,11 +23,11 @@ fun getWorkingDirectory(): Path? {
     return if (workingDir.isNotEmpty()) Paths.get(workingDir) else null
 }
 
-fun getSyncTo(): RemoteRepo? {
+fun getRemoteRepositoryType(): RemoteRepo? {
     var result = ""
     preferencesHelper {
         sync()
-        result = get(SettingsPreferencesKey.SYNC_TO, RemoteRepo.default.name)
+        result = get(SettingsPreferencesKey.REMOTE_REPOSITORY, RemoteRepo.default.name)
     }
     return enumValueOrNull(result)
 }
@@ -55,4 +56,18 @@ private fun hasEquivalentPdfOrDirectory(path: Path?, workDir: Path, dataDir: Pat
     val relParentPath = path.parent.toFile().relativeTo(dataDir.toFile())
     val ekvFile = Paths.get(workDir.toFile().canonicalPath, relParentPath.toString(), filename)
     return fileExistsNameCaseInsensitive(ekvFile)
+}
+
+/**
+ * Tests if file denoted by [path] exists and does not care about the case of the filename.
+ * E.g.: returns true for path 'path/to/file.PDF' if there is file 'path/to/File.pdf'
+ */
+private fun fileExistsNameCaseInsensitive(path: Path): Boolean {
+    return try {
+        val filename = path.toFile().name
+        val siblingsAndSelfNames = path.parent.listAll().map { it.toFile().name }
+        siblingsAndSelfNames.firstOrNull { it.equals(filename, true) } !== null
+    } catch (e: NoSuchFileException) {
+        false
+    }
 }

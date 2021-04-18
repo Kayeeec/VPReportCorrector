@@ -8,7 +8,7 @@ import org.vpreportcorrector.app.SettingsChanged
 import org.vpreportcorrector.app.errorhandling.errorWithStacktrace
 import org.vpreportcorrector.sync.git.GitSyncService
 import org.vpreportcorrector.utils.cleanDataDirectory
-import org.vpreportcorrector.utils.getSyncTo
+import org.vpreportcorrector.utils.getRemoteRepositoryType
 import tornadofx.Controller
 import tornadofx.TaskStatus
 import tornadofx.fail
@@ -57,7 +57,13 @@ class SyncController: Controller() {
         if (isAnyTaskRunning.value) return
         runAsync(initTaskStatus) {
             updateMessage("Sync service initialization in progress...")
-            when(val syncTo = getSyncTo()) {
+            when(val syncTo = getRemoteRepositoryType()) {
+                RemoteRepo.NONE -> {
+                    if (syncServiceProperty.value !== null) {
+                        syncServiceProperty.value!!.dispose()
+                        syncServiceProperty.value = null
+                    }
+                }
                 RemoteRepo.GIT -> {
                     log.info("Initializing Git sync service.")
                     initializeService<GitSyncService>()

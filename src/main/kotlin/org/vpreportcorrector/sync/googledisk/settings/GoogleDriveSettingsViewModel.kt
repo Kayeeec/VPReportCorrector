@@ -4,9 +4,7 @@ import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver
 import com.google.api.services.drive.Drive
 import javafx.beans.property.SimpleObjectProperty
-import org.vpreportcorrector.components.LoadingLatch
-import org.vpreportcorrector.components.WithLoading
-import org.vpreportcorrector.settings.Saveable
+import org.vpreportcorrector.settings.SettingsViewModel
 import org.vpreportcorrector.sync.googledisk.CustomAuthorizationCodeInstalledApp
 import org.vpreportcorrector.sync.googledisk.GoogleDriveApiHelpers
 import org.vpreportcorrector.sync.googledisk.GoogleDriveConstants.GOOGLE_DRIVE_CREDENTIALS_USER_ID
@@ -15,8 +13,7 @@ import org.vpreportcorrector.utils.t
 import tornadofx.*
 import java.nio.file.Paths
 
-class GoogleDriveSettingsViewModel: ItemViewModel<GoogleDriveSettingsModel>(GoogleDriveSettingsModel()),
-    WithLoading by LoadingLatch(), Saveable {
+class GoogleDriveSettingsViewModel: SettingsViewModel<GoogleDriveSettingsModel>(GoogleDriveSettingsModel()) {
     val remoteFolderId = bind(GoogleDriveSettingsModel::remoteFolderIdProperty)
 
     val credential = SimpleObjectProperty<Credential>(null)
@@ -27,7 +24,6 @@ class GoogleDriveSettingsViewModel: ItemViewModel<GoogleDriveSettingsModel>(Goog
     private val driveHelpers = GoogleDriveApiHelpers(t("appName"))
 
     init {
-        item.load()
         credential.onChange {
             driveService.value = driveHelpers.getDriveService(credential.value)
             remoteFolderId.value = null
@@ -38,6 +34,12 @@ class GoogleDriveSettingsViewModel: ItemViewModel<GoogleDriveSettingsModel>(Goog
         if (driveHelpers.hasStoredTokens()) {
             credential.value = driveHelpers.loadPersistedCredentials()
         }
+    }
+
+    override fun load() {
+        val m = GoogleDriveSettingsModel()
+        m.load()
+        item = m
     }
 
     override fun save() {
@@ -106,7 +108,7 @@ class GoogleDriveSettingsViewModel: ItemViewModel<GoogleDriveSettingsModel>(Goog
     }
 
     private fun collectAllRemoteFolders(): MutableSet<com.google.api.services.drive.model.File> {
-        var pageToken: String? = null
+        var pageToken: String?
         val allFolders = mutableSetOf<com.google.api.services.drive.model.File>()
         do {
             val result = driveService.value.files().list()

@@ -19,7 +19,7 @@ import org.vpreportcorrector.app.SettingsChanged
 import org.vpreportcorrector.app.Styles.Companion.centered
 import org.vpreportcorrector.app.Styles.Companion.flatButton
 import org.vpreportcorrector.components.form.loadingOverlay
-import org.vpreportcorrector.settings.SettingsModalView
+import org.vpreportcorrector.settings.modal.SettingsModalView
 import org.vpreportcorrector.utils.*
 import tornadofx.*
 import java.nio.file.Files

@@ -19,7 +19,7 @@ import org.vpreportcorrector.filesexplorer.FilesExplorerView
 import org.vpreportcorrector.import.openSimpleImportDialog
 import org.vpreportcorrector.mainview.content.ContentView
 import org.vpreportcorrector.mainview.content.ContentViewModel
-import org.vpreportcorrector.settings.SettingsModalView
+import org.vpreportcorrector.settings.modal.SettingsModalView
 import org.vpreportcorrector.sync.SyncController
 import org.vpreportcorrector.utils.getWorkingDirectory
 import org.vpreportcorrector.utils.t
@@ -87,8 +87,7 @@ class MainView : View() {
             button("Sync", FontIcon(FontAwesomeSolid.SYNC_ALT)) {
                 addClass(flatButton)
                 tooltip = tooltip("Synchronise with remote repository")
-                enableWhen { syncController.isSyncServiceInitialized }
-                disableWhen { syncController.isAnyTaskRunning }
+                disableWhen { syncController.isAnyTaskRunning.or(syncController.isSyncServiceInitialized.not()) }
                 action { fire(RequestSync) }
             }
         }

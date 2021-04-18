@@ -1,9 +1,9 @@
 package org.vpreportcorrector.sync
 
 enum class RemoteRepo {
-    GIT;
+    NONE, GIT;
 
     companion object {
-        val default = GIT
+        val default = NONE
     }
 }

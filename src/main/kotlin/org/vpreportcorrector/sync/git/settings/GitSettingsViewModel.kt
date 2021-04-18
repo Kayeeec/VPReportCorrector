@@ -3,15 +3,12 @@ package org.vpreportcorrector.sync.git.settings
 import javafx.beans.property.SimpleBooleanProperty
 import org.kordamp.ikonli.fontawesome5.FontAwesomeRegular
 import org.kordamp.ikonli.javafx.FontIcon
-import org.vpreportcorrector.components.LoadingLatch
-import org.vpreportcorrector.components.WithLoading
-import org.vpreportcorrector.settings.Saveable
+import org.vpreportcorrector.settings.SettingsViewModel
 import org.vpreportcorrector.utils.t
-import tornadofx.ItemViewModel
 import tornadofx.objectBinding
+import tornadofx.rebind
 
-class GitSettingsViewModel : ItemViewModel<GitSettingsModel>(GitSettingsModel()), WithLoading by LoadingLatch(),
-    Saveable {
+class GitSettingsViewModel : SettingsViewModel<GitSettingsModel>(GitSettingsModel()) {
     val configUserName = bind(GitSettingsModel::configUserNameProperty)
     val configUserEmail = bind(GitSettingsModel::configUserEmailProperty)
     val repoUrl = bind(GitSettingsModel::repoUrlProperty)
@@ -30,9 +27,12 @@ class GitSettingsViewModel : ItemViewModel<GitSettingsModel>(GitSettingsModel())
         selectShowGraphic(showPassphrase.value)
     }
 
-    init {
+    override fun load() {
         try {
-            item.load()
+            startLoading()
+            val m = GitSettingsModel()
+            m.load()
+            rebind { item = m }
         } catch (e: Throwable) {
             log.severe(e.stackTraceToString())
             tornadofx.error(
@@ -40,11 +40,14 @@ class GitSettingsViewModel : ItemViewModel<GitSettingsModel>(GitSettingsModel())
                 header = "Failed to load Git repository settings.",
                 content = t("error.content", e.message)
             )
+        } finally {
+            endLoading()
         }
     }
 
     override fun save() {
         try {
+            startLoading()
             item.save()
         } catch (e: Throwable) {
             log.severe(e.stackTraceToString())
@@ -53,6 +56,8 @@ class GitSettingsViewModel : ItemViewModel<GitSettingsModel>(GitSettingsModel())
                 header = "Failed to save Git repository settings.",
                 content = t("error.content", e.message)
             )
+        } finally {
+            endLoading()
         }
     }
 

@@ -1,10 +1,11 @@
-package org.vpreportcorrector.settings
+package org.vpreportcorrector.settings.general
 
 import javafx.scene.control.Tooltip
 import javafx.scene.layout.Priority
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
 import org.vpreportcorrector.components.form.help
+import org.vpreportcorrector.sync.RemoteRepo
 import org.vpreportcorrector.utils.getUserHomeDirectory
 import org.vpreportcorrector.utils.t
 import tornadofx.*
@@ -40,6 +41,13 @@ class GeneralSettingsView : View() {
                         }
                     }
                     help(t("workingDirTooltip"))
+                }
+            }
+            field(t("remoteRepository")) {
+                combobox(vm.remoteRepository, listOf(*RemoteRepo.values()).asObservable()) {
+                    cellFormat {
+                        text = t(it.name)
+                    }
                 }
             }
             vm.validate(decorateErrors = false)
