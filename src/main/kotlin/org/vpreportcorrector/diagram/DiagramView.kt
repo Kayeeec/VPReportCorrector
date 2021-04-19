@@ -49,12 +49,13 @@ class DiagramView : View() {
         graphic = FontIcon(FontAwesomeSolid.TAGS)
         tooltip = Tooltip("Show errors the diagram contains")
     }
-    private val switchToEditBtn = button("Edit", FontIcon(FontAwesomeSolid.EDIT)) {
+    private val toggleEditViewModeBtn = button {
+        textProperty().bind(vm.editToggleBtnLabel)
+        graphicProperty().bind(vm.editToggleBtnGraphic)
         addClass(Styles.flatButton)
-        tooltip = Tooltip("Switch to edit mode")
-        hiddenWhen { vm.isEditingProperty }
+        tooltip = Tooltip("Switch between edit and view mode.")
         action {
-            vm.switchToEditMode()
+            vm.toggleViewEditMode()
         }
     }
     private val saveBtn = button("", FontIcon(FontAwesomeSolid.SAVE)) {
@@ -86,7 +87,7 @@ class DiagramView : View() {
                 swingNode.requestFocus()
             }
         }
-        vm.isEditingProperty.onChangeOnce {
+        vm.isEditingProperty.onChange {
             buildToolbar()
         }
 
@@ -192,14 +193,15 @@ class DiagramView : View() {
     private fun buildViewerToolbar() {
         with(toolBar) {
             flowpane {
+                hgrow = Priority.ALWAYS
+
                 add(viewerComponents.showHideUtilityPane)
+                add(toggleEditViewModeBtn)
                 add(viewerComponents.fitPage)
                 add(viewerComponents.pan)
                 add(viewerComponents.textSelecion)
-                add(switchToEditBtn)
             }
 
-            hbox { hgrow = Priority.ALWAYS }
             add(diagramErrorsBtn)
         }
     }
@@ -207,7 +209,10 @@ class DiagramView : View() {
     private fun buildEditorToolbar() {
         with(toolBar) {
             flowpane {
+                hgrow = Priority.ALWAYS
+
                 add(viewerComponents.showHideUtilityPane)
+                add(toggleEditViewModeBtn)
                 add(saveBtn)
                 add(viewerComponents.fitPage)
                 add(viewerComponents.pan)
@@ -224,8 +229,6 @@ class DiagramView : View() {
                 add(viewerComponents.freeTextAnnotation)
                 add(viewerComponents.textAnnotation)
             }
-
-            hbox { hgrow = Priority.ALWAYS }
 
             add(diagramErrorsBtn)
         }

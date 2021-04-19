@@ -1,5 +1,8 @@
 package org.vpreportcorrector.utils
 
+import javafx.scene.control.ButtonBar
+import javafx.scene.control.ButtonType
+import org.vpreportcorrector.components.form.CustomButtonType
 import org.vpreportcorrector.settings.SettingsPreferencesKey
 import org.vpreportcorrector.utils.AppConstants.PREFERENCES_NODE
 import tornadofx.Component
@@ -29,3 +32,8 @@ fun Component.getWorkingDirectory(): Path? {
     }
     return if (workingDir.isNotEmpty()) Paths.get(workingDir) else null
 }
+
+val Component.customButtonType: CustomButtonType
+    get() = CustomButtonType(
+        DISCARD_CLOSE = ButtonType(t("discardAndClose"), ButtonBar.ButtonData.CANCEL_CLOSE)
+    )

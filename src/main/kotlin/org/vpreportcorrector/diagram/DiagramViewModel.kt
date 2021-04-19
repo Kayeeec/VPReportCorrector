@@ -1,13 +1,17 @@
 package org.vpreportcorrector.diagram
 
 import javafx.beans.property.SimpleBooleanProperty
+import javafx.scene.control.ButtonBar
 import javafx.scene.control.ButtonType
 import org.icepdf.core.pobjects.annotations.Annotation
-import org.vpreportcorrector.app.DiagramInEditModeEvent
+import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
+import org.kordamp.ikonli.javafx.FontIcon
+import org.vpreportcorrector.app.DiagramToggleEditModeEvent
 import org.vpreportcorrector.app.DiagramSavedEvent
 import org.vpreportcorrector.components.LoadingLatch
 import org.vpreportcorrector.components.WithLoading
 import org.vpreportcorrector.diagram.enums.DiagramIssue
+import org.vpreportcorrector.utils.customButtonType
 import tornadofx.*
 import javax.swing.JComponent
 import javax.swing.SwingUtilities
@@ -17,8 +21,23 @@ class DiagramViewModel(diagramModel: DiagramModel): ItemViewModel<DiagramModel>(
     val diagramIssuesProperty = bind { diagramModel.diagramIssuesProperty }
 
     val isEditingProperty = SimpleBooleanProperty(false)
+    val editToggleBtnLabel = stringBinding(this, isEditingProperty) {
+        if (isEditingProperty.value)
+            "View"
+        else
+            "Edit"
+    }
+    val editToggleBtnGraphic = objectBinding(this, isEditingProperty) {
+        if (isEditingProperty.value)
+            FontIcon(FontAwesomeSolid.EYE)
+        else
+            FontIcon(FontAwesomeSolid.EDIT)
+    }
     var viewerPanel: JComponent by singleAssign()
     var oldAnnotations: Set<String>? = null
+
+    private val saveButtonType = ButtonType("Save and switch to view mode", ButtonBar.ButtonData.OK_DONE)
+    private val justSwitchButtonType = ButtonType("Just switch to view mode", ButtonBar.ButtonData.NEXT_FORWARD)
 
     init {
         loadData()
@@ -64,12 +83,10 @@ class DiagramViewModel(diagramModel: DiagramModel): ItemViewModel<DiagramModel>(
                 actionFn = { buttonType: ButtonType ->
                    when(buttonType) {
                        ButtonType.CANCEL -> doClose = false
-                       ButtonType.YES -> {
-                           doClose = true
-                       }
+                       customButtonType.DISCARD_CLOSE -> doClose = true
                    }
                 },
-                buttons = arrayOf(ButtonType.CANCEL, ButtonType.YES)
+                buttons = arrayOf(ButtonType.CANCEL, customButtonType.DISCARD_CLOSE)
             )
         }
         if (doClose) {
@@ -133,13 +150,26 @@ class DiagramViewModel(diagramModel: DiagramModel): ItemViewModel<DiagramModel>(
         }
     }
 
-    fun switchToEditMode() {
-        isEditingProperty.value = true
+    fun toggleViewEditMode() {
+        val isEdit = !isEditingProperty.value
+        isEditingProperty.value = isEdit
+        if (!isEdit && hasUnsavedChanges()) {
+            confirmation(
+                title = "Unsaved changes",
+                header = "There are unsaved changes, do you want to save them while switching to view mode?",
+                actionFn = { buttonType: ButtonType ->
+                    when(buttonType) {
+                        saveButtonType -> { save() }
+                    }
+                },
+                buttons = arrayOf(saveButtonType, justSwitchButtonType)
+            )
+        }
         SwingUtilities.invokeLater {
-            setAnnotationsReadAndLockedFlags(false)
+            setAnnotationsReadAndLockedFlags(!isEdit)
             viewerPanel.revalidate()
             oldAnnotations = getAllAnnotationsCopy()
         }
-        fire(DiagramInEditModeEvent(item.path))
+        fire(DiagramToggleEditModeEvent(item.path, isEdit))
     }
 }

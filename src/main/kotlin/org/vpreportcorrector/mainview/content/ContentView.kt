@@ -7,7 +7,7 @@ import javafx.scene.control.Tab
 import javafx.scene.control.Tooltip
 import org.kordamp.ikonli.fontawesome5.FontAwesomeRegular
 import org.kordamp.ikonli.javafx.FontIcon
-import org.vpreportcorrector.app.DiagramInEditModeEvent
+import org.vpreportcorrector.app.DiagramToggleEditModeEvent
 import org.vpreportcorrector.app.DiagramSavedEvent
 import org.vpreportcorrector.app.OpenDiagramEvent
 import org.vpreportcorrector.app.OpenDiagramInNewWindowEvent
@@ -38,9 +38,10 @@ class ContentView : View("Content") {
         subscribe<DiagramSavedEvent> { event ->
             vm.setTabSaved(event.path)
         }
-        subscribe<DiagramInEditModeEvent> { event ->
+        subscribe<DiagramToggleEditModeEvent> { event ->
             vm.allOpenTabs[event.path]?.tab?.let {
-                it.graphic = FontIcon(FontAwesomeRegular.EDIT)
+                it.graphic = if (event.isEditing) FontIcon(FontAwesomeRegular.EDIT)
+                    else FontIcon(FontAwesomeRegular.EYE)
             }
         }
     }
