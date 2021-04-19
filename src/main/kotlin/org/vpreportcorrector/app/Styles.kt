@@ -174,6 +174,7 @@ class Styles : Stylesheet() {
             backgroundColor += Color.TRANSPARENT
             borderWidth += box(0.px)
             borderRadius += box(0.px)
+            backgroundRadius += box(0.px)
             and(hover) {
                 backgroundColor += AppColors.bgButtonHover
             }

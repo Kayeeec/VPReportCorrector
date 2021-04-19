@@ -2,10 +2,7 @@ package org.vpreportcorrector.mainview
 
 import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
-import javafx.geometry.Orientation
 import javafx.geometry.Pos
-import javafx.scene.Node
-import javafx.scene.control.SplitPane
 import javafx.scene.layout.Priority
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
@@ -13,13 +10,11 @@ import org.vpreportcorrector.app.RequestSync
 import org.vpreportcorrector.app.SettingsChanged
 import org.vpreportcorrector.app.Styles.Companion.flatButton
 import org.vpreportcorrector.app.Styles.Companion.paddedContainer
-import org.vpreportcorrector.app.Styles.Companion.sideButton
 import org.vpreportcorrector.components.form.loadingOverlay
-import org.vpreportcorrector.filesexplorer.FilesExplorerView
 import org.vpreportcorrector.import.openSimpleImportDialog
-import org.vpreportcorrector.mainview.content.ContentView
 import org.vpreportcorrector.mainview.content.ContentViewModel
 import org.vpreportcorrector.settings.modal.SettingsModalView
+import org.vpreportcorrector.statistics.StatisticsView
 import org.vpreportcorrector.sync.SyncController
 import org.vpreportcorrector.utils.Helpers.getWorkingDirectory
 import org.vpreportcorrector.utils.t
@@ -29,15 +24,10 @@ import java.nio.file.Path
 // TODO KB: extract viewmodel?
 class MainView : View() {
     private val workingDirectory = SimpleObjectProperty<Path>(getWorkingDirectory())
-    private val filesExplorerView: FilesExplorerView by inject()
-    private val contentView: ContentView by inject()
     private val contentViewModel: ContentViewModel by inject()
-
-    private var filesExplorerVisible = true
-    private var filesExplorerDividerPosition: Double = 0.25
-    private var filesExplorerNode: Node? = null
-
     private val syncController = find<SyncController>()
+
+    private val selectedContentViewType = SimpleObjectProperty(ContentViewType.EDITOR)
 
     init {
         title = t("appName")
@@ -46,21 +36,19 @@ class MainView : View() {
         }
     }
 
-    private val centerSplitPane = splitpane {
-        orientation = Orientation.HORIZONTAL
-        setDividerPositions(filesExplorerDividerPosition)
-        add(filesExplorerView)
-        add(contentView)
-        SplitPane.setResizableWithParent(this.items[0], false)
-    }
+    private val contentBorderPane = find<EditorView>()
 
     override val root = borderpane {
         top = hbox {
             disableWhen { syncController.isAnyTaskRunning }
             hgrow = Priority.ALWAYS
             alignment = Pos.CENTER_LEFT
+
             menubar {
                 removeClass(paddedContainer)
+                style {
+                    padding = box(0.px, 10.px, 0.px, 0.px)
+                }
                 menu(t("file")) {
                     item(t("settings"), "Shortcut+Alt+S", FontIcon(FontAwesomeSolid.COGS)) {
                         action {
@@ -83,6 +71,31 @@ class MainView : View() {
                     }
                 }
             }
+            togglegroup {
+                bind(selectedContentViewType)
+                togglebutton(t(ContentViewType.EDITOR.name), value = ContentViewType.EDITOR) {
+                    addClass(flatButton)
+                    fitToParentHeight()
+                    graphic = FontIcon(FontAwesomeSolid.EDIT)
+                    action {
+                        isSelected = true
+                        find<StatisticsView>().replaceWith<EditorView>(
+                            ViewTransition.Slide(0.3.seconds, ViewTransition.Direction.RIGHT)
+                        )
+                    }
+                }
+                togglebutton(t(ContentViewType.STATISTICS.name), value = ContentViewType.STATISTICS) {
+                    addClass(flatButton)
+                    graphic = FontIcon(FontAwesomeSolid.CHART_BAR)
+                    fitToParentHeight()
+                    action {
+                        isSelected = true
+                        find<EditorView>().replaceWith<StatisticsView>(
+                            ViewTransition.Slide(0.3.seconds, ViewTransition.Direction.LEFT)
+                        )
+                    }
+                }
+            }
             hbox { hgrow = Priority.ALWAYS }
             button("Sync", FontIcon(FontAwesomeSolid.SYNC_ALT)) {
                 addClass(flatButton)
@@ -91,39 +104,13 @@ class MainView : View() {
                 action { fire(RequestSync) }
             }
         }
-        left = vbox {
-            group {
-                togglebutton(t("directory")) {
-                    action {
-                        toggleFilesExplorerPane()
-                    }
-                    isSelected = filesExplorerVisible
-                    graphic = FontIcon(FontAwesomeSolid.FOLDER)
-                    rotate = -90.0
-                    addClass(sideButton, flatButton)
-                    tooltip(t("directoryTooltip"))
-                }
-            }
-        }
+
         center = stackpane {
-            add(centerSplitPane)
-            centerSplitPane.fitToParentSize()
+            add(contentBorderPane)
 
             loadingOverlay(syncController.syncTaskStatus)
             loadingOverlay(syncController.initTaskStatus)
         }
     }
-
-    private fun toggleFilesExplorerPane() {
-        if (filesExplorerVisible) {
-            filesExplorerNode = centerSplitPane.items[0]
-            filesExplorerDividerPosition = centerSplitPane.dividerPositions[0]
-            centerSplitPane.items.removeAt(0)
-            filesExplorerVisible = false
-        } else if (filesExplorerNode !== null) {
-            centerSplitPane.items.add(0, filesExplorerNode)
-            centerSplitPane.setDividerPosition(0, filesExplorerDividerPosition)
-            filesExplorerVisible = true
-        }
-    }
 }
+
