@@ -58,7 +58,6 @@ dependencies {
     // for diagram extractor
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: pdfboxVersion
     compile group: 'org.apache.pdfbox', name: 'fontbox', version: pdfboxVersion
-    compile 'org.apache.xmlgraphics:batik-all:1.14' // todo: limit only to the needed components, this is too big, might not be needed in the end
 
     // pdf viewer/annotator swing component @see https://github.com/pcorless/icepdf
     compile files('./libs/icepdf-core-6.3.3-SNAPSHOT.jar')

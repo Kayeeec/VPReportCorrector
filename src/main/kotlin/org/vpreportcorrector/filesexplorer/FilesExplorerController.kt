@@ -57,7 +57,7 @@ class FilesExplorerController: Controller() {
         model.isImportVisible.value = selectionModel != null
                 && !selectionModel.isEmpty
                 && (
-                    selectionModel.selectedItems.all {
+                    selectionModel.selectedItems.filter { it.value !== null }.all {
                         val file = it.value.toFile()
                         !file.isDirectory && isPdf(file)
                     }

@@ -1,6 +1,3 @@
-import org.apache.batik.anim.dom.SVGDOMImplementation
-import org.apache.batik.svggen.SVGGeneratorContext
-import org.apache.batik.svggen.SVGGraphics2D
 import org.apache.pdfbox.contentstream.operator.Operator
 import org.apache.pdfbox.cos.COSInteger
 import org.apache.pdfbox.pdfparser.PDFStreamParser
@@ -9,20 +6,15 @@ import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.common.PDRectangle
 import org.apache.pdfbox.pdmodel.common.PDStream
-import org.apache.pdfbox.rendering.PDFRenderer
 import org.vpreportcorrector.diagramextractor.DiagramExtractor
 import org.vpreportcorrector.diagramextractor.exceptions.DiagramExtractorException
+import org.vpreportcorrector.diagramextractor.types.DiagramPageResult
+import org.vpreportcorrector.diagramextractor.utils.searchPageForDiagramHeadings
 import org.vpreportcorrector.utils.FileConflictChoice
 import org.vpreportcorrector.utils.findConflictingFile
 import org.vpreportcorrector.utils.openFileExistsDialog
 import org.vpreportcorrector.utils.suggestName
-import org.w3c.dom.Element
-import org.vpreportcorrector.diagramextractor.types.DiagramPageResult
-import org.vpreportcorrector.diagramextractor.utils.searchPageForDiagramHeadings
-import java.awt.Color
-import java.awt.Dimension
 import java.io.File
-import java.lang.Exception
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -132,7 +124,6 @@ class VisualParadigmPdfToPdfDiagramExtractor(
         cropPage(page, dpage.searchedPage.diagramHeight)
         page.setContents(pdStream)
         savePdfPage(pdTemplate, getPdfFileName(dpage))
-//        convertPageToSvg(pdTemplate, getSvgFileName(dpage))
     }
 
     private fun savePdfPage(pdTemplate: PDDocument, pdfFileName: String) {
@@ -142,36 +133,6 @@ class VisualParadigmPdfToPdfDiagramExtractor(
             pdTemplate.save(pdfFile)
         } catch (e: Exception) {
             throw DiagramExtractorException("Failed to create or write to output file '${newFilePath.toFile().absolutePath}'", e)
-        }
-    }
-
-    private fun convertPageToSvg(tempDoc: PDDocument, svgFileName: String) {
-        val namespace = SVGDOMImplementation.SVG_NAMESPACE_URI
-        val impl = SVGDOMImplementation.getDOMImplementation()
-        val doc = impl.createDocument(namespace, "svg", null)
-        val ctx = SVGGeneratorContext.createDefault(doc)
-        ctx.isEmbeddedFontsOn = true
-        val svgGraphics2D = SVGGraphics2D(ctx, false)
-        val h = tempDoc.getPage(0).mediaBox.height.toInt() * 2
-        val w = tempDoc.getPage(0).mediaBox.width.toInt() * 2
-        svgGraphics2D.svgCanvasSize = Dimension(w, h)
-        val pdfRenderer = PDFRenderer(tempDoc)
-        svgGraphics2D.background = Color(255, 255, 255)
-        pdfRenderer.renderPageToGraphics(0, svgGraphics2D, 2.0F)
-        val root = svgGraphics2D.root
-        root.setAttributeNS(null, "viewBox", "0 0 $w $h")
-        writeToFile(svgGraphics2D, svgFileName, root)
-    }
-
-    private fun writeToFile(svgGraphics2D: SVGGraphics2D, svgFileName: String, root: Element) {
-        val svgPath = resolveConflictsAndGetOutPath(svgFileName) ?: return
-        try {
-            val svgFile = Files.createFile(svgPath).toFile()
-            svgFile.bufferedWriter().use {
-                svgGraphics2D.stream(root, it, true, false)
-            }
-        } catch (e: Exception) {
-            throw DiagramExtractorException("Failed to create or write to output file '${svgPath.toFile().absolutePath}'", e)
         }
     }
 
@@ -209,12 +170,6 @@ class VisualParadigmPdfToPdfDiagramExtractor(
         } catch (e: Exception) {
             throw DiagramExtractorException("Failed to delete conflicting file '${file.name}'.", e)
         }
-    }
-
-    private fun getSvgFileName(dpage: DiagramPageResult): String {
-        val paddedNumber = dpage.pageNumber.toString().padStart(this.paddingLength, '0')
-        val diagramName = dpage.searchedPage.diagramName!!.replace(" ", "_")
-        return "${this.fileName}_${paddedNumber}_$diagramName.svg"
     }
 
     private fun getPdfFileName(dpage: DiagramPageResult): String {
