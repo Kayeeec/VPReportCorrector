@@ -28,6 +28,9 @@ ext {
     pdfboxVersion = '2.0.21'
 }
 
+test {
+    useJUnitPlatform()
+}
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.4.10"
@@ -39,7 +42,9 @@ dependencies {
     implementation "org.openjfx:javafx-web:${openjfxVersion}"
     implementation "org.openjfx:javafx-swing:${openjfxVersion}"
 
-    implementation 'org.controlsfx:controlsfx:11.1.0' // todo remove?
+    implementation 'org.controlsfx:controlsfx:11.1.0'
+    implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+    implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
 
     compile 'commons-io:commons-io:2.8.0'
     compile 'org.apache.commons:commons-lang3:3.11'

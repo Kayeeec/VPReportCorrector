@@ -129,7 +129,7 @@ class FilesExplorerController: Controller() {
 
     fun createFolder(location: File, newFolderName: String = "") {
         val scope = Scope()
-        val model = NewFolderModel(NewFolder(location, newFolderName))
+        val model = NewFolderViewModel(NewFolderModel(location, newFolderName))
         setInScope(model, scope)
         find(NewFolderDialogView::class, scope).openModal(block = true)
     }
