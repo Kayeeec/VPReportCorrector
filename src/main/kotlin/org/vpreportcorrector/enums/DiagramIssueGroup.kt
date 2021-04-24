@@ -1,4 +1,4 @@
-package org.vpreportcorrector.diagram.enums
+package org.vpreportcorrector.enums
 
 enum class DiagramIssueGroup(val issues: Set<DiagramIssue>) {
     UseCaseDiagram(setOf(
@@ -63,5 +63,11 @@ enum class DiagramIssueGroup(val issues: Set<DiagramIssue>) {
         DiagramIssue.ISSUE_85, DiagramIssue.ISSUE_86, DiagramIssue.ISSUE_87, DiagramIssue.ISSUE_88,
         DiagramIssue.ISSUE_89, DiagramIssue.ISSUE_810, DiagramIssue.ISSUE_811, DiagramIssue.ISSUE_812,
         DiagramIssue.ISSUE_813, DiagramIssue.ISSUE_814,
-    ))
+    ));
+
+    companion object {
+        fun getGroup(issue: DiagramIssue): DiagramIssueGroup? {
+            return values().find { it.issues.contains(issue) }
+        }
+    }
 }

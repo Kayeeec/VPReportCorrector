@@ -4,7 +4,7 @@ import javafx.application.Platform
 import javafx.beans.property.SimpleSetProperty
 import javafx.collections.ObservableSet
 import org.icepdf.ri.common.ViewModel
-import org.vpreportcorrector.diagram.enums.DiagramIssue
+import org.vpreportcorrector.enums.DiagramIssue
 import org.vpreportcorrector.utils.AppConstants.DATA_FOLDER_NAME
 import org.vpreportcorrector.utils.Helpers.getWorkingDirectory
 import tornadofx.*

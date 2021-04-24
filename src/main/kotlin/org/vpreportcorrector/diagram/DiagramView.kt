@@ -211,7 +211,7 @@ class DiagramView : View() {
             flowpane {
                 hgrow = Priority.ALWAYS
 
-                add(viewerComponents.showHideUtilityPane)
+                add(viewerComponents.showHideUtilityPane) // TODO: 02.05.21 fix npe and not clickable
                 add(toggleEditViewModeBtn)
                 add(saveBtn)
                 add(viewerComponents.fitPage)

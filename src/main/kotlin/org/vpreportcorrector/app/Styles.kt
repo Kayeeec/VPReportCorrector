@@ -16,6 +16,10 @@ class Styles : Stylesheet() {
 
         val diagramAnnotatorView by cssclass()
         val diagramErrorsView by cssclass()
+        val issueChooserFragment by cssclass()
+        val issueGroupCheckboxes by cssclass()
+
+        val treeToolbar by cssclass()
 
         val h1 by cssclass()
         val h2 by cssclass()
@@ -26,6 +30,8 @@ class Styles : Stylesheet() {
         val centered by cssclass()
         val typographyText by cssclass()
         val textMuted by cssclass()
+        val textError by cssclass()
+        val textBold by cssclass()
 
         val icon48 by cssclass()
         val iconBlue by cssclass()
@@ -78,10 +84,10 @@ class Styles : Stylesheet() {
             padding = box(15.px, 0.px, 10.px, 0.px)
         }
 
-        h3 {
+        h4 {
             fontSize = 14.px
             fontWeight = FontWeight.BOLD
-            padding = box(15.px, 0.px, 10.px, 0.px)
+            padding = box(10.px, 0.px, 5.px, 0.px)
         }
 
         p {
@@ -105,7 +111,20 @@ class Styles : Stylesheet() {
             text {
                 fill = AppColors.textMuted
             }
+        }
 
+        textError {
+            fill = AppColors.textError
+            text {
+                fill = AppColors.textError
+            }
+            iconColor.value = AppColors.textError
+        }
+        textBold {
+            fontWeight = FontWeight.BOLD
+            text {
+                fontWeight = FontWeight.BOLD
+            }
         }
 
         icon48 {
@@ -188,11 +207,46 @@ class Styles : Stylesheet() {
                 fontSize = 14.px
             }
         }
+
+        issueChooserFragment {
+            radioButton {
+                padding = box(0.px, 0.px, 8.px, 0.px)
+            }
+            issueGroupCheckboxes {
+                checkBox {
+                    padding = box(0.px, 0.px, 8.px, 0.px)
+                    and(selected) {
+                        text {
+                            fontWeight = FontWeight.EXTRA_BOLD
+                        }
+                    }
+                }
+                backgroundColor += c("white")
+                padding = box(10.px)
+            }
+        }
+
+        treeToolbar {
+            title {
+                backgroundColor += AppColors.bgPrimary
+                alignment = Pos.CENTER_LEFT
+                label {
+                    fontSize = 13.px
+                    fontWeight = FontWeight.BOLD
+                }
+                button {
+                    fontWeight = FontWeight.NORMAL
+                }
+            }
+        }
+
+
     }
 }
 
 class AppColors() {
     companion object {
+        val textError = c("#B71C1C")
         val textInfo = c("#6495ED")
         val textInfoMuted = c("#6495ED", 0.8)
         val textSecondary = c("#6c757d")
@@ -202,6 +256,7 @@ class AppColors() {
         val bgSecondary = c("#ffffff")
         val bgButtonHover = c("#e1e2e1")
         val bgButtonActive = c("#c1c1c1")
+        val borderGray = c("#c8c8c8")
 
     }
 }

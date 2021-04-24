@@ -9,7 +9,7 @@ import org.vpreportcorrector.app.Styles
 import org.vpreportcorrector.components.collapseAll
 import org.vpreportcorrector.components.expandAll
 import org.vpreportcorrector.diagram.*
-import org.vpreportcorrector.diagram.enums.DiagramIssueGroup
+import org.vpreportcorrector.enums.DiagramIssueGroup
 import org.vpreportcorrector.utils.AppConstants.SCROLL_BAR_WIDTH
 import org.vpreportcorrector.utils.t
 import tornadofx.*

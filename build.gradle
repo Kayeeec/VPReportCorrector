@@ -67,8 +67,10 @@ dependencies {
     implementation group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.11.0.202103091610-r'
     implementation group: 'org.eclipse.jgit', name: 'org.eclipse.jgit.ssh.jsch', version: '5.11.0.202103091610-r'
 
-
-
+    // statistics
+    implementation 'org.jfree:org.jfree.chart.fx:2.0.1'
+    implementation 'org.jfree:org.jfree.svg:4.2'
+    implementation 'de.rototor.pdfbox:graphics2d:0.31'
 
     // google disc sync
     compile "com.google.api-client:google-api-client:${googleDriveApiVersion}"

@@ -1,4 +1,4 @@
-package org.vpreportcorrector.diagram.enums
+package org.vpreportcorrector.enums
 
 enum class DiagramIssue {
     // Use Case Diagram
@@ -32,5 +32,5 @@ enum class DiagramIssue {
 
     // Communication diagram
     ISSUE_81, ISSUE_82, ISSUE_83, ISSUE_84, ISSUE_85, ISSUE_86, ISSUE_87, ISSUE_88, ISSUE_89,
-    ISSUE_810, ISSUE_811, ISSUE_812, ISSUE_813, ISSUE_814,
+    ISSUE_810, ISSUE_811, ISSUE_812, ISSUE_813, ISSUE_814;
 }

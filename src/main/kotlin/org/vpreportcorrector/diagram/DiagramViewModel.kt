@@ -10,7 +10,7 @@ import org.vpreportcorrector.app.DiagramToggleEditModeEvent
 import org.vpreportcorrector.app.DiagramSavedEvent
 import org.vpreportcorrector.components.LoadingLatch
 import org.vpreportcorrector.components.WithLoading
-import org.vpreportcorrector.diagram.enums.DiagramIssue
+import org.vpreportcorrector.enums.DiagramIssue
 import org.vpreportcorrector.utils.customButtonType
 import tornadofx.*
 import javax.swing.JComponent

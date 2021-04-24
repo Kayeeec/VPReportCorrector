@@ -7,7 +7,9 @@ import javafx.scene.control.Label
 import javafx.scene.control.TextArea
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
+import org.vpreportcorrector.app.errorhandling.UncaughtErrorHandler.Companion.isWizardRelatedNpe
 import tornadofx.*
+import java.lang.NullPointerException
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -29,15 +31,36 @@ class UncaughtErrorHandler : Thread.UncaughtExceptionHandler {
         // By default, all error messages are shown. Override to decide if certain errors should be handled another way.
         // Call consume to avoid error dialog.
         var filter: (ErrorEvent) -> Unit = {
-            /**
-             * Consume uncaught icepdf errors, for there are weird bugs and the dialogs are annoying.
-             * IcePDF viewer still usable though.
-             */
-            if (it.error.stackTraceToString().contains("icepdf")) {
-                it.consume()
-            }
+            val doConsume = it.isIcePdfError() || it.isWizardRelatedNpe() || it.isDiagramUtilityPaneBtnNpe()
+            if (doConsume) it.consume()
+        }
+
+        /**
+         * Consume uncaught icepdf errors, for there are weird bugs and the dialogs are annoying.
+         * IcePDF viewer still usable though.
+         */
+        private fun ErrorEvent.isIcePdfError() = this.error.stackTraceToString().contains("icepdf")
+
+        /**
+         * reopening wizard causes NPE bud nothing is broken - todo: file an issue?
+         * perhaps a javafx or GTK bug
+         */
+        private fun ErrorEvent.isWizardRelatedNpe(): Boolean {
+            val st = this.error.stackTraceToString()
+            return this.error is NullPointerException
+                    && st.contains("StatisticsView\$root\$1\$1\$1\$1\$1")
+                    && st.contains("openModal")
+                    && st.contains("StageControllerImpl")
+        }
+
+        private fun ErrorEvent.isDiagramUtilityPaneBtnNpe(): Boolean {
+            val st = this.error.stackTraceToString()
+            return this.error is NullPointerException
+                    && st.contains("at org.vpreportcorrector.diagram.DiagramView\$buildEditorToolbar\$\$inlined\$with\$lambda\$1.invoke")
+                    && st.contains("at com.sun.javafx.embed.swing.newimpl.SwingNodeInteropN.overrideNativeWindowHandle")
         }
     }
+
 
     override fun uncaughtException(t: Thread, error: Throwable) {
         log.log(Level.SEVERE, "Uncaught error", error)
