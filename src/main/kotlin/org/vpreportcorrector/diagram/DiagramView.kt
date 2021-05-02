@@ -18,6 +18,7 @@ import org.vpreportcorrector.diagram.DiagramViewConstants.DEFAULT_PDF_VIEWER_ICO
 import org.vpreportcorrector.diagram.components.CustomSwingNode
 import org.vpreportcorrector.diagram.components.DiagramErrorsDrawerView
 import org.vpreportcorrector.diagram.components.PdfViewerComponents
+import org.vpreportcorrector.utils.t
 import tornadofx.*
 import java.awt.Dimension
 import javax.swing.SwingUtilities
@@ -53,18 +54,21 @@ class DiagramView : View() {
         textProperty().bind(vm.editToggleBtnLabel)
         graphicProperty().bind(vm.editToggleBtnGraphic)
         addClass(Styles.flatButton)
-        tooltip = Tooltip("Switch between edit and view mode.")
+        tooltip = tooltip {
+            textProperty().bind(vm.editToggleBtnTooltip)
+        }
         action {
             vm.toggleViewEditMode()
         }
     }
-    private val saveBtn = button("", FontIcon(FontAwesomeSolid.SAVE)) {
+    private val saveBtn = button(t("save"), FontIcon(FontAwesomeSolid.SAVE)) {
         addClass(Styles.flatButton)
         visibleWhen { vm.isEditingProperty }
-        tooltip = Tooltip("Save")
+        tooltip = Tooltip("Save (Ctrl+S)")
         action {
             vm.save()
         }
+        shortcut("Ctrl+S")
     }
 
     private var toolBar = hbox {

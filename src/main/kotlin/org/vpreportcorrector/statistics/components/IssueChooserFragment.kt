@@ -24,10 +24,11 @@ class IssueChooserFragment : Fragment("Select issues or issue groups"), Refresha
     val issueGroups: SimpleSetProperty<DiagramIssueGroup> by param()
     val issues: SimpleSetProperty<DiagramIssue> by param()
 
-    private val groupCheckboxes = mutableMapOf<DiagramIssueGroup, CheckBox>()
     private var singleIssueTree = getSingleIssueTree()
     private var singleIssueChooser = getSingleIssueChooser()
-    private var issueGroupChooser = getIssueGroupChooser()
+    private var issueGroupChooser = find<DiagramIssueGroupMultiselect>(mapOf(
+        DiagramIssueGroupMultiselect::diagramIssueGroups to issueGroups,
+    ))
 
     private fun getSingleIssueChooser(): BorderPane {
         return borderpane {
@@ -49,32 +50,6 @@ class IssueChooserFragment : Fragment("Select issues or issue groups"), Refresha
                 }
             }
             center = singleIssueTree
-        }
-    }
-
-    private fun getIssueGroupChooser() = vbox {
-        hgrow = Priority.ALWAYS
-        fitToParentSize()
-        addClass(Styles.issueGroupCheckboxes)
-        DiagramIssueGroup.values().map { diGroup ->
-            val checkbox = checkbox {
-                text = t(diGroup.name)
-                isSelected = issueGroups.contains(diGroup)
-                action {
-                    if (issueGroups.contains(diGroup)) {
-                        issueGroups.remove(diGroup)
-                    } else {
-                        issueGroups.add(diGroup)
-                    }
-                }
-            }
-            groupCheckboxes[diGroup] = checkbox
-        }
-    }
-
-    private fun refreshIssueGroupChooser() {
-        groupCheckboxes.forEach { (diagramIssueGroup, checkBox) ->
-            checkBox.isSelected = issueGroups.contains(diagramIssueGroup)
         }
     }
 
@@ -154,7 +129,7 @@ class IssueChooserFragment : Fragment("Select issues or issue groups"), Refresha
 
     override fun refreshInputs() {
         refreshSingleIssueTree()
-        refreshIssueGroupChooser()
+        issueGroupChooser.refreshInputs()
     }
 }
 

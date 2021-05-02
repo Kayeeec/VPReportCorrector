@@ -33,6 +33,12 @@ class DiagramViewModel(diagramModel: DiagramModel): ItemViewModel<DiagramModel>(
         else
             FontIcon(FontAwesomeSolid.EDIT)
     }
+    val editToggleBtnTooltip = stringBinding(this, isEditingProperty) {
+        if (isEditingProperty.value == true)
+            "Save and switch to view mode"
+        else
+            "Switch to edit mode"
+    }
     var viewerPanel: JComponent by singleAssign()
     var oldAnnotations: Set<String>? = null
 
@@ -60,9 +66,10 @@ class DiagramViewModel(diagramModel: DiagramModel): ItemViewModel<DiagramModel>(
         }
     }
 
+    // todo - fix - always true, even if no changes
     fun hasUnsavedChanges(): Boolean {
         if (!isEditingProperty.value) return false
-        return false && item.isModified() || isPdfModified() // TODO: fix bug
+        return false && item.isModified() || isPdfModified()
     }
 
     private fun isPdfModified(): Boolean {
@@ -165,6 +172,10 @@ class DiagramViewModel(diagramModel: DiagramModel): ItemViewModel<DiagramModel>(
                 buttons = arrayOf(saveButtonType, justSwitchButtonType)
             )
         }
+        if (!isEdit) { // View -> Edit, for now because detecting changes does not work correctly
+            save()
+        }
+
         SwingUtilities.invokeLater {
             setAnnotationsReadAndLockedFlags(!isEdit)
             viewerPanel.revalidate()
