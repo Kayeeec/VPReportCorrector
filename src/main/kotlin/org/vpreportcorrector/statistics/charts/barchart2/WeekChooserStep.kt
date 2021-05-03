@@ -1,8 +1,7 @@
-package org.vpreportcorrector.statistics.barchart2
+package org.vpreportcorrector.statistics.charts.barchart2
 
 import javafx.beans.binding.BooleanBinding
 import javafx.beans.binding.StringBinding
-import javafx.scene.layout.Priority
 import org.vpreportcorrector.statistics.components.WeekSingleSelect
 import org.vpreportcorrector.statistics.components.WizardPageView
 import tornadofx.*

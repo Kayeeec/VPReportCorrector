@@ -1,4 +1,4 @@
-package org.vpreportcorrector.statistics.barchart3
+package org.vpreportcorrector.statistics.charts.barchart3
 
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon

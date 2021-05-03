@@ -1,4 +1,4 @@
-package org.vpreportcorrector.statistics.barchart3
+package org.vpreportcorrector.statistics.charts.barchart3
 
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleSetProperty

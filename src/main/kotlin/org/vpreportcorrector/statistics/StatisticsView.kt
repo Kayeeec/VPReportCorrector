@@ -10,9 +10,9 @@ import org.vpreportcorrector.app.Styles
 import org.vpreportcorrector.app.errorhandling.errorWithStacktrace
 import org.vpreportcorrector.components.NoSelectionModel
 import org.vpreportcorrector.components.form.loadingOverlay
-import org.vpreportcorrector.statistics.barchart1.BarChart1Wizard
-import org.vpreportcorrector.statistics.barchart2.BarChart2Wizard
-import org.vpreportcorrector.statistics.barchart3.BarChart3Wizard
+import org.vpreportcorrector.statistics.charts.barchart1.BarChart1Wizard
+import org.vpreportcorrector.statistics.charts.barchart2.BarChart2Wizard
+import org.vpreportcorrector.statistics.charts.barchart3.BarChart3Wizard
 import org.vpreportcorrector.statistics.charts.ChartHelpers
 import org.vpreportcorrector.utils.t
 import tornadofx.*

@@ -1,4 +1,4 @@
-package org.vpreportcorrector.statistics.barchart2
+package org.vpreportcorrector.statistics.charts.barchart1
 
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
@@ -7,12 +7,12 @@ import org.vpreportcorrector.statistics.components.RefreshableWizard
 import org.vpreportcorrector.utils.p
 import tornadofx.*
 
-class BarChart2Wizard: Wizard(), RefreshableWizard {
-    val barChart2Vm: BarChart2WizardViewModel by inject()
+class BarChart1Wizard: Wizard(), RefreshableWizard {
+    val barChart1Vm: BarChart1WizardViewModel by inject()
 
     init {
-        title = "Bar chart 2"
-        heading = "Comparison of issue counts in a given pair of weeks for a given team/seminar group"
+        title = "Bar chart 1"
+        heading = "Issue counts in a given week for a given team/seminar group"
         graphic = label {
             graphic = FontIcon(FontAwesomeSolid.CHART_BAR)
             style  {
@@ -26,7 +26,7 @@ class BarChart2Wizard: Wizard(), RefreshableWizard {
         )))
 
         add(find<WeekChooserStep>())
-        barChart2Vm.validate(decorateErrors = false)
+        barChart1Vm.validate(decorateErrors = false)
     }
 
     override fun onBeforeShow() {
@@ -34,7 +34,7 @@ class BarChart2Wizard: Wizard(), RefreshableWizard {
     }
 
     private fun resetWizard() {
-        barChart2Vm.clear()
+        barChart1Vm.clear()
         refreshAllPages()
         isComplete = false
         currentPage = pages[0]
@@ -45,7 +45,7 @@ class BarChart2Wizard: Wizard(), RefreshableWizard {
     }
 
     override fun onSave() {
-        isComplete = barChart2Vm.commit()
+        isComplete = barChart1Vm.commit()
     }
 }
 

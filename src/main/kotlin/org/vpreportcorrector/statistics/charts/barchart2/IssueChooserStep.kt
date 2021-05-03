@@ -1,4 +1,4 @@
-package org.vpreportcorrector.statistics.barchart2
+package org.vpreportcorrector.statistics.charts.barchart2
 
 import javafx.beans.binding.Bindings
 import javafx.beans.binding.BooleanBinding
