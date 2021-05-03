@@ -1,4 +1,4 @@
-package org.vpreportcorrector.statistics.barchart2
+package org.vpreportcorrector.statistics.charts.barchart2
 
 import javafx.application.Platform
 import javafx.collections.SetChangeListener
@@ -6,6 +6,7 @@ import org.jfree.chart.ChartFactory
 import org.jfree.chart.JFreeChart
 import org.jfree.chart.axis.AxisLocation
 import org.jfree.chart.plot.PlotOrientation
+import org.jfree.chart.renderer.category.BarRenderer
 import org.jfree.data.category.DefaultCategoryDataset
 import org.vpreportcorrector.app.errorhandling.ErrorCollector
 import org.vpreportcorrector.enums.DiagramIssue
@@ -192,6 +193,9 @@ class BarChart2WizardViewModel(modelItem: BarChart2WizardParameters = BarChart2W
             false
         )
         chart.categoryPlot.rangeAxisLocation = AxisLocation.BOTTOM_OR_LEFT
+        val barRenderer = chart.categoryPlot.renderer as BarRenderer
+        barRenderer.itemMargin = 0.0
+
         return chart
     }
 

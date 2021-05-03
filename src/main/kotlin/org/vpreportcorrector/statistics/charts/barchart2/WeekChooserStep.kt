@@ -1,15 +1,17 @@
-package org.vpreportcorrector.statistics.barchart2
+package org.vpreportcorrector.statistics.charts.barchart2
 
 import javafx.beans.binding.BooleanBinding
 import javafx.beans.binding.StringBinding
-import javafx.scene.layout.Priority
 import org.vpreportcorrector.statistics.components.WeekSingleSelect
 import org.vpreportcorrector.statistics.components.WizardPageView
 import tornadofx.*
 
 class WeekChooserStep : WizardPageView("Select weeks") {
     val vm: BarChart2WizardViewModel by inject()
-    override val isPageValid: BooleanBinding = vm.week1.isNotNull.and(vm.week2.isNotNull)
+    private val sameWeekNumber = booleanBinding(this, vm.week1, vm.week2) {
+        weeksHaveEqualNumbers()
+    }
+    override val isPageValid: BooleanBinding = vm.week1.isNotNull.and(vm.week2.isNotNull).and(sameWeekNumber.not())
     override val errorMessage: StringBinding = stringBinding(this, vm.week1, vm.week2) {
         if (vm.week1.value == null && vm.week2.value == null)
             "No weeks selected."
