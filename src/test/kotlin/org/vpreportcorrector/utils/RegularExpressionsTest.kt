@@ -16,11 +16,22 @@ internal class RegularExpressionsTest {
                 assertTrue(REGEX_WEEK_FOLDER.matches(it), "Expression should match '${it}'.")
             }
         }
+        private fun testShouldPartiallyMatch(strings: List<String>) {
+            strings.forEach {
+                assertTrue(REGEX_WEEK_FOLDER.containsMatchIn(it), "Expression should  partially match '${it}'.")
+            }
+        }
         private fun testShouldNotMatch(strings: List<String>) {
             strings.forEach {
                 assertFalse(REGEX_WEEK_FOLDER.matches(it), "Expression should NOT match '${it}'.")
             }
         }
+        private fun testShouldNotPartiallyMatch(strings: List<String>) {
+            strings.forEach {
+                assertFalse(REGEX_WEEK_FOLDER.containsMatchIn(it), "Expression should NOT partially match '${it}'.")
+            }
+        }
+
         @Test
         fun `should match english, czech and slovak 'week' with number in the front`() {
             testShouldMatch(
@@ -74,6 +85,19 @@ internal class RegularExpressionsTest {
         }
 
         @Test
+        fun `should match english, czech and slovak 'week' partially (with other text included)`() {
+            testShouldPartiallyMatch(
+                listOf(
+                    "WEEK 1 (though week)", "(difficult week) weEk1",
+                    "lorem ipsum TÝDEN 1", "impsum tÝden1 lorem",
+                    "dolor color_TYDEN 1", " dolor tydEn1",
+                    "TÝŽDEŇ 1-latinis", "týždEň1_lorem",
+                    "loremt-TYZDEN 6541", "loremtyzDen001",
+                )
+            )
+        }
+
+        @Test
         fun `should also accept '_' and '-' as separators`() {
             testShouldMatch(
                 listOf(
@@ -81,6 +105,22 @@ internal class RegularExpressionsTest {
                     "1__týden", "1--týden",
                     "tyden_1", "tyden-1",
                     "týždeň___1", "týždeň---1",
+                )
+            )
+        }
+
+        @Test
+        fun `should not match 'week' expression with text in between the 'week' and its number `() {
+            testShouldNotPartiallyMatch(
+                listOf(
+                    "WEEK lorem ipsum 1",
+                    "TÝDEN_lorem ipsum 1",
+                    "TYDEN_color 1",
+                    "TYDEN_color_1",
+                    "TYDENcolor_1",
+                    "TÝŽDEŇ-skdjhfvsj-1",
+                    "TYZDEN sdgd-6541",
+                    "TYZDEN-sdgd6541",
                 )
             )
         }
@@ -140,11 +180,22 @@ internal class RegularExpressionsTest {
                 assertTrue(REGEX_TEAM_FOLDER.matches(it), "Expression should match '${it}'.")
             }
         }
+        private fun testShouldPartiallyMatch(strings: List<String>) {
+            strings.forEach {
+                assertTrue(REGEX_TEAM_FOLDER.containsMatchIn(it), "Expression should partially match '${it}'.")
+            }
+        }
         private fun testShouldNotMatch(strings: List<String>) {
             strings.forEach {
                 assertFalse(REGEX_TEAM_FOLDER.matches(it), "Expression should NOT match '${it}'.")
             }
         }
+        private fun testShouldNotPartiallyMatch(strings: List<String>) {
+            strings.forEach {
+                assertFalse(REGEX_TEAM_FOLDER.containsMatchIn(it), "Expression should NOT match '${it}'.")
+            }
+        }
+
         @Test
         fun `should match english, czech and slovak 'team' with number in the front`() {
             testShouldMatch(
@@ -198,6 +249,22 @@ internal class RegularExpressionsTest {
         }
 
         @Test
+        fun `should match english, czech and slovak 'team' partially`() {
+            testShouldPartiallyMatch(
+                listOf(
+                    "lorem ipsum TEAM 005", "teAm005_lorem",
+                    "dolor lorem_005 TEAM", "005teAm-lorem",
+                    "lorem-TÝM 5", "tÝm  005 lorem",
+                    "lorem 5 TÝM", "005 tÝm_lorem ipsum dolor",
+                    "lorem TYM 25", "Tym 255-lorem ipsum dolor",
+                    "lorem_25 TYM", "255 Tym--lorem ipsum dolor",
+                    "lorem-TÍM 005", "TíM5__lorem ipsum dolor",
+                    "lorem 005 TÍM", "5TíM lorem ipsum dolor",
+                )
+            )
+        }
+
+        @Test
         fun `should also accept '_' and '-' as separators`() {
             testShouldMatch(
                 listOf(
@@ -205,6 +272,23 @@ internal class RegularExpressionsTest {
                     "1__tým", "1--tým",
                     "tím_1", "tím-1",
                     "tim___1", "tim---1",
+                )
+            )
+        }
+
+        @Test
+        fun `should not match 'team' with text between the 'team' and its number`() {
+            testShouldNotPartiallyMatch(
+                listOf(
+                    "TEAM lorem 005",
+                    "005-lorem TEAM",
+                    "TÝM-lorem-5",
+                    "5 lorem-TÝM",
+                    "005_skefg tÝm",
+                    "TYM_dhd 25",
+                    "Tym edhed_255",
+                    "25_sgh_TYM",
+                    "255 dfhd Tym",
                 )
             )
         }

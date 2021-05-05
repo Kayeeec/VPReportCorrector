@@ -8,7 +8,6 @@ import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.reflect.KFunction1
-import kotlin.streams.toList
 
 object FileTreeHelpers {
     val REGEX_WEEK_FOLDER = Regex(
@@ -136,12 +135,12 @@ object FileTreeHelpers {
     }
 
     fun matchesWeek(folderName: String): Boolean {
-        return REGEX_WEEK_FOLDER.matches(folderName)
+        return REGEX_WEEK_FOLDER.containsMatchIn(folderName)
     }
 
 
     fun matchesTeam(folderName: String): Boolean {
-        return REGEX_TEAM_FOLDER.matches(folderName)
+        return REGEX_TEAM_FOLDER.containsMatchIn(folderName)
     }
 
     /**
@@ -218,14 +217,6 @@ object FileTreeHelpers {
     private fun getNumberFromString(string: String): Int {
         val numberStr = string.replace(Regex("[^0-9]"), "").replaceFirst(Regex("^0+(?!$)"), "")
         return Integer.parseInt(numberStr)
-    }
-
-    private fun matchesWeek(string: String, number: Int): Boolean {
-        return string.matches(REGEX_WEEK_FOLDER) && getNumberFromString(string) == number
-    }
-
-    private fun matchesTeam(string: String, number: Int): Boolean {
-        return string.matches(REGEX_TEAM_FOLDER) && getNumberFromString(string) == number
     }
 
     fun getWeek(path: String): Int? {
