@@ -5,13 +5,17 @@ import javafx.collections.SetChangeListener
 import org.jfree.chart.ChartFactory
 import org.jfree.chart.JFreeChart
 import org.jfree.chart.axis.AxisLocation
+import org.jfree.chart.axis.NumberAxis
 import org.jfree.chart.plot.PlotOrientation
+import org.jfree.chart.renderer.category.BarRenderer
 import org.jfree.data.category.DefaultCategoryDataset
 import org.vpreportcorrector.app.errorhandling.ErrorCollector
 import org.vpreportcorrector.enums.DiagramIssue
 import org.vpreportcorrector.enums.DiagramIssueGroup
 import org.vpreportcorrector.statistics.NoDatasetCollector
 import org.vpreportcorrector.statistics.PdfFileData
+import org.vpreportcorrector.statistics.charts.ChartHelpers.removeBarGradientAndAddItemLabels
+import org.vpreportcorrector.statistics.charts.ChartHelpers.setBackgroundAndGridColor
 import org.vpreportcorrector.statistics.components.Team
 import org.vpreportcorrector.statistics.enums.DataSelectMode
 import org.vpreportcorrector.statistics.enums.IssueChooserMode
@@ -19,6 +23,14 @@ import org.vpreportcorrector.utils.FileTreeHelpers
 import org.vpreportcorrector.utils.t
 import tornadofx.*
 import java.io.File
+import kotlin.collections.List
+import kotlin.collections.filterNotNull
+import kotlin.collections.forEach
+import kotlin.collections.map
+import kotlin.collections.mapIndexed
+import kotlin.collections.mutableMapOf
+import kotlin.collections.none
+import kotlin.collections.set
 
 class BarChart1WizardViewModel(modelItem: BarChart1WizardParameters = BarChart1WizardParameters()) :
     ItemViewModel<BarChart1WizardParameters>(modelItem) {
@@ -153,7 +165,14 @@ class BarChart1WizardViewModel(modelItem: BarChart1WizardParameters = BarChart1W
             true,
             false
         )
-        chart.categoryPlot.rangeAxisLocation = AxisLocation.BOTTOM_OR_LEFT
+        if (chart != null) {
+            val plot = chart.categoryPlot
+            plot.rangeAxisLocation = AxisLocation.BOTTOM_OR_LEFT
+            plot.rangeAxis.standardTickUnits = NumberAxis.createIntegerTickUnits()
+            plot.setBackgroundAndGridColor()
+            val renderer = plot?.renderer as BarRenderer?
+            renderer?.removeBarGradientAndAddItemLabels()
+        }
         return chart
     }
 

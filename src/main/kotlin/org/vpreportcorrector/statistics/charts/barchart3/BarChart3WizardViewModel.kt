@@ -6,9 +6,11 @@ import javafx.collections.SetChangeListener
 import org.jfree.chart.ChartFactory
 import org.jfree.chart.JFreeChart
 import org.jfree.chart.axis.CategoryLabelPositions
+import org.jfree.chart.axis.NumberAxis
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator
 import org.jfree.chart.plot.PlotOrientation
 import org.jfree.chart.renderer.category.StackedBarRenderer
+import org.jfree.chart.renderer.category.StandardBarPainter
 import org.jfree.chart.title.TextTitle
 import org.jfree.chart.ui.HorizontalAlignment
 import org.jfree.chart.ui.RectangleInsets
@@ -17,6 +19,7 @@ import org.vpreportcorrector.enums.DiagramIssueGroup
 import org.vpreportcorrector.statistics.NoDatasetCollector
 import org.vpreportcorrector.statistics.PdfFileData
 import org.vpreportcorrector.statistics.charts.ChartHelpers
+import org.vpreportcorrector.statistics.charts.ChartHelpers.setBackgroundAndGridColor
 import org.vpreportcorrector.statistics.components.Team
 import org.vpreportcorrector.statistics.components.Week
 import org.vpreportcorrector.utils.FileTreeHelpers
@@ -68,9 +71,12 @@ class BarChart3WizardViewModel(modelItem: BarChart3WizardParameters = BarChart3W
         if (graph != null) {
             val plot = graph.categoryPlot
             val renderer = plot?.renderer as StackedBarRenderer?
+            renderer?.barPainter = StandardBarPainter()
             renderer?.defaultItemLabelGenerator = StandardCategoryItemLabelGenerator()
             renderer?.defaultItemLabelsVisible = true
             graph.addSubtitle(getDetailsSubtitles())
+            plot.setBackgroundAndGridColor()
+            plot.rangeAxis.standardTickUnits = NumberAxis.createIntegerTickUnits()
         }
 
         Platform.runLater {

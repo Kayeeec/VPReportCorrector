@@ -1,9 +1,14 @@
 package org.vpreportcorrector.statistics.charts
 
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator
+import org.jfree.chart.plot.CategoryPlot
+import org.jfree.chart.renderer.category.BarRenderer
+import org.jfree.chart.renderer.category.StandardBarPainter
 import org.jfree.chart.title.TextTitle
 import org.jfree.chart.ui.HorizontalAlignment
 import org.jfree.chart.ui.RectangleInsets
 import org.vpreportcorrector.utils.Helpers.getWorkingDirectory
+import java.awt.Color
 import java.awt.Font
 import java.io.File
 
@@ -26,6 +31,19 @@ object ChartHelpers {
 
     fun isHiddenDetailsTitle(o: Any?): Boolean {
         return o != null && o is TextTitle && !o.visible && o.id == HIDDEN_DETAILS_TITLE
+    }
+
+    fun BarRenderer.removeBarGradientAndAddItemLabels() {
+        this.barPainter = StandardBarPainter()
+        this.defaultItemLabelGenerator = StandardCategoryItemLabelGenerator()
+        this.defaultItemLabelsVisible = true
+        this.defaultItemLabelPaint = Color.BLACK
+    }
+
+    fun CategoryPlot.setBackgroundAndGridColor() {
+        this.backgroundPaint = Color.WHITE
+        this.domainGridlinePaint = Color.GRAY
+        this.rangeGridlinePaint = Color.GRAY
     }
 
 }

@@ -5,6 +5,7 @@ import javafx.collections.SetChangeListener
 import org.jfree.chart.ChartFactory
 import org.jfree.chart.JFreeChart
 import org.jfree.chart.axis.AxisLocation
+import org.jfree.chart.axis.NumberAxis
 import org.jfree.chart.plot.PlotOrientation
 import org.jfree.chart.renderer.category.BarRenderer
 import org.jfree.data.category.DefaultCategoryDataset
@@ -13,6 +14,8 @@ import org.vpreportcorrector.enums.DiagramIssue
 import org.vpreportcorrector.enums.DiagramIssueGroup
 import org.vpreportcorrector.statistics.NoDatasetCollector
 import org.vpreportcorrector.statistics.PdfFileData
+import org.vpreportcorrector.statistics.charts.ChartHelpers.removeBarGradientAndAddItemLabels
+import org.vpreportcorrector.statistics.charts.ChartHelpers.setBackgroundAndGridColor
 import org.vpreportcorrector.statistics.components.Team
 import org.vpreportcorrector.statistics.enums.DataSelectMode
 import org.vpreportcorrector.statistics.enums.IssueChooserMode
@@ -193,8 +196,11 @@ class BarChart2WizardViewModel(modelItem: BarChart2WizardParameters = BarChart2W
             false
         )
         chart.categoryPlot.rangeAxisLocation = AxisLocation.BOTTOM_OR_LEFT
+        chart.categoryPlot.rangeAxis.standardTickUnits = NumberAxis.createIntegerTickUnits()
         val barRenderer = chart.categoryPlot.renderer as BarRenderer
         barRenderer.itemMargin = 0.0
+        chart.categoryPlot.setBackgroundAndGridColor()
+        barRenderer.removeBarGradientAndAddItemLabels()
 
         return chart
     }
