@@ -1,8 +1,8 @@
 package org.umlreviewer.utils.file
 
 import org.umlreviewer.utils.AppConstants
-import org.umlreviewer.utils.Helpers
-import org.umlreviewer.utils.Helpers.getWorkingDirectory
+import org.umlreviewer.utils.PreferencesHelper
+import org.umlreviewer.utils.PreferencesHelper.getWorkingDirectory
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.NoSuchFileException
@@ -40,7 +40,7 @@ object FileTreeHelpers {
     }
 
     fun getJsonFilePath(path: Path): Path {
-        val workdir = Helpers.getWorkingDirectory()?.toFile() ?: error("Can't get relative path because working directory is null.")
+        val workdir = PreferencesHelper.getWorkingDirectory()?.toFile() ?: error("Can't get relative path because working directory is null.")
         val relativeParent: File? = path.toFile().relativeTo(workdir).parentFile
         val jsonFileName = "${path.toFile().nameWithoutExtension}.json"
         return Paths.get(workdir.absolutePath, AppConstants.DATA_FOLDER_NAME, relativeParent?.path ?: "" , jsonFileName)

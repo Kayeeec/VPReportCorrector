@@ -5,7 +5,7 @@ import javafx.scene.layout.Priority
 import javafx.util.Duration
 import org.kordamp.ikonli.bootstrapicons.BootstrapIcons
 import org.kordamp.ikonli.javafx.FontIcon
-import org.umlreviewer.app.Styles
+import org.umlreviewer.styles.Styles
 import org.umlreviewer.components.collapseAll
 import org.umlreviewer.components.expandAll
 import org.umlreviewer.diagram.*

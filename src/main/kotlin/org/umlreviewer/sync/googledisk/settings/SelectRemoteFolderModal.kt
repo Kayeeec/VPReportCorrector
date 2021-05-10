@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
-import org.umlreviewer.app.Styles.Companion.paddedContainer
+import org.umlreviewer.styles.Styles.Companion.paddedContainer
 import org.umlreviewer.utils.t
 import tornadofx.*
 import tornadofx.getValue

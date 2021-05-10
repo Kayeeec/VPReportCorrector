@@ -3,7 +3,7 @@ package org.umlreviewer.sync.git.settings
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import org.umlreviewer.settings.LoadableAndSavable
-import org.umlreviewer.utils.Helpers.preferencesHelper
+import org.umlreviewer.utils.PreferencesHelper.preferencesHelper
 import tornadofx.getValue
 import tornadofx.setValue
 import java.nio.file.Files

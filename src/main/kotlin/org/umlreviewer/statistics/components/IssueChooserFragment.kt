@@ -9,7 +9,7 @@ import javafx.scene.layout.Priority
 import org.controlsfx.control.CheckTreeView
 import org.kordamp.ikonli.bootstrapicons.BootstrapIcons
 import org.kordamp.ikonli.javafx.FontIcon
-import org.umlreviewer.app.Styles
+import org.umlreviewer.styles.Styles
 import org.umlreviewer.components.collapseAll
 import org.umlreviewer.components.expandAll
 import org.umlreviewer.enums.DiagramIssue

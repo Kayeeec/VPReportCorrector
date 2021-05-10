@@ -1,4 +1,4 @@
-package org.umlreviewer.app.errorhandling
+package org.umlreviewer.errorhandling
 
 import javafx.application.Platform.runLater
 import javafx.scene.control.Alert

@@ -5,7 +5,7 @@ import javafx.stage.Modality
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang3.SystemUtils
-import org.umlreviewer.app.errorhandling.ErrorCollector
+import org.umlreviewer.errorhandling.ErrorCollector
 import org.umlreviewer.utils.file.dialogs.*
 import tornadofx.Scope
 import tornadofx.find

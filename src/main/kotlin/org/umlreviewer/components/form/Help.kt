@@ -5,8 +5,8 @@ import javafx.scene.control.Label
 import javafx.util.Duration
 import org.kordamp.ikonli.fontawesome5.FontAwesomeRegular
 import org.kordamp.ikonli.javafx.FontIcon
-import org.umlreviewer.app.Styles.Companion.helpIcon
-import org.umlreviewer.app.Styles.Companion.helpLabel
+import org.umlreviewer.styles.Styles.Companion.helpIcon
+import org.umlreviewer.styles.Styles.Companion.helpLabel
 import tornadofx.addClass
 import tornadofx.attachTo
 import tornadofx.tooltip

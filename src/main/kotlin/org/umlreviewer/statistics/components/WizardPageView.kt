@@ -5,7 +5,7 @@ import javafx.beans.binding.StringBinding
 import javafx.scene.Node
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
-import org.umlreviewer.app.Styles
+import org.umlreviewer.styles.Styles
 import tornadofx.*
 
 abstract class WizardPageView(title: String? = null, icon: Node? = null): View(title, icon), RefreshableInputComponent {

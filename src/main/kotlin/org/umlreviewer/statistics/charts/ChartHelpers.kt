@@ -7,7 +7,7 @@ import org.jfree.chart.renderer.category.StandardBarPainter
 import org.jfree.chart.title.TextTitle
 import org.jfree.chart.ui.HorizontalAlignment
 import org.jfree.chart.ui.RectangleInsets
-import org.umlreviewer.utils.Helpers.getWorkingDirectory
+import org.umlreviewer.utils.PreferencesHelper.getWorkingDirectory
 import java.awt.Color
 import java.awt.Font
 import java.io.File

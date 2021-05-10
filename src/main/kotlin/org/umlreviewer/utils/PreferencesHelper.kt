@@ -6,7 +6,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.prefs.Preferences
 
-object Helpers {
+object PreferencesHelper {
     fun preferencesHelper(op: Preferences.() -> Unit) {
         val node = Preferences.userRoot().node(PREFERENCES_NODE)
         op(node)

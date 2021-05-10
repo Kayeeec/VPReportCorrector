@@ -2,7 +2,7 @@ package org.umlreviewer.utils
 
 import javafx.event.EventTarget
 import javafx.scene.text.TextFlow
-import org.umlreviewer.app.Styles
+import org.umlreviewer.styles.Styles
 import tornadofx.addClass
 import tornadofx.attachTo
 import tornadofx.text

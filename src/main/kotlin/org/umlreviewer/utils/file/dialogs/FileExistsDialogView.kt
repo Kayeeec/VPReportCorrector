@@ -8,10 +8,10 @@ import javafx.scene.control.ButtonBar
 import javafx.scene.control.ToggleGroup
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
-import org.umlreviewer.app.Styles.Companion.paddedContainer
-import org.umlreviewer.app.Styles.Companion.icon48
-import org.umlreviewer.app.Styles.Companion.iconBlue
-import org.umlreviewer.app.Styles.Companion.p
+import org.umlreviewer.styles.Styles.Companion.paddedContainer
+import org.umlreviewer.styles.Styles.Companion.icon48
+import org.umlreviewer.styles.Styles.Companion.iconBlue
+import org.umlreviewer.styles.Styles.Companion.p
 import org.umlreviewer.utils.file.FileConflictChoice
 import org.umlreviewer.utils.file.suggestName
 import tornadofx.*

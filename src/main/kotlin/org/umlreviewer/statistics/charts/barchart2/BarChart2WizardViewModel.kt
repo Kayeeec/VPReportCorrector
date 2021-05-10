@@ -9,7 +9,7 @@ import org.jfree.chart.axis.NumberAxis
 import org.jfree.chart.plot.PlotOrientation
 import org.jfree.chart.renderer.category.BarRenderer
 import org.jfree.data.category.DefaultCategoryDataset
-import org.umlreviewer.app.errorhandling.ErrorCollector
+import org.umlreviewer.errorhandling.ErrorCollector
 import org.umlreviewer.enums.DiagramIssue
 import org.umlreviewer.enums.DiagramIssueGroup
 import org.umlreviewer.statistics.NoDatasetCollector

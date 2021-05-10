@@ -2,13 +2,13 @@ package org.umlreviewer.sync
 
 import javafx.beans.binding.BooleanBinding
 import javafx.beans.property.SimpleObjectProperty
-import org.umlreviewer.app.RefreshFilesExplorer
-import org.umlreviewer.app.RequestSync
-import org.umlreviewer.app.SettingsChanged
-import org.umlreviewer.app.errorhandling.errorWithStacktrace
+import org.umlreviewer.RefreshFilesExplorer
+import org.umlreviewer.RequestSync
+import org.umlreviewer.SettingsChanged
+import org.umlreviewer.errorhandling.errorWithStacktrace
 import org.umlreviewer.settings.SettingsPreferencesKey
 import org.umlreviewer.sync.git.GitSyncService
-import org.umlreviewer.utils.Helpers
+import org.umlreviewer.utils.PreferencesHelper
 import org.umlreviewer.utils.file.FileTreeHelpers.cleanDataDirectory
 import org.umlreviewer.utils.enumValueOrNull
 import tornadofx.Controller
@@ -103,7 +103,7 @@ class SyncController: Controller() {
 
     private fun getRemoteRepositoryType(): RemoteRepo? {
         var result = ""
-        Helpers.preferencesHelper {
+        PreferencesHelper.preferencesHelper {
             sync()
             result = get(SettingsPreferencesKey.REMOTE_REPOSITORY, RemoteRepo.default.name)
         }

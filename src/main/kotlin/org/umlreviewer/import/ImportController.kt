@@ -2,7 +2,7 @@ package org.umlreviewer.import
 
 import VisualParadigmPdfToPdfDiagramExtractor
 import javafx.application.Platform
-import org.umlreviewer.app.errorhandling.ErrorCollector
+import org.umlreviewer.errorhandling.ErrorCollector
 import org.umlreviewer.utils.file.FileConflictChoice
 import org.umlreviewer.utils.file.copyFiles
 import org.umlreviewer.utils.file.isPdf

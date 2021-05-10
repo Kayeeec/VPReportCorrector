@@ -4,7 +4,7 @@ import javafx.beans.binding.Bindings
 import javafx.beans.binding.BooleanBinding
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
-import org.umlreviewer.app.Styles.Companion.textError
+import org.umlreviewer.styles.Styles.Companion.textError
 import org.umlreviewer.statistics.components.IssueChooserFragment
 import org.umlreviewer.statistics.components.WizardPageView
 import org.umlreviewer.statistics.enums.IssueChooserMode

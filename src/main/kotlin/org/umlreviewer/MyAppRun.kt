@@ -1,4 +1,4 @@
-package org.umlreviewer.app
+package org.umlreviewer
 
 class MyAppRun {
     companion object {

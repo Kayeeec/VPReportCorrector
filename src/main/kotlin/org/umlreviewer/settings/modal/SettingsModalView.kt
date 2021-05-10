@@ -1,6 +1,6 @@
 package org.umlreviewer.settings.modal
 
-import org.umlreviewer.app.Styles
+import org.umlreviewer.styles.Styles
 import org.umlreviewer.components.form.loadingOverlay
 import org.umlreviewer.settings.general.GeneralSettingsView
 import org.umlreviewer.sync.RemoteRepo

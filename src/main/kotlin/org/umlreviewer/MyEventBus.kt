@@ -1,4 +1,4 @@
-package org.umlreviewer.app
+package org.umlreviewer
 
 import tornadofx.FXEvent
 import java.nio.file.Path

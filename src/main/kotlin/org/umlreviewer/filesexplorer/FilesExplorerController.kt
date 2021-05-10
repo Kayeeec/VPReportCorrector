@@ -4,7 +4,7 @@ import javafx.application.Platform
 import javafx.scene.control.MultipleSelectionModel
 import javafx.scene.control.TreeItem
 import javafx.stage.Modality
-import org.umlreviewer.app.errorhandling.ErrorCollector
+import org.umlreviewer.errorhandling.ErrorCollector
 import org.umlreviewer.filesexplorer.dialogs.*
 import org.umlreviewer.import.openSimpleImportDialog
 import org.umlreviewer.mergepdfs.MergePdfsDialogView

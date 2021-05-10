@@ -7,7 +7,7 @@ import javafx.geometry.Orientation
 import javafx.scene.layout.Priority
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
-import org.umlreviewer.app.Styles
+import org.umlreviewer.styles.Styles
 import org.umlreviewer.utils.file.FileTreeHelpers.getFolderNameInfoOrWarning
 import org.umlreviewer.utils.file.FolderMessageType
 import org.umlreviewer.utils.file.FolderNameMessage

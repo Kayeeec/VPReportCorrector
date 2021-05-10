@@ -6,8 +6,8 @@ import javafx.scene.control.TreeView
 import javafx.scene.layout.Priority
 import org.kordamp.ikonli.bootstrapicons.BootstrapIcons
 import org.kordamp.ikonli.javafx.FontIcon
-import org.umlreviewer.app.Styles
-import org.umlreviewer.app.Styles.Companion.treeToolbar
+import org.umlreviewer.styles.Styles
+import org.umlreviewer.styles.Styles.Companion.treeToolbar
 import org.umlreviewer.utils.t
 import tornadofx.*
 

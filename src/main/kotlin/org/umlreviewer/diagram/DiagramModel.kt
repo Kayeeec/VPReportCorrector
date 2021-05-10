@@ -6,7 +6,7 @@ import javafx.collections.ObservableSet
 import org.icepdf.ri.common.ViewModel
 import org.umlreviewer.enums.DiagramIssue
 import org.umlreviewer.utils.AppConstants.DATA_FOLDER_NAME
-import org.umlreviewer.utils.Helpers.getWorkingDirectory
+import org.umlreviewer.utils.PreferencesHelper.getWorkingDirectory
 import tornadofx.*
 import java.io.BufferedOutputStream
 import java.io.File

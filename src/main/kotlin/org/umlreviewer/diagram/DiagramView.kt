@@ -11,8 +11,8 @@ import org.icepdf.ri.util.FontPropertiesManager
 import org.icepdf.ri.util.ViewerPropertiesManager
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
-import org.umlreviewer.app.ResizeEditorEvent
-import org.umlreviewer.app.Styles
+import org.umlreviewer.ResizeEditorEvent
+import org.umlreviewer.styles.Styles
 import org.umlreviewer.components.form.loadingOverlay
 import org.umlreviewer.diagram.DiagramViewConstants.DEFAULT_PDF_VIEWER_ICON_SIZE
 import org.umlreviewer.diagram.components.CustomSwingNode
@@ -23,7 +23,6 @@ import tornadofx.*
 import java.awt.Dimension
 import javax.swing.SwingUtilities
 
-// TODO: add conditional pager
 class DiagramView : View() {
     private val vm: DiagramViewModel by inject()
     private val diagramErrorsDrawer = find<DiagramErrorsDrawerView>(scope)

@@ -7,11 +7,11 @@ import javafx.stage.FileChooser
 import org.kordamp.ikonli.fontawesome5.FontAwesomeRegular
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
-import org.umlreviewer.app.RefreshFilesExplorer
-import org.umlreviewer.app.SettingsChanged
-import org.umlreviewer.app.Styles
+import org.umlreviewer.RefreshFilesExplorer
+import org.umlreviewer.SettingsChanged
+import org.umlreviewer.styles.Styles
 import org.umlreviewer.components.form.loadingOverlay
-import org.umlreviewer.utils.Helpers.getWorkingDirectory
+import org.umlreviewer.utils.PreferencesHelper.getWorkingDirectory
 import org.umlreviewer.utils.file.getUserHomeDirectory
 import org.umlreviewer.utils.file.isWithinOrEqual
 import org.umlreviewer.utils.t

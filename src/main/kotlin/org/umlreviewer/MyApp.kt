@@ -1,10 +1,11 @@
-package org.umlreviewer.app
+package org.umlreviewer
 
 import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.Scene
 import javafx.stage.Stage
-import org.umlreviewer.app.errorhandling.UncaughtErrorHandler
+import org.umlreviewer.styles.Styles
+import org.umlreviewer.errorhandling.UncaughtErrorHandler
 import org.umlreviewer.mainview.MainView
 import org.umlreviewer.mainview.content.ContentViewModel
 import org.umlreviewer.sync.SyncController

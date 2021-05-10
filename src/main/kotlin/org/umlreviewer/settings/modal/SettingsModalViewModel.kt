@@ -2,7 +2,7 @@ package org.umlreviewer.settings.modal
 
 import javafx.beans.binding.BooleanBinding
 import javafx.beans.property.ReadOnlyObjectProperty
-import org.umlreviewer.app.SettingsChanged
+import org.umlreviewer.SettingsChanged
 import org.umlreviewer.components.LoadingLatch
 import org.umlreviewer.components.WithLoading
 import org.umlreviewer.settings.general.GeneralSettingsViewModel

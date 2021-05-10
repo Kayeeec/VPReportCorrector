@@ -7,7 +7,7 @@ import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
 import org.apache.pdfbox.pdmodel.common.PDRectangle
 import org.jfree.chart.JFreeChart
-import org.umlreviewer.app.errorhandling.errorWithStacktrace
+import org.umlreviewer.errorhandling.errorWithStacktrace
 import org.umlreviewer.utils.DesktopApi
 import org.umlreviewer.utils.file.getUserHomeDirectory
 import org.umlreviewer.utils.t

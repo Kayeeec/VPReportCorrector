@@ -5,7 +5,7 @@ import javafx.scene.Node
 import javafx.scene.control.SplitPane
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
-import org.umlreviewer.app.Styles
+import org.umlreviewer.styles.Styles
 import org.umlreviewer.filesexplorer.FilesExplorerView
 import org.umlreviewer.mainview.content.ContentView
 import org.umlreviewer.utils.t

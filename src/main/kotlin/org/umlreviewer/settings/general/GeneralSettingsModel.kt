@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleStringProperty
 import org.umlreviewer.settings.LoadableAndSavable
 import org.umlreviewer.settings.SettingsPreferencesKey
 import org.umlreviewer.sync.RemoteRepo
-import org.umlreviewer.utils.Helpers.preferencesHelper
+import org.umlreviewer.utils.PreferencesHelper.preferencesHelper
 import org.umlreviewer.utils.enumValueOrNull
 import tornadofx.getValue
 import tornadofx.setValue

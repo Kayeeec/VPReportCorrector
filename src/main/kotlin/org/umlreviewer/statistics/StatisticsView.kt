@@ -5,9 +5,9 @@ import org.jfree.chart.JFreeChart
 import org.jfree.chart.title.TextTitle
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
-import org.umlreviewer.app.AppColors
-import org.umlreviewer.app.Styles
-import org.umlreviewer.app.errorhandling.errorWithStacktrace
+import org.umlreviewer.styles.AppColors
+import org.umlreviewer.styles.Styles
+import org.umlreviewer.errorhandling.errorWithStacktrace
 import org.umlreviewer.components.NoSelectionModel
 import org.umlreviewer.components.form.loadingOverlay
 import org.umlreviewer.statistics.charts.barchart1.BarChart1Wizard

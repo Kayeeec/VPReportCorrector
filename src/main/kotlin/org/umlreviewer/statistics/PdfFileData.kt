@@ -3,7 +3,7 @@ package org.umlreviewer.statistics
 import org.umlreviewer.enums.DiagramIssue
 import org.umlreviewer.enums.DiagramIssueGroup
 import org.umlreviewer.utils.file.FileTreeHelpers
-import org.umlreviewer.utils.Helpers
+import org.umlreviewer.utils.PreferencesHelper
 import java.io.File
 
 data class PdfFileData(
@@ -17,7 +17,7 @@ data class PdfFileData(
     val issueGroups = mutableSetOf<DiagramIssueGroup>()
 
     init {
-        val workdir = Helpers.getWorkingDirectory()?.toFile()
+        val workdir = PreferencesHelper.getWorkingDirectory()?.toFile()
         relativePath = if (workdir != null) pdfFile.relativeTo(workdir).toString() else pdfFile.path
         week = FileTreeHelpers.getWeek(relativePath)
         team = FileTreeHelpers.getTeam(relativePath)

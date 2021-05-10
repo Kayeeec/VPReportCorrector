@@ -6,8 +6,8 @@ import javafx.scene.control.ButtonType
 import org.icepdf.core.pobjects.annotations.Annotation
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
-import org.umlreviewer.app.DiagramToggleEditModeEvent
-import org.umlreviewer.app.DiagramSavedEvent
+import org.umlreviewer.DiagramToggleEditModeEvent
+import org.umlreviewer.DiagramSavedEvent
 import org.umlreviewer.components.LoadingLatch
 import org.umlreviewer.components.WithLoading
 import org.umlreviewer.enums.DiagramIssue

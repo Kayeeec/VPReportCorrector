@@ -17,7 +17,7 @@ import org.umlreviewer.sync.git.exceptions.GitSyncServiceException
 import org.umlreviewer.sync.git.settings.GitProtocol
 import org.umlreviewer.sync.git.settings.GitSettingsModel
 import org.umlreviewer.utils.*
-import org.umlreviewer.utils.Helpers.getWorkingDirectory
+import org.umlreviewer.utils.PreferencesHelper.getWorkingDirectory
 import org.umlreviewer.utils.file.FileConflictChoice
 import org.umlreviewer.utils.file.copyFiles
 import org.umlreviewer.utils.file.deleteDirectoryStream
