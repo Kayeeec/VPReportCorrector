@@ -11,7 +11,7 @@ import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import org.umlreviewer.sync.SyncConstants
 import org.umlreviewer.utils.AppConstants
-import org.umlreviewer.utils.getUserHomeDirectory
+import org.umlreviewer.utils.file.getUserHomeDirectory
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader

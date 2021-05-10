@@ -3,7 +3,7 @@ package org.umlreviewer.sync.git.settings
 import javafx.scene.layout.Priority
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
-import org.umlreviewer.utils.getUserHomeDirectory
+import org.umlreviewer.utils.file.getUserHomeDirectory
 import tornadofx.*
 
 class GitSettingsView : View() {

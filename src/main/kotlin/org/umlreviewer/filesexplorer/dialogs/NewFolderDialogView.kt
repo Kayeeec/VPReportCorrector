@@ -8,10 +8,10 @@ import javafx.scene.layout.Priority
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
 import org.umlreviewer.app.Styles
-import org.umlreviewer.utils.FileTreeHelpers.getFolderNameInfoOrWarning
-import org.umlreviewer.utils.FolderMessageType
-import org.umlreviewer.utils.FolderNameMessage
-import org.umlreviewer.utils.isValidFileName
+import org.umlreviewer.utils.file.FileTreeHelpers.getFolderNameInfoOrWarning
+import org.umlreviewer.utils.file.FolderMessageType
+import org.umlreviewer.utils.file.FolderNameMessage
+import org.umlreviewer.utils.file.isValidFileName
 import org.umlreviewer.utils.t
 import tornadofx.*
 import java.io.File

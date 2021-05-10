@@ -10,7 +10,7 @@ import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.lib.RepositoryState
 import org.eclipse.jgit.transport.*
 import org.eclipse.jgit.util.FS
-import org.umlreviewer.filesexplorer.dialogs.RememberChoice
+import org.umlreviewer.utils.file.dialogs.RememberChoice
 import org.umlreviewer.sync.ReinitializationParameters
 import org.umlreviewer.sync.SyncService
 import org.umlreviewer.sync.git.exceptions.GitSyncServiceException
@@ -18,6 +18,10 @@ import org.umlreviewer.sync.git.settings.GitProtocol
 import org.umlreviewer.sync.git.settings.GitSettingsModel
 import org.umlreviewer.utils.*
 import org.umlreviewer.utils.Helpers.getWorkingDirectory
+import org.umlreviewer.utils.file.FileConflictChoice
+import org.umlreviewer.utils.file.copyFiles
+import org.umlreviewer.utils.file.deleteDirectoryStream
+import org.umlreviewer.utils.file.listAll
 import tornadofx.*
 import java.io.File
 import java.nio.file.Files
@@ -318,7 +322,8 @@ class GitSyncService: SyncService {
         copyFiles(tempDir, files, RememberChoice(
             directory = FileConflictChoice.REPLACE_OR_MERGE,
             file = FileConflictChoice.REPLACE_OR_MERGE
-        ))
+        )
+        )
         return tempDir
     }
 
@@ -331,7 +336,8 @@ class GitSyncService: SyncService {
         copyFiles(workDir.toFile(), tempDir.toPath().listAll(), RememberChoice(
             directory = FileConflictChoice.REPLACE_OR_MERGE,
             file = FileConflictChoice.REPLACE_OR_MERGE
-        ))
+        )
+        )
         deleteDirectoryStream(tempDir.toPath())
     }
 

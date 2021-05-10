@@ -8,8 +8,8 @@ import org.umlreviewer.enums.DiagramIssueGroup
 import org.umlreviewer.statistics.charts.ChartHelpers
 import org.umlreviewer.statistics.enums.DataSelectMode
 import org.umlreviewer.statistics.enums.IssueChooserMode
-import org.umlreviewer.statistics.components.Team
-import org.umlreviewer.statistics.components.Week
+import org.umlreviewer.utils.file.Team
+import org.umlreviewer.utils.file.Week
 import tornadofx.*
 import java.io.File
 

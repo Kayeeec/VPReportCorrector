@@ -9,7 +9,7 @@ import org.umlreviewer.components.NoSelectionModel
 import org.umlreviewer.components.expandAll
 import org.umlreviewer.components.getTreeTopBar
 import org.umlreviewer.statistics.components.ComponentHelpers.populateSeminarGroupTree
-import org.umlreviewer.utils.FileTreeHelpers.isSeminarGroupFile
+import org.umlreviewer.utils.file.FileTreeHelpers.isSeminarGroupFile
 import org.umlreviewer.utils.getWorkingDirectory
 import tornadofx.*
 import java.io.File

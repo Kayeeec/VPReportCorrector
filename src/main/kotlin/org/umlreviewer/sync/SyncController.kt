@@ -6,9 +6,11 @@ import org.umlreviewer.app.RefreshFilesExplorer
 import org.umlreviewer.app.RequestSync
 import org.umlreviewer.app.SettingsChanged
 import org.umlreviewer.app.errorhandling.errorWithStacktrace
+import org.umlreviewer.settings.SettingsPreferencesKey
 import org.umlreviewer.sync.git.GitSyncService
-import org.umlreviewer.utils.FileTreeHelpers.cleanDataDirectory
-import org.umlreviewer.utils.Helpers.getRemoteRepositoryType
+import org.umlreviewer.utils.Helpers
+import org.umlreviewer.utils.file.FileTreeHelpers.cleanDataDirectory
+import org.umlreviewer.utils.enumValueOrNull
 import tornadofx.Controller
 import tornadofx.TaskStatus
 import tornadofx.fail
@@ -97,5 +99,14 @@ class SyncController: Controller() {
                 }
             }
         }
+    }
+
+    private fun getRemoteRepositoryType(): RemoteRepo? {
+        var result = ""
+        Helpers.preferencesHelper {
+            sync()
+            result = get(SettingsPreferencesKey.REMOTE_REPOSITORY, RemoteRepo.default.name)
+        }
+        return enumValueOrNull(result)
     }
 }

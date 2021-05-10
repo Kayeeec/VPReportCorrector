@@ -12,8 +12,8 @@ import org.umlreviewer.app.SettingsChanged
 import org.umlreviewer.app.Styles
 import org.umlreviewer.components.form.loadingOverlay
 import org.umlreviewer.utils.Helpers.getWorkingDirectory
-import org.umlreviewer.utils.getUserHomeDirectory
-import org.umlreviewer.utils.isWithinOrEqual
+import org.umlreviewer.utils.file.getUserHomeDirectory
+import org.umlreviewer.utils.file.isWithinOrEqual
 import org.umlreviewer.utils.t
 import tornadofx.*
 import java.io.File

@@ -2,7 +2,7 @@ package org.umlreviewer.statistics
 
 import org.umlreviewer.enums.DiagramIssue
 import org.umlreviewer.enums.DiagramIssueGroup
-import org.umlreviewer.utils.FileTreeHelpers
+import org.umlreviewer.utils.file.FileTreeHelpers
 import org.umlreviewer.utils.Helpers
 import java.io.File
 

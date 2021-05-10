@@ -1,8 +1,9 @@
 package org.umlreviewer.statistics.components
 
 import javafx.scene.control.TreeItem
-import org.umlreviewer.utils.FileTreeHelpers
-import org.umlreviewer.utils.list
+import org.umlreviewer.utils.file.FileTreeHelpers
+import org.umlreviewer.utils.file.Team
+import org.umlreviewer.utils.file.list
 import java.nio.file.Path
 
 object ComponentHelpers {

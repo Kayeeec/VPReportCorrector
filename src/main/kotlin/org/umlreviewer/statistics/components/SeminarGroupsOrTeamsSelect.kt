@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleSetProperty
 import javafx.scene.Node
 import org.umlreviewer.statistics.enums.DataSelectMode
+import org.umlreviewer.utils.file.Team
 import tornadofx.*
 import java.io.File
 

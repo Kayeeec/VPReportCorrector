@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Orientation
 import org.apache.commons.io.FilenameUtils
 import org.umlreviewer.app.Styles
-import org.umlreviewer.utils.isValidFileName
+import org.umlreviewer.utils.file.isValidFileName
 import tornadofx.*
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Files

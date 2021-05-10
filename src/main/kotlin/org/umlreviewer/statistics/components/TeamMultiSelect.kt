@@ -8,6 +8,7 @@ import org.kordamp.ikonli.javafx.FontIcon
 import org.umlreviewer.components.expandAll
 import org.umlreviewer.components.getTreeTopBar
 import org.umlreviewer.statistics.components.ComponentHelpers.populateTeamTree
+import org.umlreviewer.utils.file.Team
 import org.umlreviewer.utils.getWorkingDirectory
 import tornadofx.*
 import java.nio.file.Path

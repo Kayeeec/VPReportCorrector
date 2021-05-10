@@ -21,6 +21,9 @@ import org.umlreviewer.app.Styles.Companion.flatButton
 import org.umlreviewer.components.form.loadingOverlay
 import org.umlreviewer.settings.modal.SettingsModalView
 import org.umlreviewer.utils.*
+import org.umlreviewer.utils.file.isImage
+import org.umlreviewer.utils.file.isPdf
+import org.umlreviewer.utils.file.list
 import tornadofx.*
 import java.nio.file.Files
 import java.nio.file.Path

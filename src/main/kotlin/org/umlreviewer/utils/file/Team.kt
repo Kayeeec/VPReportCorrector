@@ -1,4 +1,4 @@
-package org.umlreviewer.statistics.components
+package org.umlreviewer.utils.file
 
 import java.io.File
 

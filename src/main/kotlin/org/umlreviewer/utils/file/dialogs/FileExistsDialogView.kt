@@ -1,4 +1,4 @@
-package org.umlreviewer.filesexplorer.dialogs
+package org.umlreviewer.utils.file.dialogs
 
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleStringProperty
@@ -12,8 +12,8 @@ import org.umlreviewer.app.Styles.Companion.paddedContainer
 import org.umlreviewer.app.Styles.Companion.icon48
 import org.umlreviewer.app.Styles.Companion.iconBlue
 import org.umlreviewer.app.Styles.Companion.p
-import org.umlreviewer.utils.FileConflictChoice
-import org.umlreviewer.utils.suggestName
+import org.umlreviewer.utils.file.FileConflictChoice
+import org.umlreviewer.utils.file.suggestName
 import tornadofx.*
 
 class FileExistsDialogView : View() {

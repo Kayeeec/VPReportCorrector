@@ -3,9 +3,9 @@ package org.umlreviewer.import
 import VisualParadigmPdfToPdfDiagramExtractor
 import javafx.application.Platform
 import org.umlreviewer.app.errorhandling.ErrorCollector
-import org.umlreviewer.utils.FileConflictChoice
-import org.umlreviewer.utils.copyFiles
-import org.umlreviewer.utils.isPdf
+import org.umlreviewer.utils.file.FileConflictChoice
+import org.umlreviewer.utils.file.copyFiles
+import org.umlreviewer.utils.file.isPdf
 import tornadofx.Controller
 import java.io.File
 

@@ -1,6 +1,6 @@
 package org.umlreviewer.diagramextractor
 
-import org.umlreviewer.utils.FileConflictChoice
+import org.umlreviewer.utils.file.FileConflictChoice
 import java.io.File
 
 /**

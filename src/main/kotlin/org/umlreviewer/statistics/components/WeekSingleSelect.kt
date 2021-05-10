@@ -9,9 +9,10 @@ import org.kordamp.ikonli.javafx.FontIcon
 import org.umlreviewer.components.NoSelectionModel
 import org.umlreviewer.components.expandAll
 import org.umlreviewer.components.getTreeTopBar
-import org.umlreviewer.utils.FileTreeHelpers
+import org.umlreviewer.utils.file.FileTreeHelpers
+import org.umlreviewer.utils.file.Week
 import org.umlreviewer.utils.getWorkingDirectory
-import org.umlreviewer.utils.list
+import org.umlreviewer.utils.file.list
 import tornadofx.*
 import java.nio.file.Path
 

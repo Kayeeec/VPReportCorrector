@@ -1,6 +1,7 @@
-package org.umlreviewer.utils
+package org.umlreviewer.utils.file
 
-import org.umlreviewer.statistics.components.Team
+import org.umlreviewer.utils.AppConstants
+import org.umlreviewer.utils.Helpers
 import org.umlreviewer.utils.Helpers.getWorkingDirectory
 import java.io.File
 import java.nio.file.Files

@@ -1,9 +1,9 @@
-package org.umlreviewer.filesexplorer.dialogs
+package org.umlreviewer.utils.file.dialogs
 
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
-import org.umlreviewer.utils.FileConflictChoice
+import org.umlreviewer.utils.file.FileConflictChoice
 import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.setValue

@@ -16,10 +16,10 @@ import org.umlreviewer.statistics.NoDatasetCollector
 import org.umlreviewer.statistics.PdfFileData
 import org.umlreviewer.statistics.charts.ChartHelpers.removeBarGradientAndAddItemLabels
 import org.umlreviewer.statistics.charts.ChartHelpers.setBackgroundAndGridColor
-import org.umlreviewer.statistics.components.Team
+import org.umlreviewer.utils.file.Team
 import org.umlreviewer.statistics.enums.DataSelectMode
 import org.umlreviewer.statistics.enums.IssueChooserMode
-import org.umlreviewer.utils.FileTreeHelpers
+import org.umlreviewer.utils.file.FileTreeHelpers
 import org.umlreviewer.utils.t
 import tornadofx.*
 import java.io.File

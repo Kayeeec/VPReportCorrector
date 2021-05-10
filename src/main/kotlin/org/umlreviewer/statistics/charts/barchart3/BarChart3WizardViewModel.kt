@@ -20,9 +20,9 @@ import org.umlreviewer.statistics.NoDatasetCollector
 import org.umlreviewer.statistics.PdfFileData
 import org.umlreviewer.statistics.charts.ChartHelpers
 import org.umlreviewer.statistics.charts.ChartHelpers.setBackgroundAndGridColor
-import org.umlreviewer.statistics.components.Team
-import org.umlreviewer.statistics.components.Week
-import org.umlreviewer.utils.FileTreeHelpers
+import org.umlreviewer.utils.file.Team
+import org.umlreviewer.utils.file.Week
+import org.umlreviewer.utils.file.FileTreeHelpers
 import org.umlreviewer.utils.t
 import tornadofx.*
 import kotlin.collections.component1

@@ -3,8 +3,8 @@ package org.umlreviewer.utils
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.umlreviewer.utils.FileTreeHelpers.REGEX_TEAM_FOLDER
-import org.umlreviewer.utils.FileTreeHelpers.REGEX_WEEK_FOLDER
+import org.umlreviewer.utils.file.FileTreeHelpers.REGEX_TEAM_FOLDER
+import org.umlreviewer.utils.file.FileTreeHelpers.REGEX_WEEK_FOLDER
 
 
 internal class RegularExpressionsTest {

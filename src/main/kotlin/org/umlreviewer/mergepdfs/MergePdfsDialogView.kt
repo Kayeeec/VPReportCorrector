@@ -13,8 +13,8 @@ import org.umlreviewer.app.SettingsChanged
 import org.umlreviewer.app.Styles
 import org.umlreviewer.components.form.loadingOverlay
 import org.umlreviewer.utils.Helpers.getWorkingDirectory
-import org.umlreviewer.utils.isPdf
-import org.umlreviewer.utils.isWriteable
+import org.umlreviewer.utils.file.isPdf
+import org.umlreviewer.utils.file.isWriteable
 import org.umlreviewer.utils.t
 import tornadofx.*
 import java.io.File

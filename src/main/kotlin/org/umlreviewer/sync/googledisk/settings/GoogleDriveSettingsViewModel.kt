@@ -8,7 +8,7 @@ import org.umlreviewer.settings.SettingsViewModel
 import org.umlreviewer.sync.googledisk.CustomAuthorizationCodeInstalledApp
 import org.umlreviewer.sync.googledisk.GoogleDriveApiHelpers
 import org.umlreviewer.sync.googledisk.GoogleDriveConstants.GOOGLE_DRIVE_CREDENTIALS_USER_ID
-import org.umlreviewer.utils.deleteDirectoryStream
+import org.umlreviewer.utils.file.deleteDirectoryStream
 import org.umlreviewer.utils.t
 import tornadofx.*
 import java.nio.file.Paths

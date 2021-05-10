@@ -1,4 +1,4 @@
-package org.umlreviewer.utils
+package org.umlreviewer.utils.file
 
 import javafx.application.Platform
 import javafx.stage.Modality
@@ -6,7 +6,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang3.SystemUtils
 import org.umlreviewer.app.errorhandling.ErrorCollector
-import org.umlreviewer.filesexplorer.dialogs.*
+import org.umlreviewer.utils.file.dialogs.*
 import tornadofx.Scope
 import tornadofx.find
 import tornadofx.setInScope
@@ -143,7 +143,8 @@ fun checkConflictsAndCopyFileOrDir(rememberedAction: RememberChoice, copied: Pat
         remChoice = resolveRememberedAction(rememberedAction, result, copied)
         val chosen = remChoice.getRelevantChoice(copied)
         if (chosen == FileConflictChoice.REPLACE_OR_MERGE
-            || result?.choice == FileConflictChoice.REPLACE_OR_MERGE) {
+            || result?.choice == FileConflictChoice.REPLACE_OR_MERGE
+        ) {
             remChoice = replaceFileOrMergeDirectory(copied, targetDir, conflictingFile, remChoice)
         }
         else if (chosen == FileConflictChoice.RENAME || result?.choice == FileConflictChoice.RENAME){

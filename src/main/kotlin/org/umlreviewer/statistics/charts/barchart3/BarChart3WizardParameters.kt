@@ -4,8 +4,8 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleSetProperty
 import javafx.collections.ObservableSet
 import org.umlreviewer.enums.DiagramIssueGroup
-import org.umlreviewer.statistics.components.Team
-import org.umlreviewer.statistics.components.Week
+import org.umlreviewer.utils.file.Team
+import org.umlreviewer.utils.file.Week
 import tornadofx.*
 
 class BarChart3WizardParameters(

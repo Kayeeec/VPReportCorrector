@@ -9,10 +9,11 @@ import org.umlreviewer.filesexplorer.dialogs.*
 import org.umlreviewer.import.openSimpleImportDialog
 import org.umlreviewer.mergepdfs.MergePdfsDialogView
 import org.umlreviewer.mergepdfs.MergePdfsDialogViewModel
-import org.umlreviewer.utils.checkConflictsAndCopyFileOrDir
-import org.umlreviewer.utils.deleteDirectoryStream
-import org.umlreviewer.utils.isDescendantOf
-import org.umlreviewer.utils.isPdf
+import org.umlreviewer.utils.file.checkConflictsAndCopyFileOrDir
+import org.umlreviewer.utils.file.deleteDirectoryStream
+import org.umlreviewer.utils.file.dialogs.RememberChoice
+import org.umlreviewer.utils.file.isDescendantOf
+import org.umlreviewer.utils.file.isPdf
 import tornadofx.Controller
 import tornadofx.Scope
 import tornadofx.find

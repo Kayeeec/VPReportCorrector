@@ -10,10 +10,10 @@ import org.umlreviewer.diagramextractor.DiagramExtractor
 import org.umlreviewer.diagramextractor.exceptions.DiagramExtractorException
 import org.umlreviewer.diagramextractor.types.DiagramPageResult
 import org.umlreviewer.diagramextractor.utils.searchPageForDiagramHeadings
-import org.umlreviewer.utils.FileConflictChoice
-import org.umlreviewer.utils.findConflictingFile
-import org.umlreviewer.utils.openFileExistsDialog
-import org.umlreviewer.utils.suggestName
+import org.umlreviewer.utils.file.FileConflictChoice
+import org.umlreviewer.utils.file.findConflictingFile
+import org.umlreviewer.utils.file.openFileExistsDialog
+import org.umlreviewer.utils.file.suggestName
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
