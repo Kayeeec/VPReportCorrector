@@ -5,14 +5,14 @@ plugins {
 }
 
 application {
-    mainClassName = 'org.vpreportcorrector.app.MyAppRun'
+    mainClassName = 'org.umlreviewer.app.MyAppRun'
 }
 
 javafx {
     modules = ['javafx.controls', 'javafx.media', 'javafx.graphics', 'javafx.web', 'javafx.swing']
 }
 
-group 'org.vpreportcorrector'
+group 'org.umlreviewer'
 version '1.0-SNAPSHOT'
 
 repositories {
