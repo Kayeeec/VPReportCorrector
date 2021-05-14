@@ -1,10 +1,10 @@
-package org.umlreviewer.diagramextractor.utils
+package org.umlreviewer.diagramextractor.visualparadigmpdftopdf.utils
 
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
 import org.apache.pdfbox.text.TextPosition
-import org.umlreviewer.diagramextractor.types.SearchedPage
-import org.umlreviewer.diagramextractor.types.TextPositionSequence
+import org.umlreviewer.diagramextractor.visualparadigmpdftopdf.types.SearchedPage
+import org.umlreviewer.diagramextractor.visualparadigmpdftopdf.types.TextPositionSequence
 import java.io.IOException
 
 /**

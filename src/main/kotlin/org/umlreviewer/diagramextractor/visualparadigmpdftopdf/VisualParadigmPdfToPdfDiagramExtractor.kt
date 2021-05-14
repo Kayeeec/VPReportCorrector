@@ -1,3 +1,5 @@
+package org.umlreviewer.diagramextractor.visualparadigmpdftopdf
+
 import org.apache.pdfbox.contentstream.operator.Operator
 import org.apache.pdfbox.cos.COSInteger
 import org.apache.pdfbox.pdfparser.PDFStreamParser
@@ -8,8 +10,8 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle
 import org.apache.pdfbox.pdmodel.common.PDStream
 import org.umlreviewer.diagramextractor.DiagramExtractor
 import org.umlreviewer.diagramextractor.exceptions.DiagramExtractorException
-import org.umlreviewer.diagramextractor.types.DiagramPageResult
-import org.umlreviewer.diagramextractor.utils.searchPageForDiagramHeadings
+import org.umlreviewer.diagramextractor.visualparadigmpdftopdf.types.DiagramPageResult
+import org.umlreviewer.diagramextractor.visualparadigmpdftopdf.utils.searchPageForDiagramHeadings
 import org.umlreviewer.utils.file.FileConflictChoice
 import org.umlreviewer.utils.file.findConflictingFile
 import org.umlreviewer.utils.file.openFileExistsDialog

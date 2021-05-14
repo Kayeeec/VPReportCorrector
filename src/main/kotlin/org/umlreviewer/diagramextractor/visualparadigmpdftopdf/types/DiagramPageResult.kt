@@ -1,4 +1,4 @@
-package org.umlreviewer.diagramextractor.types
+package org.umlreviewer.diagramextractor.visualparadigmpdftopdf.types
 
 import org.apache.pdfbox.pdmodel.PDPage
 

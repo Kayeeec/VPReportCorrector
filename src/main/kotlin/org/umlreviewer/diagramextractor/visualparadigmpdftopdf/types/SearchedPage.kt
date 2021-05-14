@@ -1,10 +1,10 @@
-package org.umlreviewer.diagramextractor.types
+package org.umlreviewer.diagramextractor.visualparadigmpdftopdf.types
 
-import org.umlreviewer.diagramextractor.utils.END_HEADER
-import org.umlreviewer.diagramextractor.utils.END_HEADER_FONT_SIZE
-import org.umlreviewer.diagramextractor.utils.NEXT_START_HEADER_FONT_SIZE
-import org.umlreviewer.diagramextractor.utils.START_HEADER
-import org.umlreviewer.diagramextractor.utils.START_HEADER_FONT_SIZE
+import org.umlreviewer.diagramextractor.visualparadigmpdftopdf.utils.END_HEADER
+import org.umlreviewer.diagramextractor.visualparadigmpdftopdf.utils.END_HEADER_FONT_SIZE
+import org.umlreviewer.diagramextractor.visualparadigmpdftopdf.utils.NEXT_START_HEADER_FONT_SIZE
+import org.umlreviewer.diagramextractor.visualparadigmpdftopdf.utils.START_HEADER
+import org.umlreviewer.diagramextractor.visualparadigmpdftopdf.utils.START_HEADER_FONT_SIZE
 import kotlin.math.abs
 
 class SearchedPage {

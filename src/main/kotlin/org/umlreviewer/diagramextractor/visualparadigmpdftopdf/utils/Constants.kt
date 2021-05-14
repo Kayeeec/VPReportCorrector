@@ -1,4 +1,4 @@
-package org.umlreviewer.diagramextractor.utils//@file:JvmName("Constants") // for accessing from java code without Kt suffix
+package org.umlreviewer.diagramextractor.visualparadigmpdftopdf.utils//@file:JvmName("Constants") // for accessing from java code without Kt suffix
 
 const val START_HEADER = "Diagram"
 const val START_HEADER_FONT_SIZE = 12f
