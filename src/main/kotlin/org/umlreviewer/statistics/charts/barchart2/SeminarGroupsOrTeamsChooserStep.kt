@@ -4,7 +4,7 @@ import javafx.beans.binding.Bindings
 import javafx.beans.binding.BooleanBinding
 import javafx.scene.Node
 import org.umlreviewer.statistics.components.SeminarGroupsOrTeamsSelect
-import org.umlreviewer.statistics.components.WizardPageView
+import org.umlreviewer.statistics.charts.WizardPageView
 import org.umlreviewer.statistics.enums.DataSelectMode
 import tornadofx.*
 

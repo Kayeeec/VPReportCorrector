@@ -4,7 +4,7 @@ import javafx.beans.binding.Bindings
 import javafx.beans.binding.BooleanBinding
 import javafx.beans.binding.StringBinding
 import org.umlreviewer.statistics.components.DiagramIssueGroupMultiselect
-import org.umlreviewer.statistics.components.WizardPageView
+import org.umlreviewer.statistics.charts.WizardPageView
 import tornadofx.*
 
 class DiagramTypesChooserStep : WizardPageView("Select diagram types") {

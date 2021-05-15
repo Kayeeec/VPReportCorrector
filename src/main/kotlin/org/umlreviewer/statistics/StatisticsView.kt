@@ -162,17 +162,7 @@ class StatisticsView : View("Statistics") {
 
     private fun openChartPreview(chart: JFreeChart?) {
         if (chart == null) return
-        find<ChartPreview>(mapOf(ChartPreview::chart to chart)).openModal()
-    }
-
-    override fun onDock() {
-        // TODO KB:
-        log.info("statistics on dock")
-    }
-
-    override fun onUndock() {
-        // TODO: 19.04.21
-        log.info("statistics on undock")
+        find<ChartPreviewFragment>(mapOf(ChartPreviewFragment::chart to chart)).openModal()
     }
 
     private fun JFreeChart.getHiddenDetails(): MutableList<Pair<String, String>> {

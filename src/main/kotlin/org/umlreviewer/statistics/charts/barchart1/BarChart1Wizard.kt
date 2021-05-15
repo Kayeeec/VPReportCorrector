@@ -3,11 +3,11 @@ package org.umlreviewer.statistics.charts.barchart1
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
 import org.umlreviewer.statistics.components.RefreshableInputComponent
-import org.umlreviewer.statistics.components.RefreshableWizard
+import org.umlreviewer.statistics.charts.RefreshableWizard
 import org.umlreviewer.utils.p
 import tornadofx.*
 
-class BarChart1Wizard: Wizard(), RefreshableWizard {
+class BarChart1Wizard: RefreshableWizard() {
     val barChart1Vm: BarChart1WizardViewModel by inject()
 
     init {
@@ -38,10 +38,6 @@ class BarChart1Wizard: Wizard(), RefreshableWizard {
         refreshAllPages()
         isComplete = false
         currentPage = pages[0]
-    }
-
-    override fun refreshAllPages() {
-        pages.forEach { (it as RefreshableInputComponent).refreshInputs() }
     }
 
     override fun onSave() {

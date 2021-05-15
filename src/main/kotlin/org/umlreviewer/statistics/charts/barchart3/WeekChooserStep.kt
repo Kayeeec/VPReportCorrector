@@ -3,7 +3,7 @@ package org.umlreviewer.statistics.charts.barchart3
 import javafx.beans.binding.BooleanBinding
 import javafx.beans.binding.StringBinding
 import org.umlreviewer.statistics.components.WeekSingleSelect
-import org.umlreviewer.statistics.components.WizardPageView
+import org.umlreviewer.statistics.charts.WizardPageView
 import tornadofx.*
 
 class WeekChooserStep : WizardPageView("Select week") {

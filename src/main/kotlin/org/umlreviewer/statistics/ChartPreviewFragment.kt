@@ -4,7 +4,7 @@ import org.jfree.chart.JFreeChart
 import org.jfree.chart.fx.ChartViewer
 import tornadofx.*
 
-class ChartPreview : Fragment() {
+class ChartPreviewFragment : Fragment() {
     val chart: JFreeChart by param()
 
     init {

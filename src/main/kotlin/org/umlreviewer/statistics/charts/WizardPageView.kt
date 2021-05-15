@@ -1,10 +1,11 @@
-package org.umlreviewer.statistics.components
+package org.umlreviewer.statistics.charts
 
 import javafx.beans.binding.BooleanBinding
 import javafx.beans.binding.StringBinding
 import javafx.scene.Node
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid
 import org.kordamp.ikonli.javafx.FontIcon
+import org.umlreviewer.statistics.components.RefreshableInputComponent
 import org.umlreviewer.styles.Styles
 import tornadofx.*
 
