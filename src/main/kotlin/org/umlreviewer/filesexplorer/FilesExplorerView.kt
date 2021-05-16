@@ -31,6 +31,7 @@ import java.nio.file.Path
 // TODO: 08.03.21 test shortcuts
 class FilesExplorerView : View() {
     private val controller: FilesExplorerController by inject()
+    private val model: FilesExplorerModel by inject()
     private val rootFolderProp = SimpleObjectProperty<Path?>(this.getWorkingDirectory())
     private lateinit var filesTree: TreeView<Path>
     private val pasteStatus = TaskStatus()
@@ -119,8 +120,8 @@ class FilesExplorerView : View() {
 
                         contextmenu {
                             item("New folder") {
-                                visibleWhen { controller.model.isNewFolderVisible }
-                                enableWhen { controller.model.isFileTreeFocused.and(controller.model.isNewFolderVisible) }
+                                visibleWhen { model.isNewFolderVisible }
+                                enableWhen { model.isFileTreeFocused.and(model.isNewFolderVisible) }
                                 action {
                                     val location = selectionModel.selectedItems.firstOrNull()?.value?.toFile()
                                     if (location != null ) {
@@ -133,37 +134,37 @@ class FilesExplorerView : View() {
                                 }
                             }
                             item("Import") {
-                                visibleWhen { controller.model.isImportVisible }
-                                enableWhen { controller.model.isFileTreeFocused.and(controller.model.isImportVisible) }
+                                visibleWhen { model.isImportVisible }
+                                enableWhen { model.isFileTreeFocused.and(model.isImportVisible) }
                                 action {
                                     controller.import(selectionModel.selectedItems.toList())
                                 }
                             }
                             item("Open") {
-                                visibleWhen { controller.model.isEditVisible }
-                                enableWhen { controller.model.isFileTreeFocused.and(controller.model.isEditVisible) }
+                                visibleWhen { model.isEditVisible }
+                                enableWhen { model.isFileTreeFocused.and(model.isEditVisible) }
                                 action {
                                     openDiagram()
                                 }
                             }
                             item("Open in new window") {
-                                visibleWhen { controller.model.isEditVisible }
-                                enableWhen { controller.model.isFileTreeFocused.and(controller.model.isEditVisible) }
+                                visibleWhen { model.isEditVisible }
+                                enableWhen { model.isFileTreeFocused.and(model.isEditVisible) }
                                 action {
                                     openDiagram(true)
                                 }
                             }
                             item("Merge PDFs...") {
-                                visibleWhen { controller.model.isMergePdfsVisible }
-                                enableWhen { controller.model.isFileTreeFocused.and(controller.model.isMergePdfsVisible) }
+                                visibleWhen { model.isMergePdfsVisible }
+                                enableWhen { model.isFileTreeFocused.and(model.isMergePdfsVisible) }
                                 action {
                                     controller.openMergePdfsDialog(selectionModel)
                                 }
                             }
                             separator()
                             item("Rename") {
-                                visibleWhen { controller.model.isRenameVisible }
-                                enableWhen { controller.model.isFileTreeFocused.and(controller.model.isRenameVisible) }
+                                visibleWhen { model.isRenameVisible }
+                                enableWhen { model.isFileTreeFocused.and(model.isRenameVisible) }
                                 action {
                                     if (selectionModel.selectedItems !== null
                                         && selectionModel.selectedItems.isNotEmpty()
@@ -181,7 +182,7 @@ class FilesExplorerView : View() {
                                 }
                             }
                             item("Copy", KeyCombination.keyCombination("Shortcut+C")){
-                                enableWhen { controller.model.isFileTreeFocused }
+                                enableWhen { model.isFileTreeFocused }
                                 action {
                                     if (filesTree.isFocused
                                         && selectionModel.selectedItems !== null
@@ -210,7 +211,7 @@ class FilesExplorerView : View() {
                                 }
                             }
                             item("Delete", KeyCombination.keyCombination("Delete")) {
-                                enableWhen { controller.model.isFileTreeFocused }
+                                enableWhen { model.isFileTreeFocused }
                                 action {
                                     if (filesTree.isFocused
                                         && selectionModel.selectedItems !== null
@@ -235,7 +236,7 @@ class FilesExplorerView : View() {
                         }
 
                         focusedProperty().onChange { newValue: Boolean ->
-                            controller.model.isFileTreeFocused.value = newValue
+                            model.isFileTreeFocused.value = newValue
                         }
                     }
                     filesTree.fitToParentSize()
@@ -274,7 +275,7 @@ class FilesExplorerView : View() {
     }
 
     private fun openDiagram(inNewWindow: Boolean = false) {
-        if (filesTree.selectionModel.selectedItems.size == 1 && controller.model.isEditVisible.value) {
+        if (filesTree.selectionModel.selectedItems.size == 1 && model.isEditVisible.value) {
             if (inNewWindow) {
                 fire(OpenDiagramInNewWindowEvent(filesTree.selectionModel.selectedItems[0].value) )
             } else {

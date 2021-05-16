@@ -27,7 +27,7 @@ import java.util.concurrent.FutureTask
 
 // TODO: 18.03.21 refactor to MVVM ?
 class FilesExplorerController: Controller() {
-    val model: FilesExplorerModel by inject()
+    private val model: FilesExplorerModel by inject()
 
     fun onSelectedItemsChange(selectionModel: MultipleSelectionModel<TreeItem<Path>>?) {
         recomputeContextMenuVisibilities(selectionModel)
@@ -79,7 +79,7 @@ class FilesExplorerController: Controller() {
 
     fun rename(path: Path) {
         val scope = Scope()
-        val model = RenameDialogModel(RenameDialog(path))
+        val model = RenameDialogViewModel(RenameDialogModel(path))
         setInScope(model, scope)
         find(RenameDialogView::class, scope).openModal(
             block = true,

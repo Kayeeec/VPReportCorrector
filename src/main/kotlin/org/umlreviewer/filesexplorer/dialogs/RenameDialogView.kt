@@ -12,7 +12,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 class RenameDialogView : View("Rename") {
-    private val model: RenameDialogModel by inject()
+    private val model: RenameDialogViewModel by inject()
 
     override fun onBeforeShow() {
         modalStage?.let {
@@ -90,7 +90,7 @@ class RenameDialogView : View("Rename") {
         }
     }
 
-    private fun resolveName(data: RenameDialog): String {
+    private fun resolveName(data: RenameDialogModel): String {
         val trimmed = data.newName.trim()
         val file = data.toRename.toFile()
         if (file.isDirectory) return trimmed
@@ -103,7 +103,7 @@ class RenameDialogView : View("Rename") {
     }
 }
 
-class RenameDialog(renamed: Path) {
+class RenameDialogModel(renamed: Path) {
     val conflictingFileNameProperty = SimpleStringProperty(null)
     var conflictingFileName: String? by conflictingFileNameProperty
 
@@ -117,9 +117,9 @@ class RenameDialog(renamed: Path) {
     var toRename: Path by toRenameProperty
 }
 
-class RenameDialogModel(renameDialog: RenameDialog) : ItemViewModel<RenameDialog>(renameDialog) {
-    val newName = bind(RenameDialog::newNameProperty)
-    val oldName = bind(RenameDialog::oldNameProperty)
-    val toRename = bind(RenameDialog::toRenameProperty)
-    val conflictingFileName = bind(RenameDialog::conflictingFileNameProperty)
+class RenameDialogViewModel(renameDialog: RenameDialogModel) : ItemViewModel<RenameDialogModel>(renameDialog) {
+    val newName = bind(RenameDialogModel::newNameProperty)
+    val oldName = bind(RenameDialogModel::oldNameProperty)
+    val toRename = bind(RenameDialogModel::toRenameProperty)
+    val conflictingFileName = bind(RenameDialogModel::conflictingFileNameProperty)
 }
