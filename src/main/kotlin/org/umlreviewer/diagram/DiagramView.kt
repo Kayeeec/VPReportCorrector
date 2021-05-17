@@ -3,6 +3,7 @@ package org.umlreviewer.diagram
 import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.control.Tooltip
+import javafx.scene.layout.FlowPane
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import org.icepdf.ri.common.MyAnnotationCallback
@@ -70,12 +71,8 @@ class DiagramView : View() {
         shortcut("Ctrl+S")
     }
 
-    private var toolBar = hbox {
-        style {
-            padding = box(4.px)
-        }
-        hgrow = Priority.ALWAYS
-    }
+    private var toolBarFlowPane: FlowPane by singleAssign()
+    private var toolBar: HBox by singleAssign()
 
     init {
         subscribe<ResizeEditorEvent> {
@@ -91,7 +88,7 @@ class DiagramView : View() {
             }
         }
         vm.isEditingProperty.onChange {
-            buildToolbar()
+            rebuildToolbar()
         }
 
     }
@@ -172,7 +169,7 @@ class DiagramView : View() {
                 val factory = SwingViewBuilder(swingController, properties)
                 vm.viewerPanel = factory.buildUtilityAndDocumentSplitPane(false)
                 viewerComponents = PdfViewerComponents(factory)
-                buildToolbar()
+                toolBar = getInitialToolbar()
                 vm.viewerPanel.revalidate()
                 swingNode.content = vm.viewerPanel
                 centerView.add(swingNode)
@@ -184,56 +181,34 @@ class DiagramView : View() {
         }
     }
 
-    private fun buildToolbar() {
-        toolBar.children.clear()
-        if (vm.isEditingProperty.value == true) {
-            buildEditorToolbar()
-        } else {
-            buildViewerToolbar()
-        }
-    }
-
-    private fun buildViewerToolbar() {
-        with(toolBar) {
-            flowpane {
+    private fun getInitialToolbar(): HBox {
+        return hbox {
+            style {
+                padding = box(4.px)
+            }
+            hgrow = Priority.ALWAYS
+            toolBarFlowPane = flowpane {
                 hgrow = Priority.ALWAYS
-
                 add(viewerComponents.showHideUtilityPane)
                 add(toggleEditViewModeBtn)
                 add(viewerComponents.fitPage)
                 add(viewerComponents.pan)
                 add(viewerComponents.textSelecion)
             }
-
             add(diagramErrorsBtn)
         }
     }
 
-    private fun buildEditorToolbar() {
-        with(toolBar) {
-            flowpane {
-                hgrow = Priority.ALWAYS
-
-                add(viewerComponents.showHideUtilityPane) // TODO: 02.05.21 fix npe and not clickable
-                add(toggleEditViewModeBtn)
-                add(saveBtn)
-                add(viewerComponents.fitPage)
-                add(viewerComponents.pan)
-                add(viewerComponents.textSelecion)
+    private fun rebuildToolbar() {
+        if (vm.isEditingProperty.value == true) {
+            with(toolBarFlowPane) {
+                addChildIfPossible(saveBtn, 2)
                 separator()
-                add(viewerComponents.selectAnnotation)
-                add(viewerComponents.lineAnnotation)
-                add(viewerComponents.lineArrowAnnotation)
-
-                add(viewerComponents.squareAnnotation)
-                add(viewerComponents.circleAnnotation)
-                add(viewerComponents.inkAnnotation)
-
-                add(viewerComponents.freeTextAnnotation)
-                add(viewerComponents.textAnnotation)
+                viewerComponents.annotationButtons.forEach { add(it) }
             }
-
-            add(diagramErrorsBtn)
+        } else {
+            viewerComponents.annotationButtons.forEach { it.removeFromParent() }
+            saveBtn.removeFromParent()
         }
     }
 

@@ -31,7 +31,11 @@ class UncaughtErrorHandler : Thread.UncaughtExceptionHandler {
         // Call consume to avoid error dialog.
         var filter: (ErrorEvent) -> Unit = {
             val doConsume = it.isIcePdfError() || it.isWizardRelatedNpe() || it.isDiagramUtilityPaneBtnNpe()
-            if (doConsume) it.consume()
+            if (doConsume) {
+//                log.severe(it.error.stackTraceToString())
+                it.error.printStackTrace()
+                it.consume()
+            }
         }
 
         /**

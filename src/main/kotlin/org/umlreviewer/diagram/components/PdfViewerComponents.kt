@@ -28,4 +28,11 @@ class PdfViewerComponents(factory: SwingViewBuilder) {
         sn.content = jComponent
         return sn
     }
+
+    val annotationButtons: List<SwingNode>
+        get() = listOf(
+            selectAnnotation, lineAnnotation, lineArrowAnnotation,
+            squareAnnotation, circleAnnotation, inkAnnotation,
+            freeTextAnnotation, textAnnotation
+        )
 }
