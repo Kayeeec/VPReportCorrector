@@ -88,6 +88,7 @@ class MainView : View() {
                     addClass(flatButton)
                     graphic = FontIcon(FontAwesomeSolid.CHART_BAR)
                     fitToParentHeight()
+                    disableWhen { workingDirectory.isNull }
                     action {
                         isSelected = true
                         find<EditorView>().replaceWith<StatisticsView>(

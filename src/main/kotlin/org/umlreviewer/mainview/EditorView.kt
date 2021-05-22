@@ -60,14 +60,4 @@ class EditorView : View("Editor") {
 
         center = centerSplitPane
     }
-
-    override fun onDock() {
-        // TODO KB:
-        log.info("editor on dock")
-    }
-
-    override fun onUndock() {
-        // TODO: 19.04.21
-        log.info("editor on undock")
-    }
 }
