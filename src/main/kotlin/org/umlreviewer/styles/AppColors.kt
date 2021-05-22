@@ -15,6 +15,5 @@ class AppColors() {
         val bgButtonHover = c("#e1e2e1")
         val bgButtonActive = c("#c1c1c1")
         val borderGray = c("#c8c8c8")
-
     }
 }
