@@ -3,13 +3,33 @@ package org.umlreviewer.diagram
 import javafx.application.Platform
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleIntegerProperty
+import org.icepdf.ri.common.PrintHelper
 import org.icepdf.ri.common.SwingController
+import org.icepdf.ri.common.ViewModel
+import org.icepdf.ri.common.search.DocumentSearchControllerImpl
+import org.umlreviewer.diagram.components.icepdf.CustomDocumentViewControllerImpl
 import java.beans.PropertyChangeEvent
+import java.util.*
 
-class CustomSwingController: SwingController() {
+class CustomSwingController: SwingController {
+    private var reflectingZoomInZoomComboBox: Boolean = false
     val currentPageProperty = SimpleIntegerProperty(1)
     val nextAndLastPageButtonEnabled = SimpleBooleanProperty(true)
     val previousAndFirstPageButtonEnabled = SimpleBooleanProperty(false)
+
+    constructor(currentMessageBundle: ResourceBundle? = null) {
+        viewModel = ViewModel()
+        documentViewController = CustomDocumentViewControllerImpl(this)
+        documentSearchController = DocumentSearchControllerImpl(this)
+        documentViewController.addPropertyChangeListener(this)
+        if (currentMessageBundle != null) {
+            SwingController.messageBundle = currentMessageBundle
+        } else {
+            SwingController.messageBundle = ResourceBundle.getBundle("org.icepdf.ri.resources.MessageBundle")
+        }
+
+        Thread { PrintHelper.preparePrintServices() }.start()
+    }
 
     override fun propertyChange(evt: PropertyChangeEvent?) {
         super.propertyChange(evt)
