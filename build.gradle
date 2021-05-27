@@ -19,7 +19,7 @@ javafx {
 }
 
 group 'org.umlreviewer'
-version '1.0-SNAPSHOT'
+version '1.0.1'
 
 repositories {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' } // for TornadoFX 2 snapshot

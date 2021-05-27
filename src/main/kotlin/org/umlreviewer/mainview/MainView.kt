@@ -91,6 +91,7 @@ class MainView : View() {
                     showDelay = Duration.millis(200.0)
                 }
                 action { openSimpleImportDialog() }
+                enableWhen { workingDirectory.isNotNull }
             }
             hbox {
                 hgrow = Priority.ALWAYS
