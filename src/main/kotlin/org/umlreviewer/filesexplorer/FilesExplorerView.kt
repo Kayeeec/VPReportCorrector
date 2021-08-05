@@ -258,8 +258,10 @@ class FilesExplorerView : View() {
     }
 
     private fun refreshTreeView() {
-        with(filesTree){
-            refreshTreeItemRecursively(this.root)
+        if (this::filesTree.isInitialized) {
+            with(filesTree){
+                refreshTreeItemRecursively(this.root)
+            }
         }
     }
 
