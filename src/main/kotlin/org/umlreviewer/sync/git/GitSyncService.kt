@@ -3,27 +3,24 @@ package org.umlreviewer.sync.git
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.JSchException
 import javafx.application.Platform
-import org.apache.commons.io.FileUtils
 import org.eclipse.jgit.api.*
 import org.eclipse.jgit.lib.ConfigConstants.CONFIG_BRANCH_SECTION
 import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.lib.RepositoryState
+import org.eclipse.jgit.merge.ContentMergeStrategy
+import org.eclipse.jgit.merge.MergeStrategy
 import org.eclipse.jgit.transport.*
 import org.eclipse.jgit.util.FS
-import org.umlreviewer.utils.file.dialogs.RememberChoice
 import org.umlreviewer.sync.ReinitializationParameters
 import org.umlreviewer.sync.SyncService
 import org.umlreviewer.sync.git.exceptions.GitSyncServiceException
 import org.umlreviewer.sync.git.settings.GitProtocol
 import org.umlreviewer.sync.git.settings.GitSettingsModel
-import org.umlreviewer.utils.*
 import org.umlreviewer.utils.PreferencesHelper.getWorkingDirectory
-import org.umlreviewer.utils.file.FileConflictChoice
-import org.umlreviewer.utils.file.copyFiles
 import org.umlreviewer.utils.file.deleteDirectoryStream
-import org.umlreviewer.utils.file.listAll
-import tornadofx.*
-import java.io.File
+import tornadofx.FXTask
+import tornadofx.error
+import tornadofx.warning
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.logging.Logger
@@ -72,7 +69,7 @@ class GitSyncService: SyncService {
     }
 
     /**
-     * Initialises new git repository and pulls files from the remote.
+     * Initialises new git repository and pulls files from the remote. Does not push anything.
      *
      * @return git  a JGit representation of the created repository, null if it could not be initialized
      */
@@ -87,14 +84,12 @@ class GitSyncService: SyncService {
         log.info("Initial file synchronisation.")
         if (nGit.hasUntrackedFiles()) {
             log.info("Folder has untracked files")
-            val tempDir = stashWorkdirContentsToTemp()
             gitAddAllAndCommit(nGit, "initial") // will be deleted along with the added files by pullRebase(...)
             val conf = nGit.repository.config
             conf.setString(CONFIG_BRANCH_SECTION, BRANCH, "remote", REMOTE)
             conf.setString(CONFIG_BRANCH_SECTION, BRANCH, "merge", "refs/heads/${BRANCH}")
             conf.save()
-            pullRebaseAndContinue(nGit)
-            unstashWorkdirContentsFromTemp(tempDir)
+            pullRebaseKeepLocalChanges(nGit)
         } else {
             log.info("No untracked files.")
             nGit.checkout()!!
@@ -124,9 +119,7 @@ class GitSyncService: SyncService {
 
     /**
      * Two-way synchronisation of the working directory with remote git repository.
-     * Pulls the commits from the remote repo and rebases the local changes/commits on top of them (using a workaround -
-     * stashes changes to a temporary folder and then copies them back, due to a JGit bug
-     * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=501111)
+     * Pulls the commits from the remote repo and rebases the local changes/commits on top of them.
      * Local changes take precedence.
      */
     override fun sync(fxTask: FXTask<*>) {
@@ -135,45 +128,18 @@ class GitSyncService: SyncService {
         val status = git!!.status().call()
         if (status.isClean) {
             fxTask.updateMessage("Pulling remote changes...")
-            pullRebaseAndContinue(git)
+            pullRebaseKeepLocalChanges(git)
         } else {
-            val stashTempDir = stashChanges(status)
-            git.reset().setMode(ResetCommand.ResetType.HARD).call()
-            git.clean().setForce(true).call()
-            fxTask.updateMessage("Pulling remote changes...")
-            pullRebaseAndContinue(git)
-            fxTask.updateMessage("Applying local changes...")
-            unstashWorkdirContentsFromTemp(stashTempDir)
-            deleteRemovedFiles(status)
+            fxTask.updateMessage("Committing local changes...")
             gitAddAllAndCommit(git, getSyncCommitMessage())
-            fxTask.updateMessage("Pushing to remote repository...")
+            fxTask.updateMessage("Pulling remote changes...")
+            pullRebaseKeepLocalChanges(git)
+            fxTask.updateMessage("Pushing local changes...")
             pushAndResetIfRejected(git)
         }
     }
 
     private fun getSyncCommitMessage() = "${gitSettings.configUserName} (${gitSettings.configUserEmail}) - sync"
-
-    private fun deleteRemovedFiles(status: Status) {
-        if (workDir == null) return
-        val workDirAbs = workDir.toFile().absolutePath
-        status.removed.forEach {
-            deleteRelativePathIfExists(workDirAbs, it)
-        }
-        status.missing.forEach {
-            deleteRelativePathIfExists(workDirAbs, it)
-        }
-    }
-
-    private fun deleteRelativePathIfExists(basePath: String, relativePath: String) {
-        try {
-            val path = Paths.get(basePath, relativePath)
-            if (Files.exists(path)) {
-                deleteDirectoryStream(path)
-            }
-        } catch (e: Throwable) {
-            log.severe(e.stackTraceToString())
-        }
-    }
 
     override fun shouldReinitializeAndOrDispose(): ReinitializationParameters {
         val newWorkingDir = getWorkingDirectory()
@@ -206,7 +172,7 @@ class GitSyncService: SyncService {
             .call()
         val anyRefsRejected = pushResults.any { pr -> pr.remoteUpdates.any { ru -> pushRejectedStatuses.contains(ru.status) } }
         if (anyRefsRejected) {
-            val messages = pushResults.map { it.messages }.joinToString("\n")
+            val messages = pushResults.joinToString("\n") { it.messages }
             resetLastSyncCommitIfExists(nGit)
             Platform.runLater {
                 warning(
@@ -226,15 +192,17 @@ class GitSyncService: SyncService {
         }
     }
 
-    private fun pullRebaseAndContinue(nGit: Git) {
+    private fun pullRebaseKeepLocalChanges(nGit: Git) {
         val pullResult = nGit.pull()
             .addAuthentication()
             .setProgressMonitor(LoggingProgressMonitor())
             .setRebase(true)
+            .setStrategy(MergeStrategy.RECURSIVE)
+            .setContentMergeStrategy(ContentMergeStrategy.THEIRS)
             .call()
         logFailedPullResult(pullResult)
         if (!pullResult.rebaseResult.status.isSuccessful && nGit.repository.repositoryState != RepositoryState.SAFE) {
-            nGit.rebase().setOperation(RebaseCommand.Operation.CONTINUE)
+            nGit.rebase().setOperation(RebaseCommand.Operation.CONTINUE).call()
         }
     }
 
@@ -309,54 +277,5 @@ class GitSyncService: SyncService {
 
     private fun Git.hasUntrackedFiles(): Boolean {
         return this.status().call().untracked.isNotEmpty()
-    }
-
-    /**
-     * Creates a temporary directory and copies the contents of [workDir] into it.
-     * @return temDir   File representation if temporary directory serving as a copy of [workDir], null if [workDir] is null
-     */
-    private fun stashWorkdirContentsToTemp(): File? {
-        if(workDir == null) return null
-        val tempDir = createTempDir("VPRC-workdir-stash")
-        val files = workDir.listAll()
-        copyFiles(tempDir, files, RememberChoice(
-            directory = FileConflictChoice.REPLACE_OR_MERGE,
-            file = FileConflictChoice.REPLACE_OR_MERGE
-        )
-        )
-        return tempDir
-    }
-
-    /**
-     * Copies the contents of [tempDir] to the [workDir], overwriting conflicting files and deletes the [tempDir].
-     * @param tempDir   directory to copy contents from
-     */
-    private fun unstashWorkdirContentsFromTemp(tempDir: File?) {
-        if (tempDir == null || workDir == null) return
-        copyFiles(workDir.toFile(), tempDir.toPath().listAll(), RememberChoice(
-            directory = FileConflictChoice.REPLACE_OR_MERGE,
-            file = FileConflictChoice.REPLACE_OR_MERGE
-        )
-        )
-        deleteDirectoryStream(tempDir.toPath())
-    }
-
-    private fun stashChanges(status: Status): File? {
-        if(workDir == null
-            || status.untracked.size + status.added.size + status.changed.size + status.modified.size == 0) return null
-        val workDirAbs = workDir.toFile().absolutePath
-        val tempDir = createTempDir("VPRC-sync-changes-stash")
-        val tempDirAbs = tempDir.absolutePath
-        status.untracked.forEach { copyToTemp(workDirAbs, it, tempDirAbs) }
-        status.added.forEach { copyToTemp(workDirAbs, it, tempDirAbs) }
-        status.changed.forEach { copyToTemp(workDirAbs, it, tempDirAbs) }
-        status.modified.forEach { copyToTemp(workDirAbs, it, tempDirAbs) }
-        return tempDir
-    }
-
-    private fun copyToTemp(workDirAbs: String, fileRelative: String, tempDirAbs: String) {
-        val src = Paths.get(workDirAbs, fileRelative)
-        val destDir = Paths.get(tempDirAbs, fileRelative)
-        FileUtils.copyFile(src.toFile(), destDir.toFile(), true)
     }
 }
