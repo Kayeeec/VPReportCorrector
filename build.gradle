@@ -32,6 +32,7 @@ ext {
     googleDriveApiVersion = '1.31.0'
     openjfxVersion = '13-ea+8'
     pdfboxVersion = '2.0.21'
+    jGitVersion = '5.13.0.202109080827-r'
 }
 
 test {
@@ -70,8 +71,8 @@ dependencies {
     compile files('./libs/icepdf-viewer-6.3.3-SNAPSHOT.jar')
 
     // git sync
-    implementation group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.11.0.202103091610-r'
-    implementation group: 'org.eclipse.jgit', name: 'org.eclipse.jgit.ssh.jsch', version: '5.11.0.202103091610-r'
+    implementation "org.eclipse.jgit:org.eclipse.jgit:${jGitVersion}"
+    implementation "org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:${jGitVersion}"
 
     // statistics
     implementation 'org.jfree:org.jfree.chart.fx:2.0.1'
